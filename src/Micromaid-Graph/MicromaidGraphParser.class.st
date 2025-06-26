@@ -6,15 +6,16 @@ Class {
 }
 
 { #category : 'parsing' }
-MicromaidGraphParser >> edge [
+MicromaidGraphParser >> edgeLabel [
 
-	^ self normalEdge
+	^ $| asPParser , ($| asPParser not , #any asPParser) star flatten
+	  , $| asPParser ==> #second
 ]
 
 { #category : 'parsing' }
 MicromaidGraphParser >> graph [
 
-	^ self edge
+	^ self link
 ]
 
 { #category : 'parsing' }
@@ -36,10 +37,39 @@ MicromaidGraphParser >> head2 [
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> linkLabel [
+MicromaidGraphParser >> line [
 
-	^ $| asPParser , ($| asPParser not , #any asPParser) star flatten
-	  , $| asPParser ==> #second
+	^ self node trimBlanks , (self link , self node trimBlanks) optional
+	  , (#newline asPParser / #eoi asPParser) ==> [ :triple |
+		  | node1 |
+		  node1 := triple first.
+		  self notifyNode: node1.
+		  triple second ifNil: [ { node1 } ] ifNotNil: [ :edgeAndNode |
+				  | edge node2 |
+				  edge := edgeAndNode first.
+				  node2 := edgeAndNode second.
+				  edge
+					  node1: node1 name;
+					  node2: node2 name.
+				  self
+					  notifyNode: node2;
+					  notifyEdge: edge.
+				  {
+					  node1.
+					  node2.
+					  edge } ] ]
+]
+
+{ #category : 'parsing' }
+MicromaidGraphParser >> link [
+
+	^ self normalLink
+]
+
+{ #category : 'parsing' }
+MicromaidGraphParser >> node [
+
+	^ self rectNode
 ]
 
 { #category : 'parsing' }
@@ -49,14 +79,14 @@ MicromaidGraphParser >> nodeName [
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> normalEdge [
+MicromaidGraphParser >> normalLink [
 
 	^ self head1 , '-' asPParser
 	  ,
 		  (' ' asPParser
 		   , (' --' asPParser not , #any asPParser) star flatten
 		   , ' --' asPParser ==> #second) optional , $- asPParser star
-	  , self head2 , self linkLabel optional ==> [ :array |
+	  , self head2 , self edgeLabel optional ==> [ :array |
 		  MMGraphEdge new
 			  label: (array third ifNil: [ array sixth ]);
 			  head1: array first;
@@ -64,6 +94,18 @@ MicromaidGraphParser >> normalEdge [
 			  line: #normal;
 			  length: array fourth size + 1;
 			  yourself ]
+]
+
+{ #category : 'notifying' }
+MicromaidGraphParser >> notifyEdge: aMMGraphEdge [
+
+	^ MMGraphEdgeNotification signal: aMMGraphEdge
+]
+
+{ #category : 'notifying' }
+MicromaidGraphParser >> notifyNode: aMMGraphNode [
+
+	^ MMGraphNodeNotification signal: aMMGraphNode
 ]
 
 { #category : 'parsing' }

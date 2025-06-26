@@ -8,6 +8,13 @@ Class {
 	#package : 'Micromaid-Tests'
 }
 
+{ #category : 'asserting' }
+MicromaidGraphParserTest >> assertPetit2Success: anObject and: aBlock [
+
+	self assert: anObject isPetit2Success.
+	aBlock cull: anObject
+]
+
 { #category : 'running' }
 MicromaidGraphParserTest >> setUp [
 
@@ -20,10 +27,18 @@ MicromaidGraphParserTest >> testHead1 [
 
 	| head1 |
 	head1 := parser head1 end.
-	self assert: (head1 parse: '-') equals: #none.
-	self assert: (head1 parse: '<') equals: #arrowhead.
-	self assert: (head1 parse: 'o') equals: #circle.
-	self assert: (head1 parse: 'x') equals: #cross.
+	self
+		assertPetit2Success: (head1 parse: '-')
+		and: [ :head | self assert: head equals: #none ].
+	self
+		assertPetit2Success: (head1 parse: '<')
+		and: [ :head | self assert: head equals: #arrowhead ].
+	self
+		assertPetit2Success: (head1 parse: 'o')
+		and: [ :head | self assert: head equals: #circle ].
+	self
+		assertPetit2Success: (head1 parse: 'x')
+		and: [ :head | self assert: head equals: #cross ].
 	self assert: (head1 parse: '>') isPetit2Failure
 ]
 
@@ -32,53 +47,146 @@ MicromaidGraphParserTest >> testHead2 [
 
 	| head2 |
 	head2 := parser head2 end.
-	self assert: (head2 parse: '-') equals: #none.
-	self assert: (head2 parse: '>') equals: #arrowhead.
-	self assert: (head2 parse: 'o') equals: #circle.
-	self assert: (head2 parse: 'x') equals: #cross.
+	self
+		assertPetit2Success: (head2 parse: '-')
+		and: [ :head | self assert: head equals: #none ].
+	self
+		assertPetit2Success: (head2 parse: '>')
+		and: [ :head | self assert: head equals: #arrowhead ].
+	self
+		assertPetit2Success: (head2 parse: 'o')
+		and: [ :head | self assert: head equals: #circle ].
+	self
+		assertPetit2Success: (head2 parse: 'x')
+		and: [ :head | self assert: head equals: #cross ].
 	self assert: (head2 parse: '<') isPetit2Failure
 ]
 
 { #category : 'tests' }
-MicromaidGraphParserTest >> testNormalEdge [
+MicromaidGraphParserTest >> testLine [
 
-	| edge |
-	edge := parser normalEdge end parse: '-->'.
-	self assert: edge label equals: nil.
-	self assert: edge line equals: #normal.
-	self assert: edge head1 equals: #none.
-	self assert: edge head2 equals: #arrowhead.
-	self assert: edge length equals: 1.
-	edge := parser normalEdge end parse: '---->'.
-	self assert: edge label equals: nil.
-	self assert: edge line equals: #normal.
-	self assert: edge head1 equals: #none.
-	self assert: edge head2 equals: #arrowhead.
-	self assert: edge length equals: 3.
-	edge := parser normalEdge end parse: '-- foo --->'.
-	self assert: edge label equals: 'foo'.
-	self assert: edge line equals: #normal.
-	self assert: edge head1 equals: #none.
-	self assert: edge head2 equals: #arrowhead.
-	self assert: edge length equals: 2.
-	edge := parser normalEdge end parse: '--->|foo|'.
-	self assert: edge label equals: 'foo'.
-	self assert: edge line equals: #normal.
-	self assert: edge head1 equals: #none.
-	self assert: edge head2 equals: #arrowhead.
-	self assert: edge length equals: 2
+	self
+		assertPetit2Success: (parser line end parse: 'A')
+		and: [ :line |
+				self assert: line isArray.
+				self assert: line size equals: 1.
+				self assert: line first name equals: 'A'.
+				self assert: line first label equals: 'A' ].
+	self
+		assertPetit2Success: (parser line end parse: 'A[node a]')
+		and: [ :line |
+				self assert: line isArray.
+				self assert: line size equals: 1.
+				self assert: line first name equals: 'A'.
+				self assert: line first label equals: 'node a' ].
+	self
+		assertPetit2Success: (parser line end parse: 'A-->B')
+		and: [ :line |
+				self assert: line isArray.
+				self assert: line size equals: 3.
+				self assert: line first name equals: 'A'.
+				self assert: line first label equals: 'A'.
+				self assert: line second name equals: 'B'.
+				self assert: line second label equals: 'B'.
+				self assert: line third label equals: nil ].
+	self
+		assertPetit2Success:
+		(parser line end parse: 'A[node a] -->|a to b| B[node b]')
+		and: [ :line |
+				self assert: line isArray.
+				self assert: line size equals: 3.
+				self assert: line first name equals: 'A'.
+				self assert: line first label equals: 'node a'.
+				self assert: line second name equals: 'B'.
+				self assert: line second label equals: 'node b'.
+				self assert: line third label equals: 'a to b' ].
+	self
+		assertPetit2Success: ((parser line , parser line) end parse: 'A
+B')
+		and: [ :lines |
+				| nodes |
+				self assert: lines isArray.
+				self assert: lines size equals: 2.
+				nodes := lines collect: #first.
+				self assert: nodes first name equals: 'A'.
+				self assert: nodes second name equals: 'B' ].
+	self
+		assert: (Array streamContents: [ :stream |
+					 [
+						 (parser line , parser line) end parse: 'A
+B --> A' ]
+						 on: MMGraphNodeNotification
+						 do: [ :ex |
+								 stream nextPut: ex node name.
+								 ex resume ] ])
+		equals: #( 'A' 'B' 'A' ).
+	self
+		assert: (Array streamContents: [ :stream |
+					 [
+						 (parser line , parser line) end parse: 'A
+B --> A' ]
+						 on: MMGraphEdgeNotification
+						 do: [ :ex |
+								 stream
+									 nextPut: ex edge node1;
+									 nextPut: ex edge node2.
+								 ex resume ] ])
+		equals: #( 'B' 'A' )
+]
+
+{ #category : 'tests' }
+MicromaidGraphParserTest >> testNormalLink [
+
+	self
+		assertPetit2Success: (parser normalLink end parse: '-->')
+		and: [ :link |
+				self assert: link isPetit2Success.
+				self assert: link label equals: nil.
+				self assert: link line equals: #normal.
+				self assert: link head1 equals: #none.
+				self assert: link head2 equals: #arrowhead.
+				self assert: link length equals: 1 ].
+	self
+		assertPetit2Success: (parser normalLink end parse: '---->')
+		and: [ :link |
+				self assert: link label equals: nil.
+				self assert: link line equals: #normal.
+				self assert: link head1 equals: #none.
+				self assert: link head2 equals: #arrowhead.
+				self assert: link length equals: 3 ].
+	self
+		assertPetit2Success: (parser normalLink end parse: '-- foo --->')
+		and: [ :link |
+				self assert: link label equals: 'foo'.
+				self assert: link line equals: #normal.
+				self assert: link head1 equals: #none.
+				self assert: link head2 equals: #arrowhead.
+				self assert: link length equals: 2 ].
+	self
+		assertPetit2Success: (parser normalLink end parse: '--->|foo|')
+		and: [ :link |
+				self assert: link label equals: 'foo'.
+				self assert: link line equals: #normal.
+				self assert: link head1 equals: #none.
+				self assert: link head2 equals: #arrowhead.
+				self assert: link length equals: 2 ]
 ]
 
 { #category : 'tests' }
 MicromaidGraphParserTest >> testRectNode [
 
-	| rectNode |
-	rectNode := parser rectNode end parse: 'A'.
-	self assert: rectNode name equals: 'A'.
-	self assert: rectNode label equals: 'A'.
-	self assert: rectNode shape equals: #rect.
-	rectNode := parser rectNode end parse: 'A[foo]'.
-	self assert: rectNode name equals: 'A'.
-	self assert: rectNode label equals: 'foo'.
-	self assert: rectNode shape equals: #rect
+	self
+		assertPetit2Success: (parser rectNode end parse: 'A')
+		and: [ :rectNode |
+				self assert: rectNode isPetit2Success.
+				self assert: rectNode name equals: 'A'.
+				self assert: rectNode label equals: 'A'.
+				self assert: rectNode shape equals: #rect ].
+	self
+		assertPetit2Success: (parser rectNode end parse: 'A[foo]')
+		and: [ :rectNode |
+				self assert: rectNode isPetit2Success.
+				self assert: rectNode name equals: 'A'.
+				self assert: rectNode label equals: 'foo'.
+				self assert: rectNode shape equals: #rect ]
 ]

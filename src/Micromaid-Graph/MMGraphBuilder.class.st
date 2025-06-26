@@ -21,10 +21,22 @@ MMGraphBuilder >> addNode: aMMGraphNode [
 	^ nodes at: aMMGraphNode name ifAbsentPut: [ aMMGraphNode ]
 ]
 
+{ #category : 'accessing' }
+MMGraphBuilder >> edges [
+
+	^ edges
+]
+
 { #category : 'initialization' }
 MMGraphBuilder >> initialize [
 
 	super initialize.
 	nodes := OrderedDictionary new.
 	edges := OrderedCollection new
+]
+
+{ #category : 'accessing' }
+MMGraphBuilder >> nodes [
+
+	^ nodes
 ]
