@@ -179,12 +179,12 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 							| line |
 							line := self newShapeForEdge: edge.
 							line
-								withHorizontalAttachPoint;
+								withVerticalAttachPoint;
 								from: from;
 								to: to.
 							aRSCanvas add: line.
 							line pushBack ] ] ].
-	RSHorizontalTreeLayout on: aRSCanvas nodes.
+	RSTreeLayout on: aRSCanvas nodes.
 	treeEdges := treeEdges asSet.
 	edges do: [ :edge |
 			(treeEdges includes: edge) ifFalse: [
@@ -200,7 +200,7 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 									| line |
 									line := self newShapeForEdge: edge.
 									line
-										attachPoint: RSShortestHorizontalAttachPoint new;
+										attachPoint: RSShortestVerticalAttachPoint new;
 										from: from;
 										to: to.
 									aRSCanvas add: line ] ] ] ]
