@@ -1,14 +1,19 @@
 Class {
 	#name : 'MMGraphNode',
-	#superclass : 'Object',
+	#superclass : 'MMGraphSimpleNode',
 	#instVars : [
-		'name',
 		'label',
 		'shape'
 	],
 	#category : 'Micromaid-Graph',
 	#package : 'Micromaid-Graph'
 }
+
+{ #category : 'building' }
+MMGraphNode >> applyToBuilder: aMMGraphBuilder [
+
+	aMMGraphBuilder addNode: self
+]
 
 { #category : 'initialization' }
 MMGraphNode >> initialize [
@@ -27,18 +32,6 @@ MMGraphNode >> label [
 MMGraphNode >> label: aString [
 
 	label := aString
-]
-
-{ #category : 'accessing' }
-MMGraphNode >> name [
-
-	^ name
-]
-
-{ #category : 'accessing' }
-MMGraphNode >> name: aString [
-
-	name := aString
 ]
 
 { #category : 'accessing' }

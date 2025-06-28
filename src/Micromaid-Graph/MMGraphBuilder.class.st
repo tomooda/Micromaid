@@ -3,11 +3,25 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'nodes',
-		'edges'
+		'edges',
+		'direction'
 	],
 	#category : 'Micromaid-Graph',
 	#package : 'Micromaid-Graph'
 }
+
+{ #category : 'instance creation' }
+MMGraphBuilder class >> fromString: aString [
+
+	| builder |
+	builder := self new.
+	[ MMGraphParser new parse: aString ]
+		on: MMGraphParserNotification
+		do: [ :ex |
+				ex applyToBuilder: builder.
+				ex resume ].
+	^ builder
+]
 
 { #category : 'adding' }
 MMGraphBuilder >> addEdge: aMMGraphEdge [
@@ -18,7 +32,27 @@ MMGraphBuilder >> addEdge: aMMGraphEdge [
 { #category : 'adding' }
 MMGraphBuilder >> addNode: aMMGraphNode [
 
-	^ nodes at: aMMGraphNode name ifAbsentPut: [ aMMGraphNode ]
+	^ nodes at: aMMGraphNode name put: aMMGraphNode
+]
+
+{ #category : 'adding' }
+MMGraphBuilder >> addSimpleNode: aMMGraphSimpleNode [
+
+	^ nodes
+		  at: aMMGraphSimpleNode name
+		  ifAbsentPut: [ aMMGraphSimpleNode ]
+]
+
+{ #category : 'accessing' }
+MMGraphBuilder >> direction [
+
+	^ direction
+]
+
+{ #category : 'accessing' }
+MMGraphBuilder >> direction: aSymbol [
+
+	direction := aSymbol
 ]
 
 { #category : 'accessing' }

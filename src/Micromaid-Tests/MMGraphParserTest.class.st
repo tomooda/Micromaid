@@ -1,5 +1,5 @@
 Class {
-	#name : 'MicromaidGraphParserTest',
+	#name : 'MMGraphParserTest',
 	#superclass : 'TestCase',
 	#instVars : [
 		'parser'
@@ -9,21 +9,60 @@ Class {
 }
 
 { #category : 'asserting' }
-MicromaidGraphParserTest >> assertPetit2Success: anObject and: aBlock [
+MMGraphParserTest >> assertPetit2Success: anObject and: aBlock [
 
 	self assert: anObject isPetit2Success.
 	aBlock cull: anObject
 ]
 
 { #category : 'running' }
-MicromaidGraphParserTest >> setUp [
+MMGraphParserTest >> setUp [
 
 	super setUp.
-	parser := MicromaidGraphParser new
+	parser := MMGraphParser new
 ]
 
 { #category : 'tests' }
-MicromaidGraphParserTest >> testHead1 [
+MMGraphParserTest >> testBuilder [
+
+	| builder |
+	builder := MMGraphBuilder new.
+	[
+		(parser line , parser line) end parse: 'A
+B --> A[node A]' ]
+		on: MMGraphParserNotification
+		do: [ :ex |
+				ex applyToBuilder: builder.
+				ex resume ].
+	self assert: builder nodes keys asSet equals: #( 'A' 'B' ) asSet.
+	self assert: (builder nodes at: 'A') label equals: 'node A'.
+	self assert: builder edges size equals: 1.
+	self assert: builder edges first node1 equals: 'B'.
+	self assert: builder edges first node2 equals: 'A'
+]
+
+{ #category : 'tests' }
+MMGraphParserTest >> testDirection [
+
+	| direction |
+	direction := parser direction end.
+	#( 'TD' 'TB' 'BT' 'LR' 'RL' ) do: [ :dir |
+		self assert: (direction parse: dir) equals: dir ]
+]
+
+{ #category : 'tests' }
+MMGraphParserTest >> testGraph [
+
+	self assert: (parser graph parse: 'flowchart TD
+	Init[start]
+	Init -> Read
+	Read -> Eval
+	Eval -> Print
+	Print -> Read') isPetit2Success
+]
+
+{ #category : 'tests' }
+MMGraphParserTest >> testHead1 [
 
 	| head1 |
 	head1 := parser head1 end.
@@ -43,7 +82,7 @@ MicromaidGraphParserTest >> testHead1 [
 ]
 
 { #category : 'tests' }
-MicromaidGraphParserTest >> testHead2 [
+MMGraphParserTest >> testHead2 [
 
 	| head2 |
 	head2 := parser head2 end.
@@ -63,7 +102,7 @@ MicromaidGraphParserTest >> testHead2 [
 ]
 
 { #category : 'tests' }
-MicromaidGraphParserTest >> testLine [
+MMGraphParserTest >> testLine [
 
 	self
 		assertPetit2Success: (parser line end parse: 'A')
@@ -109,33 +148,11 @@ B')
 				self assert: lines size equals: 2.
 				nodes := lines collect: #first.
 				self assert: nodes first name equals: 'A'.
-				self assert: nodes second name equals: 'B' ].
-	self
-		assert: (Array streamContents: [ :stream |
-					 [
-						 (parser line , parser line) end parse: 'A
-B --> A' ]
-						 on: MMGraphNodeNotification
-						 do: [ :ex |
-								 stream nextPut: ex node name.
-								 ex resume ] ])
-		equals: #( 'A' 'B' 'A' ).
-	self
-		assert: (Array streamContents: [ :stream |
-					 [
-						 (parser line , parser line) end parse: 'A
-B --> A' ]
-						 on: MMGraphEdgeNotification
-						 do: [ :ex |
-								 stream
-									 nextPut: ex edge node1;
-									 nextPut: ex edge node2.
-								 ex resume ] ])
-		equals: #( 'B' 'A' )
+				self assert: nodes second name equals: 'B' ]
 ]
 
 { #category : 'tests' }
-MicromaidGraphParserTest >> testNormalLink [
+MMGraphParserTest >> testNormalLink [
 
 	self
 		assertPetit2Success: (parser normalLink end parse: '-->')
@@ -173,7 +190,7 @@ MicromaidGraphParserTest >> testNormalLink [
 ]
 
 { #category : 'tests' }
-MicromaidGraphParserTest >> testRectNode [
+MMGraphParserTest >> testRectNode [
 
 	self
 		assertPetit2Success: (parser rectNode end parse: 'A')

@@ -1,6 +1,8 @@
 Class {
 	#name : 'MMGraphEdge',
 	#superclass : 'Object',
+	#traits : 'TMMGraphEntity',
+	#classTraits : 'TMMGraphEntity classTrait',
 	#instVars : [
 		'node1',
 		'node2',
@@ -13,6 +15,12 @@ Class {
 	#category : 'Micromaid-Graph',
 	#package : 'Micromaid-Graph'
 }
+
+{ #category : 'building' }
+MMGraphEdge >> applyToBuilder: aMMGraphBuilder [
+
+	aMMGraphBuilder addEdge: self
+]
 
 { #category : 'accessing' }
 MMGraphEdge >> head1 [
@@ -105,4 +113,10 @@ MMGraphEdge >> node2 [
 MMGraphEdge >> node2: aString [
 
 	node2 := aString
+]
+
+{ #category : 'class access' }
+MMGraphEdge >> notificationClass [
+
+	^ MMGraphParserEdgeNotification
 ]

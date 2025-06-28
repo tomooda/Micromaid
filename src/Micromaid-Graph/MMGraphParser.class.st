@@ -1,25 +1,35 @@
 Class {
-	#name : 'MicromaidGraphParser',
+	#name : 'MMGraphParser',
 	#superclass : 'PP2CompositeNode',
 	#category : 'Micromaid-Graph',
 	#package : 'Micromaid-Graph'
 }
 
 { #category : 'parsing' }
-MicromaidGraphParser >> edgeLabel [
+MMGraphParser >> direction [
+
+	^ 'TB' asPParser / 'TD' asPParser / 'BT' asPParser / 'RL' asPParser
+	  / 'LR' asPParser ==> [ :str |
+		  MMGraphParserDirectionNotification signal: str asSymbol.
+		  str asSymbol ]
+]
+
+{ #category : 'parsing' }
+MMGraphParser >> edgeLabel [
 
 	^ $| asPParser , ($| asPParser not , #any asPParser) star flatten
 	  , $| asPParser ==> #second
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> graph [
+MMGraphParser >> graph [
 
-	^ self link
+	^ 'graph' asPParser / 'flowchart' asPParser
+	  , self direction trimBlanks , #newline asPParser , self line star
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> head1 [
+MMGraphParser >> head1 [
 
 	^ '-' asPParser ==> [ :str | #none ]
 	  / ('<' asPParser ==> [ :str | #arrowhead ])
@@ -28,7 +38,7 @@ MicromaidGraphParser >> head1 [
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> head2 [
+MMGraphParser >> head2 [
 
 	^ '-' asPParser ==> [ :str | #none ]
 	  / ('>' asPParser ==> [ :str | #arrowhead ])
@@ -37,13 +47,13 @@ MicromaidGraphParser >> head2 [
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> line [
+MMGraphParser >> line [
 
 	^ self node trimBlanks , (self link , self node trimBlanks) optional
 	  , (#newline asPParser / #eoi asPParser) ==> [ :triple |
 		  | node1 |
 		  node1 := triple first.
-		  self notifyNode: node1.
+		  node1 notify.
 		  triple second ifNil: [ { node1 } ] ifNotNil: [ :edgeAndNode |
 				  | edge node2 |
 				  edge := edgeAndNode first.
@@ -51,9 +61,8 @@ MicromaidGraphParser >> line [
 				  edge
 					  node1: node1 name;
 					  node2: node2 name.
-				  self
-					  notifyNode: node2;
-					  notifyEdge: edge.
+				  node2 notify.
+				  edge notify.
 				  {
 					  node1.
 					  node2.
@@ -61,25 +70,25 @@ MicromaidGraphParser >> line [
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> link [
+MMGraphParser >> link [
 
 	^ self normalLink
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> node [
+MMGraphParser >> node [
 
 	^ self rectNode
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> nodeName [
+MMGraphParser >> nodeName [
 
 	^ (#letter asPParser / #digit asPParser) plus flatten
 ]
 
 { #category : 'parsing' }
-MicromaidGraphParser >> normalLink [
+MMGraphParser >> normalLink [
 
 	^ self head1 , '-' asPParser
 	  ,
@@ -96,20 +105,8 @@ MicromaidGraphParser >> normalLink [
 			  yourself ]
 ]
 
-{ #category : 'notifying' }
-MicromaidGraphParser >> notifyEdge: aMMGraphEdge [
-
-	^ MMGraphEdgeNotification signal: aMMGraphEdge
-]
-
-{ #category : 'notifying' }
-MicromaidGraphParser >> notifyNode: aMMGraphNode [
-
-	^ MMGraphNodeNotification signal: aMMGraphNode
-]
-
 { #category : 'parsing' }
-MicromaidGraphParser >> rectNode [
+MMGraphParser >> rectNode [
 
 	^ self nodeName
 	  , ($[ asPParser , ($] asPParser not , #any asPParser) star flatten
@@ -121,7 +118,7 @@ MicromaidGraphParser >> rectNode [
 ]
 
 { #category : 'accessing' }
-MicromaidGraphParser >> start [
+MMGraphParser >> start [
 
 	^ self graph
 ]
