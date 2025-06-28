@@ -111,10 +111,17 @@ MMGraphParser >> rectNode [
 	^ self nodeName
 	  , ($[ asPParser , ($] asPParser not , #any asPParser) star flatten
 		   , $] asPParser ==> #second) optional ==> [ :pair |
-		  MMGraphNode new
-			  name: pair first;
-			  label: (pair second ifNil: [ pair first ]);
-			  yourself ]
+		  pair second
+			  ifNil: [
+					  MMGraphSimpleNode new
+						  name: pair first;
+						  yourself ]
+			  ifNotNil: [
+					  MMGraphNode new
+						  name: pair first;
+						  label: (pair second ifNil: [ pair first ]);
+						  shape: #rect;
+						  yourself ] ]
 ]
 
 { #category : 'accessing' }
