@@ -184,7 +184,9 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 								to: to.
 							aRSCanvas add: line.
 							line pushBack ] ] ].
-	RSTreeLayout on: aRSCanvas nodes.
+	RSTreeLayout new
+		verticalGap: 50;
+		on: aRSCanvas nodes.
 	treeEdges := treeEdges asSet.
 	edges do: [ :edge |
 			(treeEdges includes: edge) ifFalse: [
