@@ -19,7 +19,7 @@ MMGraphBuilder class >> example [
     C -->|One| D[Laptop]
     C -->|Two| E[iPhone]
     C -->|Three| F[Car]
-    F --o B') build
+    F x-o B') build
 		zoomToFit;
 		open
 ]
@@ -134,6 +134,23 @@ MMGraphBuilder >> newMarkerFor: aSymbol [
 			marker := shape asMarker.
 			marker offset: 3.
 			^ marker ].
+	aSymbol = #cross ifTrue: [
+			| shape marker |
+			shape := {
+				         (RSLine new
+					          startPoint: -4 @ -4;
+					          endPoint: 4 @ 4;
+					          color: Color black;
+					          yourself).
+				         (RSLine new
+					          startPoint: 4 @ -4;
+					          endPoint: -4 @ 4;
+					          color: Color black;
+					          yourself) } asShape.
+			marker := shape asMarker.
+			marker offset: 3.
+			^ marker ].
+
 	^ nil
 ]
 
@@ -162,7 +179,7 @@ MMGraphBuilder >> newShapeForDiamondNode: aMMGraphNode [
 { #category : 'instance creation' }
 MMGraphBuilder >> newShapeForEdge: edge [
 
-	^ RSLine new
+	^ RSBezier new
 		  model: edge;
 		  color: Color black;
 		  markerStart: (self newMarkerFor: edge head1);
@@ -250,9 +267,11 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 							| line |
 							line := self newShapeForEdge: edge.
 							line
-								withVerticalAttachPoint;
+								attachPoint: RSBorderAttachPoint new;
 								from: from;
-								to: to.
+								to: to;
+								controlPointsController:
+									(MMGraphVerticalCPAPController new t: 1 / 10).
 							aRSCanvas add: line.
 							line pushBack ] ] ].
 	RSTreeLayout new
@@ -274,9 +293,11 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 									| line |
 									line := self newShapeForEdge: edge.
 									line
-										attachPoint: RSShortestVerticalAttachPoint new;
+										attachPoint: RSBorderAttachPoint new;
 										from: from;
-										to: to.
+										to: to;
+										controlPointsController:
+											(MMGraphVerticalCPAPController new t: 9 / 10).
 									aRSCanvas add: line ] ] ] ].
 	aRSCanvas edges do: [ :line |
 			line model isMMGraphEdge ifTrue: [
