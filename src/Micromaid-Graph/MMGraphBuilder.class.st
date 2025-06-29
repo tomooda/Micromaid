@@ -15,11 +15,11 @@ MMGraphBuilder class >> example [
 
 	(MMGraphBuilder fromString: 'flowchart TD
     A[Christmas] -->|Get money| B(Go shopping)
-    B --> C[Let me think]
+    B --> C{Let me think}
     C -->|One| D[Laptop]
     C -->|Two| E[iPhone]
     C -->|Three| F[Car]
-    F --> B') build
+    F --o B') build
 		zoomToFit;
 		open
 ]
@@ -83,24 +83,6 @@ MMGraphBuilder >> initialize [
 	edges := OrderedCollection new
 ]
 
-{ #category : 'accessing - markers' }
-MMGraphBuilder >> markerFor: aSymbol [
-
-	aSymbol = #arrowhead ifTrue: [
-			| shape marker |
-			shape := RSPolygon new
-				         points: {
-						         (-4 @ 6).
-						         (0 @ 0).
-						         (4 @ 6) };
-				         color: Color black;
-				         yourself.
-			marker := shape asMarker.
-			marker offset: shape height / 2.
-			^ marker ].
-	^ nil
-]
-
 { #category : 'instance creation' }
 MMGraphBuilder >> newLabelForEdge: aMMGraphEdge [
 
@@ -129,13 +111,62 @@ MMGraphBuilder >> newLabelForNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
+MMGraphBuilder >> newMarkerFor: aSymbol [
+
+	aSymbol = #arrowhead ifTrue: [
+			| shape marker |
+			shape := RSPolygon new
+				         points: {
+						         (-4 @ 6).
+						         (0 @ 0).
+						         (4 @ 6) };
+				         color: Color black;
+				         yourself.
+			marker := shape asMarker.
+			marker offset: shape height / 2.
+			^ marker ].
+	aSymbol = #circle ifTrue: [
+			| shape marker |
+			shape := RSCircle new
+				         extent: 6 @ 6;
+				         color: Color black;
+				         yourself.
+			marker := shape asMarker.
+			marker offset: 3.
+			^ marker ].
+	^ nil
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForDiamondNode: aMMGraphNode [
+
+	| label extent diamond |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent.
+	diamond := RSPolygon new
+		       points: {
+				       (extent x negated - 5 @ 0).
+				       (0 @ (extent y negated - 5)).
+				       (extent x + 5 @ 0).
+				       (0 @ (extent y + 5)) };
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  diamond.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
 MMGraphBuilder >> newShapeForEdge: edge [
 
 	^ RSLine new
 		  model: edge;
 		  color: Color black;
-		  markerStart: (self markerFor: edge head1);
-		  markerEnd: (self markerFor: edge head2);
+		  markerStart: (self newMarkerFor: edge head1);
+		  markerEnd: (self newMarkerFor: edge head2);
 		  yourself
 ]
 
@@ -146,6 +177,8 @@ MMGraphBuilder >> newShapeForNode: aMMGraphNode [
 		^ self newShapeForRectNode: aMMGraphNode ].
 	aMMGraphNode shape = #roundedRect ifTrue: [
 		^ self newShapeForRoundedRectNode: aMMGraphNode ].
+	aMMGraphNode shape = #diamond ifTrue: [
+		^ self newShapeForDiamondNode: aMMGraphNode ].
 	^ nil
 ]
 

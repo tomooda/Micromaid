@@ -6,6 +6,19 @@ Class {
 }
 
 { #category : 'parsing' }
+MMGraphParser >> diamondNode [
+
+	^ self nodeName
+	  , (${ asPParser , ($} asPParser not , #any asPParser) star flatten
+		   , $} asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #diamond;
+			  yourself ]
+]
+
+{ #category : 'parsing' }
 MMGraphParser >> direction [
 
 	^ 'TB' asPParser / 'TD' asPParser / 'BT' asPParser / 'RL' asPParser
@@ -78,7 +91,7 @@ MMGraphParser >> link [
 { #category : 'parsing' }
 MMGraphParser >> node [
 
-	^ self roundedRectNode / self rectNode
+	^ self roundedRectNode / self diamondNode / self rectNode
 ]
 
 { #category : 'parsing' }
