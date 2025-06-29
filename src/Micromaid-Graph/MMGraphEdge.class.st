@@ -55,6 +55,12 @@ MMGraphEdge >> initialize [
 	head2 := #none
 ]
 
+{ #category : 'testing' }
+MMGraphEdge >> isMMGraphEdge [
+
+	^ true
+]
+
 { #category : 'accessing' }
 MMGraphEdge >> label [
 

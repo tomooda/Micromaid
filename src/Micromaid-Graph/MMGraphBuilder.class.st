@@ -18,7 +18,7 @@ MMGraphBuilder class >> example [
     B --> C[Let me think]
     C -->|One| D[Laptop]
     C -->|Two| E[iPhone]
-    C -->|Three| F[fa:fa-car Car]
+    C -->|Three| F[Car]
     F --> B') build
 		zoomToFit;
 		open
@@ -102,6 +102,24 @@ MMGraphBuilder >> markerFor: aSymbol [
 ]
 
 { #category : 'instance creation' }
+MMGraphBuilder >> newLabelForEdge: aMMGraphEdge [
+
+	^ aMMGraphEdge label ifNotNil: [ :string |
+			  | label box |
+			  label := RSLabel new
+				           text: string;
+				           color: Color black;
+				           yourself.
+			  box := RSBox new
+				         extent: label extent + 4;
+				         color: Color lightGray;
+				         yourself.
+			  {
+				  box.
+				  label } asShapeFor: aMMGraphEdge ]
+]
+
+{ #category : 'instance creation' }
 MMGraphBuilder >> newLabelForNode: aMMGraphNode [
 
 	^ RSLabel new
@@ -155,7 +173,7 @@ MMGraphBuilder >> nodes [
 { #category : 'rendering' }
 MMGraphBuilder >> renderIn: aCanvas [
 
-	aCanvas color: Color lightGray.
+	aCanvas color: (Color gray: 0.8).
 	self
 		renderNodesIn: aCanvas;
 		renderLinksIn: aCanvas
@@ -185,7 +203,8 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 							aRSCanvas add: line.
 							line pushBack ] ] ].
 	RSTreeLayout new
-		verticalGap: 50;
+		verticalGap: 100;
+		horizontalGap: 50;
 		on: aRSCanvas nodes.
 	treeEdges := treeEdges asSet.
 	edges do: [ :edge |
@@ -205,7 +224,12 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 										attachPoint: RSShortestVerticalAttachPoint new;
 										from: from;
 										to: to.
-									aRSCanvas add: line ] ] ] ]
+									aRSCanvas add: line ] ] ] ].
+	aRSCanvas edges do: [ :line |
+			line model isMMGraphEdge ifTrue: [
+					(self newLabelForEdge: line model) ifNotNil: [ :label |
+							label position: line position.
+							aRSCanvas addShape: label ] ] ]
 ]
 
 { #category : 'rendering' }
