@@ -19,7 +19,7 @@ MMGraphBuilder class >> example [
     C -->|One| D[Laptop]
     C -->|Two| E[iPhone]
     C -->|Three| F[Car]
-    F x-o B') build
+    F x-o|drive to downtown| B') build
 		zoomToFit;
 		open
 ]
@@ -117,9 +117,9 @@ MMGraphBuilder >> newMarkerFor: aSymbol [
 			| shape marker |
 			shape := RSPolygon new
 				         points: {
-						         (-4 @ 6).
+						         (-6 @ 8).
 						         (0 @ 0).
-						         (4 @ 6) };
+						         (6 @ 8) };
 				         color: Color black;
 				         yourself.
 			marker := shape asMarker.
@@ -128,27 +128,29 @@ MMGraphBuilder >> newMarkerFor: aSymbol [
 	aSymbol = #circle ifTrue: [
 			| shape marker |
 			shape := RSCircle new
-				         extent: 6 @ 6;
+				         extent: 8 @ 8;
 				         color: Color black;
 				         yourself.
 			marker := shape asMarker.
-			marker offset: 3.
+			marker offset: 4.
 			^ marker ].
 	aSymbol = #cross ifTrue: [
 			| shape marker |
 			shape := {
 				         (RSLine new
-					          startPoint: -4 @ -4;
-					          endPoint: 4 @ 4;
+					          startPoint: -5 @ -5;
+					          endPoint: 5 @ 5;
+					          width: 2;
 					          color: Color black;
 					          yourself).
 				         (RSLine new
-					          startPoint: 4 @ -4;
-					          endPoint: -4 @ 4;
+					          startPoint: 5 @ -5;
+					          endPoint: -5 @ 5;
 					          color: Color black;
+					          width: 2;
 					          yourself) } asShape.
 			marker := shape asMarker.
-			marker offset: 3.
+			marker offset: 5.
 			^ marker ].
 
 	^ nil
@@ -161,16 +163,16 @@ MMGraphBuilder >> newShapeForDiamondNode: aMMGraphNode [
 	label := self newLabelForNode: aMMGraphNode.
 	extent := label extent.
 	diamond := RSPolygon new
-		       points: {
-				       (extent x negated - 5 @ 0).
-				       (0 @ (extent y negated - 5)).
-				       (extent x + 5 @ 0).
-				       (0 @ (extent y + 5)) };
-		       color: Color white;
-		       border: (RSBorder new
-				        color: Color black;
-				        yourself);
-		       yourself.
+		           points: {
+				           (extent x negated - 5 @ 0).
+				           (0 @ (extent y negated - 5)).
+				           (extent x + 5 @ 0).
+				           (0 @ (extent y + 5)) };
+		           color: Color white;
+		           border: (RSBorder new
+				            color: Color black;
+				            yourself);
+		           yourself.
 	^ {
 		  diamond.
 		  label } asShapeFor: aMMGraphNode
@@ -205,7 +207,7 @@ MMGraphBuilder >> newShapeForRectNode: aMMGraphNode [
 	| label box |
 	label := self newLabelForNode: aMMGraphNode.
 	box := RSBox new
-		       extent: label extent + 10;
+		       extent: label extent + 20;
 		       color: Color white;
 		       border: (RSBorder new
 				        color: Color black;
@@ -222,7 +224,7 @@ MMGraphBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
 	| label box |
 	label := self newLabelForNode: aMMGraphNode.
 	box := RSBox new
-		       extent: label extent + 10;
+		       extent: label extent + 20;
 		       cornerRadius: 5;
 		       color: Color white;
 		       border: (RSBorder new
@@ -276,7 +278,7 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 							line pushBack ] ] ].
 	RSTreeLayout new
 		verticalGap: 100;
-		horizontalGap: 50;
+		horizontalGap: 100;
 		on: aRSCanvas nodes.
 	treeEdges := treeEdges asSet.
 	edges do: [ :edge |
@@ -299,10 +301,11 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 										controlPointsController:
 											(MMGraphVerticalCPAPController new t: 9 / 10).
 									aRSCanvas add: line ] ] ] ].
-	aRSCanvas edges do: [ :line |
-			line model isMMGraphEdge ifTrue: [
-					(self newLabelForEdge: line model) ifNotNil: [ :label |
-							label position: line position.
+	aRSCanvas edges do: [ :bezier |
+			bezier model isMMGraphEdge ifTrue: [
+					(self newLabelForEdge: bezier model) ifNotNil: [ :label |
+							label position:
+								(bezier atT: bezier controlPointsController labelT).
 							aRSCanvas addShape: label ] ] ]
 ]
 

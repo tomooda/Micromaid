@@ -21,6 +21,17 @@ MMGraphVerticalCPAPController >> controlPointsFrom: from to: to [
 ]
 
 { #category : 'accessing' }
+MMGraphVerticalCPAPController >> labelT [
+
+	^ t = (1 / 2)
+		  ifTrue: [ 1 / 2 ]
+		  ifFalse: [
+				  t > (1 / 2)
+					  ifTrue: [ (4 * t) reciprocal ]
+					  ifFalse: [ 1 - (4 * (1 - t)) reciprocal ] ]
+]
+
+{ #category : 'accessing' }
 MMGraphVerticalCPAPController >> t [
 
 	^ t ifNil: [ 1 / 2 ]
