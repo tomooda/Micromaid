@@ -78,7 +78,7 @@ MMGraphParser >> link [
 { #category : 'parsing' }
 MMGraphParser >> node [
 
-	^ self rectNode
+	^ self roundedRectNode / self rectNode
 ]
 
 { #category : 'parsing' }
@@ -122,6 +122,19 @@ MMGraphParser >> rectNode [
 						  label: (pair second ifNil: [ pair first ]);
 						  shape: #rect;
 						  yourself ] ]
+]
+
+{ #category : 'parsing' }
+MMGraphParser >> roundedRectNode [
+
+	^ self nodeName
+	  , ($( asPParser , ($) asPParser not , #any asPParser) star flatten
+		   , $) asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #roundedRect;
+			  yourself ]
 ]
 
 { #category : 'accessing' }

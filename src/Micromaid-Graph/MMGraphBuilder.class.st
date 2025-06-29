@@ -14,7 +14,7 @@ Class {
 MMGraphBuilder class >> example [
 
 	(MMGraphBuilder fromString: 'flowchart TD
-    A[Christmas] -->|Get money| B[Go shopping]
+    A[Christmas] -->|Get money| B(Go shopping)
     B --> C[Let me think]
     C -->|One| D[Laptop]
     C -->|Two| E[iPhone]
@@ -144,6 +144,8 @@ MMGraphBuilder >> newShapeForNode: aMMGraphNode [
 
 	aMMGraphNode shape = #rect ifTrue: [
 		^ self newShapeForRectNode: aMMGraphNode ].
+	aMMGraphNode shape = #roundedRect ifTrue: [
+		^ self newShapeForRoundedRectNode: aMMGraphNode ].
 	^ nil
 ]
 
@@ -154,6 +156,24 @@ MMGraphBuilder >> newShapeForRectNode: aMMGraphNode [
 	label := self newLabelForNode: aMMGraphNode.
 	box := RSBox new
 		       extent: label extent + 10;
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
+
+	| label box |
+	label := self newLabelForNode: aMMGraphNode.
+	box := RSBox new
+		       extent: label extent + 10;
+		       cornerRadius: 5;
 		       color: Color white;
 		       border: (RSBorder new
 				        color: Color black;

@@ -207,3 +207,15 @@ MMGraphParserTest >> testRectNode [
 				self assert: rectNode label equals: 'foo'.
 				self assert: rectNode shape equals: #rect ]
 ]
+
+{ #category : 'tests' }
+MMGraphParserTest >> testRoundedRectNode [
+
+	self
+		assertPetit2Success: (parser roundedRectNode end parse: 'A(foo)')
+		and: [ :rectNode |
+				self assert: rectNode isPetit2Success.
+				self assert: rectNode name equals: 'A'.
+				self assert: rectNode label equals: 'foo'.
+				self assert: rectNode shape equals: #roundedRect ]
+]
