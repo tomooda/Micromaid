@@ -157,28 +157,6 @@ MMGraphBuilder >> newMarkerFor: aSymbol [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForDiamondNode: aMMGraphNode [
-
-	| label extent diamond |
-	label := self newLabelForNode: aMMGraphNode.
-	extent := label extent.
-	diamond := RSPolygon new
-		           points: {
-				           (extent x negated - 5 @ 0).
-				           (0 @ (extent y negated - 5)).
-				           (extent x + 5 @ 0).
-				           (0 @ (extent y + 5)) };
-		           color: Color white;
-		           border: (RSBorder new
-				            color: Color black;
-				            yourself);
-		           yourself.
-	^ {
-		  diamond.
-		  label } asShapeFor: aMMGraphNode
-]
-
-{ #category : 'instance creation' }
 MMGraphBuilder >> newShapeForEdge: edge [
 
 	^ RSBezier new
@@ -196,8 +174,8 @@ MMGraphBuilder >> newShapeForNode: aMMGraphNode [
 		^ self newShapeForRectNode: aMMGraphNode ].
 	aMMGraphNode shape = #roundedRect ifTrue: [
 		^ self newShapeForRoundedRectNode: aMMGraphNode ].
-	aMMGraphNode shape = #diamond ifTrue: [
-		^ self newShapeForDiamondNode: aMMGraphNode ].
+	aMMGraphNode shape = #rhombus ifTrue: [
+		^ self newShapeForRhombusNode: aMMGraphNode ].
 	^ nil
 ]
 
@@ -215,6 +193,28 @@ MMGraphBuilder >> newShapeForRectNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForRhombusNode: aMMGraphNode [
+
+	| label extent diamond |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := (label extent x max: label extent y) asPoint.
+	diamond := RSPolygon new
+		           points: {
+				           (extent x negated - 5 @ 0).
+				           (0 @ (extent y negated - 5)).
+				           (extent x + 5 @ 0).
+				           (0 @ (extent y + 5)) };
+		           color: Color white;
+		           border: (RSBorder new
+				            color: Color black;
+				            yourself);
+		           yourself.
+	^ {
+		  diamond.
 		  label } asShapeFor: aMMGraphNode
 ]
 
@@ -269,7 +269,7 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 							| line |
 							line := self newShapeForEdge: edge.
 							line
-								attachPoint: RSBorderAttachPoint new;
+								attachPoint: MMGraphAttachPoint new;
 								from: from;
 								to: to;
 								controlPointsController:
@@ -295,7 +295,7 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 									| line |
 									line := self newShapeForEdge: edge.
 									line
-										attachPoint: RSBorderAttachPoint new;
+										attachPoint: MMGraphAttachPoint new;
 										from: from;
 										to: to;
 										controlPointsController:
