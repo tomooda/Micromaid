@@ -78,7 +78,8 @@ MMGraphParser >> link [
 { #category : 'parsing' }
 MMGraphParser >> node [
 
-	^ self roundedRectNode / self rhombusNode / self rectNode
+	^ self stadiumNode / self roundedRectNode / self rhombusNode
+	  / self subroutineNode / self rectNode
 ]
 
 { #category : 'parsing' }
@@ -150,8 +151,38 @@ MMGraphParser >> roundedRectNode [
 			  yourself ]
 ]
 
+{ #category : 'parsing' }
+MMGraphParser >> stadiumNode [
+
+	^ self nodeName
+	  ,
+		  ('([' asPParser
+		   , ('])' asPParser not , #any asPParser) star flatten
+		   , '])' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #stadium;
+			  yourself ]
+]
+
 { #category : 'accessing' }
 MMGraphParser >> start [
 
 	^ self graph
+]
+
+{ #category : 'parsing' }
+MMGraphParser >> subroutineNode [
+
+	^ self nodeName
+	  ,
+		  ('[[' asPParser
+		   , (']]' asPParser not , #any asPParser) star flatten
+		   , ']]' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #subroutine;
+			  yourself ]
 ]

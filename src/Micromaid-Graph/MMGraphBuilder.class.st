@@ -192,6 +192,10 @@ MMGraphBuilder >> newShapeForNode: aMMGraphNode [
 		^ self newShapeForRoundedRectNode: aMMGraphNode ].
 	aMMGraphNode shape = #rhombus ifTrue: [
 		^ self newShapeForRhombusNode: aMMGraphNode ].
+	aMMGraphNode shape = #stadium ifTrue: [
+		^ self newShapeForStadiumNode: aMMGraphNode ].
+	aMMGraphNode shape = #subroutine ifTrue: [
+		^ self newShapeForSubroutineNode: aMMGraphNode ].
 	^ nil
 ]
 
@@ -249,6 +253,43 @@ MMGraphBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForStadiumNode: aMMGraphNode [
+
+	| label box |
+	label := self newLabelForNode: aMMGraphNode.
+	box := RSBox new
+		       extent: label extent + 20;
+		       cornerRadius: (label extent x min: label extent y) + 20 / 2;
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForSubroutineNode: aMMGraphNode [
+
+	| label box1 box2 |
+	label := self newLabelForNode: aMMGraphNode.
+	box1 := RSBox new
+		        extent: label extent + 20;
+		        color: Color white;
+		        border: (RSBorder new
+				         color: Color black;
+				         yourself);
+		        yourself.
+	box2 := box1 copy extent: box1 extent + (10 @ 0).
+	^ {
+		  box2.
+		  box1.
 		  label } asShapeFor: aMMGraphNode
 ]
 
