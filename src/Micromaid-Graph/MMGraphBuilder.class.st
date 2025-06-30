@@ -19,7 +19,7 @@ MMGraphBuilder class >> example [
     C -->|One| D[Laptop]
     C -->|Two| E[iPhone]
     C -->|Three| F[Car]
-    F x-o|drive to downtown| B') build
+    G([stadium]) x-o|cross and circle heads| H[[subroutine]]') build
 		zoomToFit;
 		open
 ]
