@@ -75,12 +75,28 @@ MMGraphBuilder >> edges [
 	^ edges
 ]
 
+{ #category : 'controlling' }
+MMGraphBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
+
+	^ (#( TB TD BT ) includes: direction)
+		  ifTrue: aBlock
+		  ifFalse: anotherBlock
+]
+
 { #category : 'initialization' }
 MMGraphBuilder >> initialize [
 
 	super initialize.
 	nodes := OrderedDictionary new.
 	edges := OrderedCollection new
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newCPAPController [
+
+	^ self
+		  ifVertical: [ MMGraphVerticalCPAPController new ]
+		  ifHorizontal: [ MMGraphHorizontalCPAPController new ]
 ]
 
 { #category : 'instance creation' }
@@ -236,6 +252,28 @@ MMGraphBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
 		  label } asShapeFor: aMMGraphNode
 ]
 
+{ #category : 'instance creation' }
+MMGraphBuilder >> newTreeLayouter [
+
+	direction = #LR ifTrue: [
+			^ RSHorizontalTreeLayout new
+				  verticalGap: 100;
+				  horizontalGap: 100 ].
+	direction = #RL ifTrue: [
+			^ RSHorizontalTreeLayout new
+				  verticalGap: 100;
+				  horizontalGap: 100;
+				  horizontallyReverse ].
+	direction = #BT ifTrue: [
+			^ RSTreeLayout new
+				  verticalGap: 100;
+				  horizontalGap: 100;
+				  verticallyReverse ].
+	^ RSTreeLayout new
+		  verticalGap: 100;
+		  horizontalGap: 100
+]
+
 { #category : 'accessing' }
 MMGraphBuilder >> nodes [
 
@@ -272,14 +310,10 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 								attachPoint: MMGraphAttachPoint new;
 								from: from;
 								to: to;
-								controlPointsController:
-									(MMGraphVerticalCPAPController new t: 1 / 10).
+								controlPointsController: (self newCPAPController t: 1 / 10).
 							aRSCanvas add: line.
 							line pushBack ] ] ].
-	RSTreeLayout new
-		verticalGap: 100;
-		horizontalGap: 100;
-		on: aRSCanvas nodes.
+	self newTreeLayouter on: aRSCanvas nodes.
 	treeEdges := treeEdges asSet.
 	edges do: [ :edge |
 			(treeEdges includes: edge) ifFalse: [
@@ -298,8 +332,7 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 										attachPoint: MMGraphAttachPoint new;
 										from: from;
 										to: to;
-										controlPointsController:
-											(MMGraphVerticalCPAPController new t: 9 / 10).
+										controlPointsController: (self newCPAPController t: 9 / 10).
 									aRSCanvas add: line ] ] ] ].
 	aRSCanvas edges do: [ :bezier |
 			bezier model isMMGraphEdge ifTrue: [
