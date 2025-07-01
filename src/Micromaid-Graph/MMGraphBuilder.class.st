@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'nodes',
 		'edges',
-		'direction'
+		'direction',
+		'gap'
 	],
 	#category : 'Micromaid-Graph',
 	#package : 'Micromaid-Graph'
@@ -59,6 +60,66 @@ MMGraphBuilder >> addSimpleNode: aMMGraphSimpleNode [
 		  ifAbsentPut: [ aMMGraphSimpleNode ]
 ]
 
+{ #category : 'private' }
+MMGraphBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: aRSCanvas [
+
+	| margin others |
+	margin := gap / 2.
+	others := aRSCanvas nodes copyWithoutAll: {
+			          aRSShape.
+			          anotherRSShape }.
+	((self isLeftmostShape: aRSShape in: others) and: [
+		 self isLeftmostShape: anotherRSShape in: others ]) ifTrue: [
+			| left |
+			left := (aRSShape encompassingRectangle left min:
+				         anotherRSShape encompassingRectangle left) - margin.
+			aRSBezier controlPoints: {
+					aRSShape encompassingRectangle leftCenter.
+					(left @ aRSShape encompassingRectangle center y).
+					(left @ anotherRSShape encompassingRectangle center y).
+					anotherRSShape encompassingRectangle leftCenter }.
+			^ self ].
+	((self isRightmostShape: aRSShape in: others) and: [
+		 self isRightmostShape: anotherRSShape in: others ]) ifTrue: [
+			| right |
+			right := (aRSShape encompassingRectangle right max:
+				          anotherRSShape encompassingRectangle right) + margin.
+			aRSBezier controlPoints: {
+					aRSShape encompassingRectangle rightCenter.
+					(right @ aRSShape encompassingRectangle center y).
+					(right @ anotherRSShape encompassingRectangle center y).
+					anotherRSShape encompassingRectangle rightCenter }.
+			^ self ].
+	((self isTopmostShape: aRSShape in: others) and: [
+		 self isTopmostShape: anotherRSShape in: others ]) ifTrue: [
+			| top |
+			top := (aRSShape encompassingRectangle top min:
+				        anotherRSShape encompassingRectangle top) - margin.
+			aRSBezier controlPoints: {
+					aRSShape encompassingRectangle topCenter.
+					(aRSShape encompassingRectangle center x @ top).
+					(anotherRSShape encompassingRectangle center x @ top).
+					anotherRSShape encompassingRectangle topCenter }.
+			^ self ].
+	((self isBottommostShape: aRSShape in: others) and: [
+		 self isBottommostShape: anotherRSShape in: others ]) ifTrue: [
+			| bottom |
+			bottom := (aRSShape encompassingRectangle bottom max:
+				           anotherRSShape encompassingRectangle bottom) + margin.
+			aRSBezier controlPoints: {
+					aRSShape encompassingRectangle bottomCenter.
+					(aRSShape encompassingRectangle center x @ bottom).
+					(anotherRSShape encompassingRectangle center x @ bottom).
+					anotherRSShape encompassingRectangle bottomCenter }.
+			^ self ].
+
+	aRSBezier
+		attachPoint: MMGraphAttachPoint new;
+		from: aRSShape;
+		to: anotherRSShape;
+		controlPointsController: (self newCPAPController t: 9 / 10)
+]
+
 { #category : 'accessing' }
 MMGraphBuilder >> direction [
 
@@ -89,8 +150,61 @@ MMGraphBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
 MMGraphBuilder >> initialize [
 
 	super initialize.
+	gap := 100.
 	nodes := OrderedDictionary new.
 	edges := OrderedCollection new
+]
+
+{ #category : 'testing' }
+MMGraphBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
+
+	| x y |
+	x := aRSShape encompassingRectangle center x.
+	y := aRSShape encompassingRectangle top.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  y > shape encompassingRectangle bottom or: [
+					  (x
+						   between: shape encompassingRectangle left
+						   and: shape encompassingRectangle right) not ] ]
+]
+
+{ #category : 'testing' }
+MMGraphBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
+
+	| x y |
+	x := aRSShape encompassingRectangle right.
+	y := aRSShape encompassingRectangle center y.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  x < shape encompassingRectangle left or: [
+					  (y
+						   between: shape encompassingRectangle top
+						   and: shape encompassingRectangle bottom) not ] ]
+]
+
+{ #category : 'testing' }
+MMGraphBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
+
+	| x y |
+	x := aRSShape encompassingRectangle left.
+	y := aRSShape encompassingRectangle center y.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  x > shape encompassingRectangle right or: [
+					  (y
+						   between: shape encompassingRectangle top
+						   and: shape encompassingRectangle bottom) not ] ]
+]
+
+{ #category : 'testing' }
+MMGraphBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
+
+	| x y |
+	x := aRSShape encompassingRectangle center x.
+	y := aRSShape encompassingRectangle bottom.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  y < shape encompassingRectangle top or: [
+					  (x
+						   between: shape encompassingRectangle left
+						   and: shape encompassingRectangle right) not ] ]
 ]
 
 { #category : 'instance creation' }
@@ -263,10 +377,11 @@ MMGraphBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
 { #category : 'instance creation' }
 MMGraphBuilder >> newShapeForStadiumNode: aMMGraphNode [
 
-	| label box |
+	| label extent box |
 	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + 20.
 	box := RSBox new
-		       extent: label extent + 20;
+		       extent: (extent x max: extent y) + 20 @ extent y;
 		       cornerRadius: (label extent x min: label extent y) + 20 / 2;
 		       color: Color white;
 		       border: (RSBorder new
@@ -302,21 +417,21 @@ MMGraphBuilder >> newTreeLayouter [
 
 	direction = #LR ifTrue: [
 			^ RSHorizontalTreeLayout new
-				  verticalGap: 100;
-				  horizontalGap: 100 ].
+				  verticalGap: gap;
+				  horizontalGap: gap ].
 	direction = #RL ifTrue: [
 			^ RSHorizontalTreeLayout new
-				  verticalGap: 100;
-				  horizontalGap: 100;
+				  verticalGap: gap;
+				  horizontalGap: gap;
 				  horizontallyReverse ].
 	direction = #BT ifTrue: [
 			^ RSTreeLayout new
-				  verticalGap: 100;
-				  horizontalGap: 100;
+				  verticalGap: gap;
+				  horizontalGap: gap;
 				  verticallyReverse ].
 	^ RSTreeLayout new
-		  verticalGap: 100;
-		  horizontalGap: 100
+		  verticalGap: gap;
+		  horizontalGap: gap
 ]
 
 { #category : 'accessing' }
@@ -373,11 +488,11 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 								 ifNone: [ nil ]) ifNotNil: [ :to |
 									| line |
 									line := self newShapeForEdge: edge.
-									line
-										attachPoint: MMGraphAttachPoint new;
-										from: from;
-										to: to;
-										controlPointsController: (self newCPAPController t: 9 / 10).
+									self
+										attach: line
+										from: from
+										to: to
+										in: aRSCanvas.
 									aRSCanvas add: line ] ] ] ].
 	aRSCanvas edges do: [ :bezier |
 			bezier model isMMGraphEdge ifTrue: [
@@ -408,6 +523,8 @@ MMGraphBuilder >> treeEdges [
 					  | node2 |
 					  node2 := edge node2.
 					  (knownNodes includes: node2) ifFalse: [
-							  knownNodes add: node2.
+							  knownNodes
+								  add: edge node1;
+								  add: node2.
 							  stream nextPut: edge ] ] ]
 ]

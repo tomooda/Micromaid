@@ -23,9 +23,9 @@ MicrodownLiveEditorPresenter class >> exampleREPL [
 R[Read]
 E[Eval]
 P[Print]
-A([initialize]) --> R
+A([Init]) --> R
 R -->  E
-E -->|quit| Q([finalize and exit])
+E -->|quit| Q([quit])
 E --> P
 P --> R
 ';
