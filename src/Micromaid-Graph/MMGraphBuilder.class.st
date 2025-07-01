@@ -497,8 +497,10 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 	aRSCanvas edges do: [ :bezier |
 			bezier model isMMGraphEdge ifTrue: [
 					(self newLabelForEdge: bezier model) ifNotNil: [ :label |
-							label position:
-								(bezier atT: bezier controlPointsController labelT).
+							label position: (bezier atT:
+									 (bezier controlPointsController
+										  ifNotNil: #labelT
+										  ifNil: [ 0.5 ])).
 							aRSCanvas addShape: label ] ] ]
 ]
 
