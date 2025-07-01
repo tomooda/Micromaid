@@ -107,6 +107,7 @@ MMGraphBuilder >> newLabelForEdge: aMMGraphEdge [
 	^ aMMGraphEdge label ifNotNil: [ :string |
 			  | label box |
 			  label := RSLabel new
+				           metricsProvider: RSPharoMetricsProvider new;
 				           text: string;
 				           color: Color black;
 				           yourself.
@@ -123,6 +124,7 @@ MMGraphBuilder >> newLabelForEdge: aMMGraphEdge [
 MMGraphBuilder >> newLabelForNode: aMMGraphNode [
 
 	^ RSLabel new
+		  metricsProvider: RSPharoMetricsProvider new;
 		  text: aMMGraphNode label;
 		  color: Color black;
 		  yourself
