@@ -2,7 +2,7 @@
 A simple Mermaid-like chart generator for Pharo
 You can draw something like this.
 
-![micromaid-REPL](https://github.com/user-attachments/assets/0c4ef391-9ef8-4a38-bdd8-aee92574a953)
+![micromaid-REPL](https://github.com/user-attachments/assets/e1bc97c1-7de8-4faa-afc9-940e7de000eb)
 
 BTW, Mermaid will render it like the below.
 
