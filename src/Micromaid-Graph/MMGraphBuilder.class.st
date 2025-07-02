@@ -67,7 +67,7 @@ MMGraphBuilder >> addSimpleNode: aMMGraphSimpleNode [
 MMGraphBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: aRSCanvas [
 
 	| margin others |
-	margin := gap / 2.
+	margin := gap.
 	others := aRSCanvas nodes copyWithoutAll: {
 			          aRSShape.
 			          anotherRSShape }.
@@ -211,7 +211,7 @@ MMGraphBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
 MMGraphBuilder >> initialize [
 
 	super initialize.
-	gap := 100.
+	gap := 50.
 	nodes := OrderedDictionary new.
 	edges := OrderedCollection new
 ]
