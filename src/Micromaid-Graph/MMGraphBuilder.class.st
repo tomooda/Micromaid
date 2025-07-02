@@ -1,3 +1,6 @@
+"
+I build a Roassal canvas from nodes and links from Micromaid scripts.
+"
 Class {
 	#name : 'MMGraphBuilder',
 	#superclass : 'RSBuilder',
@@ -182,6 +185,18 @@ MMGraphBuilder >> direction: aSymbol [
 MMGraphBuilder >> edges [
 
 	^ edges
+]
+
+{ #category : 'accessing' }
+MMGraphBuilder >> gap [
+
+	^ gap
+]
+
+{ #category : 'accessing' }
+MMGraphBuilder >> gap: aNumber [
+
+	gap := aNumber
 ]
 
 { #category : 'controlling' }

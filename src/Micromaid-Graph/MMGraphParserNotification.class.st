@@ -1,3 +1,6 @@
+"
+I am a notification from the MMGraphParser that tells the builder that the parser encounterd corresponding kind of AST node.
+"
 Class {
 	#name : 'MMGraphParserNotification',
 	#superclass : 'Notification',

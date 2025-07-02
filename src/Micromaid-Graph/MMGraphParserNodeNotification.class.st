@@ -1,3 +1,6 @@
+"
+I'm signaled when a MMGraphParser successfully parses a node.
+"
 Class {
 	#name : 'MMGraphParserNodeNotification',
 	#superclass : 'MMGraphParserNotification',

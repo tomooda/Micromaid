@@ -1,3 +1,6 @@
+"
+I'm signaled when a MMGraphParser successfully parses an edge.
+"
 Class {
 	#name : 'MMGraphParserEdgeNotification',
 	#superclass : 'MMGraphParserNotification',

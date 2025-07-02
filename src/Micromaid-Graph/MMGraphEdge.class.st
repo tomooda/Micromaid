@@ -1,3 +1,6 @@
+"
+I am an AST node that represent an edge in a Micromaid script.
+"
 Class {
 	#name : 'MMGraphEdge',
 	#superclass : 'Object',

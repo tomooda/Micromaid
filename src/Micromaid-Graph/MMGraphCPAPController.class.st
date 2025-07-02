@@ -1,3 +1,6 @@
+"
+I provide control points of bezier curve so that the crank can be ajustable by the *t* parameter.
+"
 Class {
 	#name : 'MMGraphCPAPController',
 	#superclass : 'RSAbstractCPAPController',

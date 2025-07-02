@@ -1,3 +1,10 @@
+"
+I am an attach point that binds a node and an edge.
+The actual end point is computed based on the line between the both nodes and the shape of the node.
+For example, if the node is a diamond shape, the endpoint will be on either edge of the diamond.
+This class is necessary because the border attachment in the Roassal library places the end point on the encompassing rectangle rather than the shape itself.
+
+"
 Class {
 	#name : 'MMGraphAttachPoint',
 	#superclass : 'RSBorderAttachPoint',

@@ -1,3 +1,6 @@
+"
+I parse a Micromaid script emitting notifications of encountered AST nodes.
+"
 Class {
 	#name : 'MMGraphParser',
 	#superclass : 'PP2CompositeNode',

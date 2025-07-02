@@ -1,3 +1,6 @@
+"
+I'm signaled when a MMGraphParser successfully parses a direction of the diagram.
+"
 Class {
 	#name : 'MMGraphParserDirectionNotification',
 	#superclass : 'MMGraphParserNotification',

@@ -1,3 +1,8 @@
+"
+I am a presenter with two panes horizontally.
+The left one is a text editor where the user will edit a Micromaid script.
+The right one is a Roassal presenter where the system will render the diagram.
+"
 Class {
 	#name : 'MicrodownLiveEditorPresenter',
 	#superclass : 'SpPresenter',

@@ -1,3 +1,6 @@
+"
+I am an AST node that represent a  node in various shapes and labels  in a Micromaid script.
+"
 Class {
 	#name : 'MMGraphNode',
 	#superclass : 'MMGraphSimpleNode',
