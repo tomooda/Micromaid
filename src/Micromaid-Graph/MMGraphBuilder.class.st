@@ -436,20 +436,20 @@ MMGraphBuilder >> newShapeForSubroutineNode: aMMGraphNode [
 MMGraphBuilder >> newTreeLayouter [
 
 	direction = #LR ifTrue: [
-			^ RSHorizontalTreeLayout new
+			^ RSHorizontalVanDerPloegTreeLayout new
 				  verticalGap: gap;
 				  horizontalGap: gap ].
 	direction = #RL ifTrue: [
-			^ RSHorizontalTreeLayout new
+			^ RSHorizontalVanDerPloegTreeLayout new
 				  verticalGap: gap;
 				  horizontalGap: gap;
 				  horizontallyReverse ].
 	direction = #BT ifTrue: [
-			^ RSTreeLayout new
+			^ RSVanDerPloegTreeLayout new
 				  verticalGap: gap;
 				  horizontalGap: gap;
 				  verticallyReverse ].
-	^ RSTreeLayout new
+	^ RSVanDerPloegTreeLayout new
 		  verticalGap: gap;
 		  horizontalGap: gap
 ]
