@@ -158,53 +158,53 @@ MMGraphBuilder >> initialize [
 { #category : 'testing' }
 MMGraphBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
 
-	| x y |
-	x := aRSShape encompassingRectangle center x.
+	| left right y |
+	left := aRSShape encompassingRectangle left.
+	right := aRSShape encompassingRectangle right.
 	y := aRSShape encompassingRectangle top.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
 			  y > shape encompassingRectangle bottom or: [
-					  (x
-						   between: shape encompassingRectangle left
-						   and: shape encompassingRectangle right) not ] ]
+					  shape encompassingRectangle right < left or: [
+						  shape encompassingRectangle left > right ] ] ]
 ]
 
 { #category : 'testing' }
 MMGraphBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
 
-	| x y |
+	| x top bottom |
 	x := aRSShape encompassingRectangle right.
-	y := aRSShape encompassingRectangle center y.
+	top := aRSShape encompassingRectangle top.
+	bottom := aRSShape encompassingRectangle bottom.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
 			  x < shape encompassingRectangle left or: [
-					  (y
-						   between: shape encompassingRectangle top
-						   and: shape encompassingRectangle bottom) not ] ]
+					  shape encompassingRectangle bottom < top or: [
+						  shape encompassingRectangle top > bottom ] ] ]
 ]
 
 { #category : 'testing' }
 MMGraphBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
 
-	| x y |
+	| x top bottom |
 	x := aRSShape encompassingRectangle left.
-	y := aRSShape encompassingRectangle center y.
+	top := aRSShape encompassingRectangle top.
+	bottom := aRSShape encompassingRectangle bottom.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
 			  x > shape encompassingRectangle right or: [
-					  (y
-						   between: shape encompassingRectangle top
-						   and: shape encompassingRectangle bottom) not ] ]
+					  shape encompassingRectangle bottom < top or: [
+						  shape encompassingRectangle top > bottom ] ] ]
 ]
 
 { #category : 'testing' }
 MMGraphBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
 
-	| x y |
-	x := aRSShape encompassingRectangle center x.
+	| left right y |
+	left := aRSShape encompassingRectangle left.
+	right := aRSShape encompassingRectangle right.
 	y := aRSShape encompassingRectangle bottom.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
 			  y < shape encompassingRectangle top or: [
-					  (x
-						   between: shape encompassingRectangle left
-						   and: shape encompassingRectangle right) not ] ]
+					  shape encompassingRectangle right < left or: [
+						  shape encompassingRectangle left > right ] ] ]
 ]
 
 { #category : 'instance creation' }
@@ -237,11 +237,31 @@ MMGraphBuilder >> newLabelForEdge: aMMGraphEdge [
 { #category : 'instance creation' }
 MMGraphBuilder >> newLabelForNode: aMMGraphNode [
 
-	^ RSLabel new
-		  metricsProvider: RSPharoMetricsProvider new;
-		  text: aMMGraphNode label;
-		  color: Color black;
-		  yourself
+	| lines |
+	lines := aMMGraphNode label lines collect: #trim.
+	^ lines size = 1
+		  ifTrue: [
+				  RSLabel new
+					  metricsProvider: RSPharoMetricsProvider new;
+					  text: lines first;
+					  color: Color black;
+					  yourself ]
+		  ifFalse: [
+				  | labels center |
+				  labels := lines
+					            collect: [ :line |
+							            RSLabel new
+								            metricsProvider: RSPharoMetricsProvider new;
+								            text: line;
+								            color: Color black;
+								            yourself ]
+					            as: RSGroup.
+				  RSVerticalLineLayout new
+					  alignCenter;
+					  on: labels.
+				  center := labels encompassingRectangle center.
+				  labels do: [ :label | label position: label position - center ].
+				  labels asShape ]
 ]
 
 { #category : 'instance creation' }
