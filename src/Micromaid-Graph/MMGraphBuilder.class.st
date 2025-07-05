@@ -372,6 +372,24 @@ MMGraphBuilder >> newMarkerFor: aSymbol [
 ]
 
 { #category : 'instance creation' }
+MMGraphBuilder >> newShapeForCircleNode: aMMGraphNode [
+
+	| label extent circle |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := (label extent x max: label extent y) asPoint.
+	circle := RSCircle new
+		          extent: (extent x squared + extent y squared) sqrt;
+		          color: Color white;
+		          border: (RSBorder new
+				           color: Color black;
+				           yourself);
+		          yourself.
+	^ {
+		  circle.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
 MMGraphBuilder >> newShapeForEdge: edge [
 
 	^ RSBezier new
