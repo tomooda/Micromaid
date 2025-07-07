@@ -16,6 +16,8 @@ BaselineOfMicromaid >> baseline: spec [
 			spec
 				package: 'Micromaid-Graph'
 				with: [ spec requires: #( 'PetitParser2Core' ) ];
+				package: 'Micromaid-Spec'
+				with: [ spec requires: #( 'Micromaid-Graph' ) ];
 				package: 'Micromaid-Tests'
 				with: [ spec requires: #( 'Micromaid-Graph' ) ].
 			spec
