@@ -8,6 +8,36 @@ Class {
 	#package : 'Micromaid-Graph'
 }
 
+{ #category : 'parsing-shapes' }
+MMGraphParser >> circleNode [
+
+	^ self nodeName
+	  ,
+		  ('((' asPParser
+		   , ('))' asPParser not , #any asPParser) star flatten
+		   , '))' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #circle;
+			  yourself ]
+]
+
+{ #category : 'parsing-shapes' }
+MMGraphParser >> cylinderNode [
+
+	^ self nodeName
+	  ,
+		  ('[(' asPParser
+		   , (')]' asPParser not , #any asPParser) star flatten
+		   , ')]' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #cylinder;
+			  yourself ]
+]
+
 { #category : 'parsing' }
 MMGraphParser >> direction [
 
@@ -81,8 +111,9 @@ MMGraphParser >> link [
 { #category : 'parsing' }
 MMGraphParser >> node [
 
-	^ self stadiumNode / self roundedRectNode / self rhombusNode
-	  / self subroutineNode / self rectNode
+	^ self stadiumNode / self cylinderNode / self circleNode
+	  / self roundedRectNode / self rhombusNode / self subroutineNode
+	  / self rectNode
 ]
 
 { #category : 'parsing' }
@@ -109,7 +140,7 @@ MMGraphParser >> normalLink [
 			  yourself ]
 ]
 
-{ #category : 'parsing' }
+{ #category : 'parsing-shapes' }
 MMGraphParser >> rectNode [
 
 	^ self nodeName
@@ -128,7 +159,7 @@ MMGraphParser >> rectNode [
 						  yourself ] ]
 ]
 
-{ #category : 'parsing' }
+{ #category : 'parsing-shapes' }
 MMGraphParser >> rhombusNode [
 
 	^ self nodeName
@@ -141,7 +172,7 @@ MMGraphParser >> rhombusNode [
 			  yourself ]
 ]
 
-{ #category : 'parsing' }
+{ #category : 'parsing-shapes' }
 MMGraphParser >> roundedRectNode [
 
 	^ self nodeName
@@ -154,7 +185,7 @@ MMGraphParser >> roundedRectNode [
 			  yourself ]
 ]
 
-{ #category : 'parsing' }
+{ #category : 'parsing-shapes' }
 MMGraphParser >> stadiumNode [
 
 	^ self nodeName
@@ -175,7 +206,7 @@ MMGraphParser >> start [
 	^ self graph
 ]
 
-{ #category : 'parsing' }
+{ #category : 'parsing-shapes' }
 MMGraphParser >> subroutineNode [
 
 	^ self nodeName

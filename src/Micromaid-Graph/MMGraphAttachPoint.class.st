@@ -42,7 +42,7 @@ MMGraphAttachPoint >> borderPointFrom: aSource to: aTarget via: line edge: aLine
 				    do: [ :geometry |
 				    stream nextPutAll: (line intersectionsWith: geometry) ] ])
 		   detectMin: [ :p | p asPoint distanceTo: line v2 ]) ifNil: [
-		  aSource center ]
+		  aSource encompassingRectangle center ]
 ]
 
 { #category : 'public - hooks' }
@@ -52,5 +52,7 @@ MMGraphAttachPoint >> geometriesFor: aRSShape edge: aLine do: aBlock [
 		ifTrue: [
 				aRSShape children do: [ :shape |
 					self geometriesFor: shape edge: aLine do: aBlock ] ]
-		ifFalse: [ aBlock value: (self geometryFor: aRSShape edge: aLine) ]
+		ifFalse: [
+				(aRSShape isKindOf: RSBoundingShape) ifTrue: [
+					aBlock value: (self geometryFor: aRSShape edge: aLine) ] ]
 ]

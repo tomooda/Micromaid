@@ -378,7 +378,7 @@ MMGraphBuilder >> newShapeForCircleNode: aMMGraphNode [
 	label := self newLabelForNode: aMMGraphNode.
 	extent := (label extent x max: label extent y) asPoint.
 	circle := RSCircle new
-		          extent: (extent x squared + extent y squared) sqrt;
+		          extent: (extent x squared + extent y squared) sqrt asPoint;
 		          color: Color white;
 		          border: (RSBorder new
 				           color: Color black;
@@ -386,6 +386,44 @@ MMGraphBuilder >> newShapeForCircleNode: aMMGraphNode [
 		          yourself.
 	^ {
 		  circle.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForCylinderNode: aMMGraphNode [
+
+	| label extent box lid bottom leftBar rightBar |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + (20 @ 10).
+	box := RSBox new
+		       position: 0 @ (extent x / -16);
+		       extent: extent x @ (extent x / 8 + extent y);
+		       color: Color white;
+		       yourself.
+	lid := RSEllipse new
+		       position: 0 @ (extent y / -2 + (extent x / -8));
+		       extent: extent x @ (extent x / 4);
+		       color: Color white;
+		       border: (RSBorder new color: Color black).
+	bottom := RSEllipse new
+		          center: 0 @ (extent y / 2);
+		          extent: extent x @ (extent x / 4);
+		          color: Color white;
+		          border: (RSBorder new color: Color black).
+	leftBar := RSLine new
+		           from: extent x / -2 @ (extent y / -2 + (extent x / -8));
+		           to: extent x / -2 @ (extent y / 2);
+		           color: Color black.
+	rightBar := RSLine new
+		            from: extent x / 2 @ (extent y / -2 + (extent x / -8));
+		            to: extent x / 2 @ (extent y / 2);
+		            color: Color black.
+	^ {
+		  bottom.
+		  box.
+		  lid.
+		  leftBar.
+		  rightBar.
 		  label } asShapeFor: aMMGraphNode
 ]
 
@@ -413,6 +451,10 @@ MMGraphBuilder >> newShapeForNode: aMMGraphNode [
 		^ self newShapeForStadiumNode: aMMGraphNode ].
 	aMMGraphNode shape = #subroutine ifTrue: [
 		^ self newShapeForSubroutineNode: aMMGraphNode ].
+	aMMGraphNode shape = #cylinder ifTrue: [
+		^ self newShapeForCylinderNode: aMMGraphNode ].
+	aMMGraphNode shape = #circle ifTrue: [
+		^ self newShapeForCircleNode: aMMGraphNode ].
 	^ nil
 ]
 
