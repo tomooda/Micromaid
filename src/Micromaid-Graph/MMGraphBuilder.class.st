@@ -372,6 +372,33 @@ MMGraphBuilder >> newMarkerFor: aSymbol [
 ]
 
 { #category : 'instance creation' }
+MMGraphBuilder >> newShapeForAsymmetricNode: aMMGraphNode [
+
+	| label extent left right top bottom box |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + 20.
+	left := extent x / -2 - 10.
+	right := extent x / 2.
+	top := extent y / -2.
+	bottom := extent y / 2.
+	box := RSPolygon new
+		       points: {
+				       (left @ top).
+				       (right @ top).
+				       (right @ bottom).
+				       (left @ bottom).
+				       (left + 10 @ 0) };
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
 MMGraphBuilder >> newShapeForCircleNode: aMMGraphNode [
 
 	| label extent circle |
@@ -428,6 +455,32 @@ MMGraphBuilder >> newShapeForCylinderNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
+MMGraphBuilder >> newShapeForDoubleCircleNode: aMMGraphNode [
+
+	| label extent circle circle2 |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := (label extent x max: label extent y) asPoint.
+	circle := RSCircle new
+		          extent: (extent x squared + extent y squared) sqrt asPoint;
+		          color: Color white;
+		          border: (RSBorder new
+				           color: Color black;
+				           yourself);
+		          yourself.
+	circle2 := RSCircle new
+		          extent: ((extent x squared + extent y squared) sqrt + 5) asPoint;
+		          color: Color white;
+		          border: (RSBorder new
+				           color: Color black;
+				           yourself);
+		          yourself.
+	^ {
+		  circle2.
+		  circle.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
 MMGraphBuilder >> newShapeForEdge: edge [
 
 	^ RSBezier new
@@ -436,6 +489,34 @@ MMGraphBuilder >> newShapeForEdge: edge [
 		  markerStart: (self newMarkerFor: edge head1);
 		  markerEnd: (self newMarkerFor: edge head2);
 		  yourself
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForHexagonNode: aMMGraphNode [
+
+	| label extent left right top bottom box |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + 20.
+	left := extent x / -2.
+	right := extent x / 2.
+	top := extent y / -2.
+	bottom := extent y / 2.
+	box := RSPolygon new
+		       points: {
+				       (left @ top).
+				       (right @ top).
+				       (right + 10 @ 0).
+				       (right @ bottom).
+				       (left @ bottom).
+				       (left - 10 @ 0) };
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
+		  label } asShapeFor: aMMGraphNode
 ]
 
 { #category : 'instance creation' }
@@ -455,7 +536,73 @@ MMGraphBuilder >> newShapeForNode: aMMGraphNode [
 		^ self newShapeForCylinderNode: aMMGraphNode ].
 	aMMGraphNode shape = #circle ifTrue: [
 		^ self newShapeForCircleNode: aMMGraphNode ].
+	aMMGraphNode shape = #doubleCircle ifTrue: [
+		^ self newShapeForDoubleCircleNode: aMMGraphNode ].
+	aMMGraphNode shape = #asymmetric ifTrue: [
+		^ self newShapeForAsymmetricNode: aMMGraphNode ].
+	aMMGraphNode shape = #hexagon ifTrue: [
+		^ self newShapeForHexagonNode: aMMGraphNode ].
+	aMMGraphNode shape = #parallelogram ifTrue: [
+		^ self newShapeForParallelogramNode: aMMGraphNode ].
+	aMMGraphNode shape = #parallelogramAlt ifTrue: [
+		^ self newShapeForParallelogramAltNode: aMMGraphNode ].
+	aMMGraphNode shape = #trapezoid ifTrue: [
+		^ self newShapeForTrapezoidNode: aMMGraphNode ].
+	aMMGraphNode shape = #trapezoidAlt ifTrue: [
+		^ self newShapeForTrapezoidAltNode: aMMGraphNode ].
 	^ nil
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForParallelogramAltNode: aMMGraphNode [
+
+	| label extent left right top bottom box |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + 20.
+	left := extent x / -2.
+	right := extent x / 2.
+	top := extent y / -2.
+	bottom := extent y / 2.
+	box := RSPolygon new
+		       points: {
+				       (left - 10 @ top).
+				       (right - 10 @ top).
+				       (right + 10 @ bottom).
+				       (left + 10 @ bottom) };
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForParallelogramNode: aMMGraphNode [
+
+	| label extent left right top bottom box |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + 20.
+	left := extent x / -2.
+	right := extent x / 2.
+	top := extent y / -2.
+	bottom := extent y / 2.
+	box := RSPolygon new
+		       points: {
+				       (left + 10 @ top).
+				       (right + 10 @ top).
+				       (right - 10 @ bottom).
+				       (left - 10 @ bottom) };
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
+		  label } asShapeFor: aMMGraphNode
 ]
 
 { #category : 'instance creation' }
@@ -550,6 +697,58 @@ MMGraphBuilder >> newShapeForSubroutineNode: aMMGraphNode [
 	^ {
 		  box2.
 		  box1.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForTrapezoidAltNode: aMMGraphNode [
+
+	| label extent left right top bottom box |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + 20.
+	left := extent x / -2.
+	right := extent x / 2.
+	top := extent y / -2.
+	bottom := extent y / 2.
+	box := RSPolygon new
+		       points: {
+				       (left - 10 @ top).
+				       (right + 10 @ top).
+				       (right - 10 @ bottom).
+				       (left + 10 @ bottom) };
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMGraphBuilder >> newShapeForTrapezoidNode: aMMGraphNode [
+
+	| label extent left right top bottom box |
+	label := self newLabelForNode: aMMGraphNode.
+	extent := label extent + 20.
+	left := extent x / -2.
+	right := extent x / 2.
+	top := extent y / -2.
+	bottom := extent y / 2.
+	box := RSPolygon new
+		       points: {
+				       (left + 10 @ top).
+				       (right - 10 @ top).
+				       (right + 10 @ bottom).
+				       (left - 10 @ bottom) };
+		       color: Color white;
+		       border: (RSBorder new
+				        color: Color black;
+				        yourself);
+		       yourself.
+	^ {
+		  box.
 		  label } asShapeFor: aMMGraphNode
 ]
 

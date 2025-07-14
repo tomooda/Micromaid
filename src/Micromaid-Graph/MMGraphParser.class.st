@@ -9,6 +9,19 @@ Class {
 }
 
 { #category : 'parsing-shapes' }
+MMGraphParser >> asymmetricNode [
+
+	^ self nodeName
+	  , ($> asPParser , ($] asPParser not , #any asPParser) star flatten
+		   , $] asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #asymmetric;
+			  yourself ]
+]
+
+{ #category : 'parsing-shapes' }
 MMGraphParser >> circleNode [
 
 	^ self nodeName
@@ -47,6 +60,21 @@ MMGraphParser >> direction [
 		  str asSymbol ]
 ]
 
+{ #category : 'parsing-shapes' }
+MMGraphParser >> doubleCircleNode [
+
+	^ self nodeName
+	  ,
+		  ('(((' asPParser
+		   , (')))' asPParser not , #any asPParser) star flatten
+		   , ')))' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #doubleCircle;
+			  yourself ]
+]
+
 { #category : 'parsing' }
 MMGraphParser >> edgeLabel [
 
@@ -77,6 +105,21 @@ MMGraphParser >> head2 [
 	  / ('>' asPParser ==> [ :str | #arrowhead ])
 	  / ('o' asPParser ==> [ :str | #circle ])
 	  / ('x' asPParser ==> [ :str | #cross ])
+]
+
+{ #category : 'parsing-shapes' }
+MMGraphParser >> hexagonNode [
+
+	^ self nodeName
+	  ,
+		  ('{{' asPParser
+		   , ('}}' asPParser not , #any asPParser) star flatten
+		   , '}}' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #hexagon;
+			  yourself ]
 ]
 
 { #category : 'parsing' }
@@ -111,8 +154,11 @@ MMGraphParser >> link [
 { #category : 'parsing' }
 MMGraphParser >> node [
 
-	^ self stadiumNode / self cylinderNode / self circleNode
-	  / self roundedRectNode / self rhombusNode / self subroutineNode
+	^ self stadiumNode / self cylinderNode / self doubleCircleNode
+	  / self circleNode / self roundedRectNode / self hexagonNode
+	  / self rhombusNode / self parallelogramNode
+	  / self parallelogramAltNode / self trapezoidNode
+	  / self trapezoidAltNode / self subroutineNode / self asymmetricNode
 	  / self rectNode
 ]
 
@@ -137,6 +183,36 @@ MMGraphParser >> normalLink [
 			  head2: array fifth;
 			  line: #normal;
 			  length: array fourth size + 1;
+			  yourself ]
+]
+
+{ #category : 'parsing-shapes' }
+MMGraphParser >> parallelogramAltNode [
+
+	^ self nodeName
+	  ,
+		  ('[\' asPParser
+		   , ('\]' asPParser not , #any asPParser) star flatten
+		   , '\]' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #parallelogramAlt;
+			  yourself ]
+]
+
+{ #category : 'parsing-shapes' }
+MMGraphParser >> parallelogramNode [
+
+	^ self nodeName
+	  ,
+		  ('[/' asPParser
+		   , ('/]' asPParser not , #any asPParser) star flatten
+		   , '/]' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #parallelogram;
 			  yourself ]
 ]
 
@@ -218,5 +294,35 @@ MMGraphParser >> subroutineNode [
 			  name: pair first;
 			  label: pair second;
 			  shape: #subroutine;
+			  yourself ]
+]
+
+{ #category : 'parsing-shapes' }
+MMGraphParser >> trapezoidAltNode [
+
+	^ self nodeName
+	  ,
+		  ('[\' asPParser
+		   , ('/]' asPParser not , #any asPParser) star flatten
+		   , '/]' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #trapezoidAlt;
+			  yourself ]
+]
+
+{ #category : 'parsing-shapes' }
+MMGraphParser >> trapezoidNode [
+
+	^ self nodeName
+	  ,
+		  ('[/' asPParser
+		   , ('\]' asPParser not , #any asPParser) star flatten
+		   , '\]' asPParser ==> #second) ==> [ :pair |
+		  MMGraphNode new
+			  name: pair first;
+			  label: pair second;
+			  shape: #trapezoid;
 			  yourself ]
 ]
