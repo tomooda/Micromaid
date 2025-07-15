@@ -3,9 +3,8 @@ I am an AST node that represent a  node in various shapes and labels  in a Micro
 "
 Class {
 	#name : 'MMGraphNode',
-	#superclass : 'MMGraphSimpleNode',
+	#superclass : 'MMNode',
 	#instVars : [
-		'label',
 		'shape'
 	],
 	#category : 'Micromaid-Graph-AST',
@@ -13,29 +12,11 @@ Class {
 	#tag : 'AST'
 }
 
-{ #category : 'building' }
-MMGraphNode >> applyToBuilder: aMMGraphBuilder [
-
-	aMMGraphBuilder addNode: self
-]
-
 { #category : 'initialization' }
 MMGraphNode >> initialize [
 
 	super initialize.
 	shape := #rect
-]
-
-{ #category : 'accessing' }
-MMGraphNode >> label [
-
-	^ label
-]
-
-{ #category : 'accessing' }
-MMGraphNode >> label: aString [
-
-	label := aString
 ]
 
 { #category : 'accessing' }

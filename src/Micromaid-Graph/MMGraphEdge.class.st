@@ -5,7 +5,6 @@ Class {
 	#name : 'MMGraphEdge',
 	#superclass : 'MMEdge',
 	#instVars : [
-		'label',
 		'head1',
 		'head2',
 		'line',
@@ -15,12 +14,6 @@ Class {
 	#package : 'Micromaid-Graph',
 	#tag : 'AST'
 }
-
-{ #category : 'building' }
-MMGraphEdge >> applyToBuilder: aMMGraphBuilder [
-
-	aMMGraphBuilder addEdge: self
-]
 
 { #category : 'accessing' }
 MMGraphEdge >> head1 [
@@ -53,18 +46,6 @@ MMGraphEdge >> initialize [
 	line := #normal.
 	head1 := #none.
 	head2 := #none
-]
-
-{ #category : 'accessing' }
-MMGraphEdge >> label [
-
-	^ label
-]
-
-{ #category : 'accessing' }
-MMGraphEdge >> label: aString [
-
-	label := aString
 ]
 
 { #category : 'accessing' }
