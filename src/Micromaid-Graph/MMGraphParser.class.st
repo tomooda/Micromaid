@@ -139,7 +139,7 @@ MMGraphParser >> hexagonNode [
 MMGraphParser >> line [
 
 	^ self node trimBlanks , (self link , self node trimBlanks) optional
-	  , (#newline asPParser / #eoi asPParser) ==> [ :triple |
+	  , self newline ==> [ :triple |
 		  | node1 |
 		  node1 := triple first.
 		  triple second ifNil: [ { node1 } ] ifNotNil: [ :edgeAndNode |
@@ -170,12 +170,6 @@ MMGraphParser >> node [
 	  / self parallelogramAltNode / self trapezoidNode
 	  / self trapezoidAltNode / self subroutineNode / self asymmetricNode
 	  / self rectNode
-]
-
-{ #category : 'parsing' }
-MMGraphParser >> nodeName [
-
-	^ (#letter asPParser / #digit asPParser) plus flatten
 ]
 
 { #category : 'parsing' }
@@ -284,12 +278,6 @@ MMGraphParser >> stadiumNode [
 			  label: pair second;
 			  shape: #stadium;
 			  yourself ]
-]
-
-{ #category : 'accessing' }
-MMGraphParser >> start [
-
-	^ self diagram
 ]
 
 { #category : 'parsing-shapes' }

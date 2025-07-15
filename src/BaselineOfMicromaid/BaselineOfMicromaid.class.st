@@ -18,9 +18,12 @@ BaselineOfMicromaid >> baseline: spec [
 				with: [ spec requires: #( 'PetitParser2Core' ) ];
 				package: 'Micromaid-Graph'
 				with: [ spec requires: #( 'Micromaid-Base' ) ];
+				package: 'Micromaid-StateDiagram'
+				with: [ spec requires: #( 'Micromaid-Base' ) ];
 				package: 'Micromaid-Spec'
 				with: [ spec requires: #( 'Micromaid-Base' ) ].
 			spec
 				group: 'default'
-				with: #( 'Micromaid-Base' 'Micromaid-Graph' 'Micromaid-Spec' ) ]
+				with:
+				#( 'Micromaid-Base' 'Micromaid-Graph' 'Micromaid-StateDiagram''Micromaid-Spec' ) ]
 ]

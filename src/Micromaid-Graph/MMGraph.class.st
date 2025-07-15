@@ -31,9 +31,8 @@ MMGraph >> directionDo: aBlock [
 MMGraph >> roassalBuilder [
 
 	| builder |
-	builder := self roassalBuilderClass new.
-	self directionDo: [:dir | builder direction: dir ].
-	self entitiesDo: [ :nodeOrEdge | nodeOrEdge applyToBuilder: builder ].
+	builder := super roassalBuilder.
+	self directionDo: [ :dir | builder direction: dir ].
 	^ builder
 ]
 

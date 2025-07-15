@@ -4,6 +4,8 @@ I build a Roassal canvas from nodes and links from Micromaid scripts.
 Class {
 	#name : 'MMGraphRoassalBuilder',
 	#superclass : 'MMRoassalBuilder',
+	#traits : 'MMTDagRoassalBuilder',
+	#classTraits : 'MMTDagRoassalBuilder classTrait',
 	#instVars : [
 		'direction'
 	],
@@ -33,48 +35,55 @@ MMGraphRoassalBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
 ]
 
 { #category : 'instance creation' }
-MMGraphRoassalBuilder >> newMarkerFor: aSymbol [
+MMGraphRoassalBuilder >> newCPAPController [
 
-	aSymbol = #arrowhead ifTrue: [
-			| shape marker |
-			shape := RSPolygon new
-				         points: {
-						         (-6 @ 8).
-						         (0 @ 0).
-						         (6 @ 8) };
-				         color: Color black;
-				         yourself.
-			marker := shape asMarker.
-			marker offset: shape height / 2.
-			^ marker ].
-	aSymbol = #circle ifTrue: [
-			| shape marker |
-			shape := RSCircle new
-				         extent: 8 @ 8;
-				         color: Color black;
-				         yourself.
-			marker := shape asMarker.
-			marker offset: 4.
-			^ marker ].
-	aSymbol = #cross ifTrue: [
-			| shape marker |
-			shape := {
-				         (RSLine new
-					          startPoint: -5 @ -5;
-					          endPoint: 5 @ 5;
-					          width: 2;
-					          color: Color black;
-					          yourself).
-				         (RSLine new
-					          startPoint: 5 @ -5;
-					          endPoint: -5 @ 5;
-					          color: Color black;
-					          width: 2;
-					          yourself) } asShape.
-			marker := shape asMarker.
-			marker offset: 5.
-			^ marker ].
+	^ self
+		  ifVertical: [ MMVerticalCPAPController new ]
+		  ifHorizontal: [ MMHorizontalCPAPController new ]
+]
 
+{ #category : 'instance creation' }
+MMGraphRoassalBuilder >> newShapeForEdge: edge [
+
+	^ RSBezier new
+		  model: edge;
+		  color: Color black;
+		  markerStart: (self newMarkerFor: edge head1);
+		  markerEnd: (self newMarkerFor: edge head2);
+		  yourself
+]
+
+{ #category : 'instance creation' }
+MMGraphRoassalBuilder >> newShapeForNode: aMMGraphNode [
+
+	aMMGraphNode shape = #rect ifTrue: [
+		^ self newShapeForRectNode: aMMGraphNode ].
+	aMMGraphNode shape = #roundedRect ifTrue: [
+		^ self newShapeForRoundedRectNode: aMMGraphNode ].
+	aMMGraphNode shape = #rhombus ifTrue: [
+		^ self newShapeForRhombusNode: aMMGraphNode ].
+	aMMGraphNode shape = #stadium ifTrue: [
+		^ self newShapeForStadiumNode: aMMGraphNode ].
+	aMMGraphNode shape = #subroutine ifTrue: [
+		^ self newShapeForSubroutineNode: aMMGraphNode ].
+	aMMGraphNode shape = #cylinder ifTrue: [
+		^ self newShapeForCylinderNode: aMMGraphNode ].
+	aMMGraphNode shape = #circle ifTrue: [
+		^ self newShapeForCircleNode: aMMGraphNode ].
+	aMMGraphNode shape = #doubleCircle ifTrue: [
+		^ self newShapeForDoubleCircleNode: aMMGraphNode ].
+	aMMGraphNode shape = #asymmetric ifTrue: [
+		^ self newShapeForAsymmetricNode: aMMGraphNode ].
+	aMMGraphNode shape = #hexagon ifTrue: [
+		^ self newShapeForHexagonNode: aMMGraphNode ].
+	aMMGraphNode shape = #parallelogram ifTrue: [
+		^ self newShapeForParallelogramNode: aMMGraphNode ].
+	aMMGraphNode shape = #parallelogramAlt ifTrue: [
+		^ self newShapeForParallelogramAltNode: aMMGraphNode ].
+	aMMGraphNode shape = #trapezoid ifTrue: [
+		^ self newShapeForTrapezoidNode: aMMGraphNode ].
+	aMMGraphNode shape = #trapezoidAlt ifTrue: [
+		^ self newShapeForTrapezoidAltNode: aMMGraphNode ].
 	^ nil
 ]
 
@@ -98,95 +107,4 @@ MMGraphRoassalBuilder >> newTreeLayouter [
 	^ RSVanDerPloegTreeLayout new
 		  verticalGap: gap;
 		  horizontalGap: gap
-]
-
-{ #category : 'rendering' }
-MMGraphRoassalBuilder >> renderIn: aCanvas [
-
-	aCanvas color: (Color gray: 0.8).
-	self
-		renderNodesIn: aCanvas;
-		renderLinksIn: aCanvas
-]
-
-{ #category : 'rendering' }
-MMGraphRoassalBuilder >> renderLinksIn: aRSCanvas [
-
-	| treeEdges |
-	treeEdges := self treeEdges.
-	treeEdges do: [ :edge |
-			| node1 node2 |
-			node1 := nodes at: edge node1.
-			node2 := nodes at: edge node2.
-			(aRSCanvas nodes
-				 detect: [ :node | node model = node1 ]
-				 ifNone: [ nil ]) ifNotNil: [ :from |
-					(aRSCanvas nodes
-						 detect: [ :node | node model = node2 ]
-						 ifNone: [ nil ]) ifNotNil: [ :to |
-							| line |
-							line := self newShapeForEdge: edge.
-							line
-								attachPoint: MMAttachPoint new;
-								from: from;
-								to: to;
-								controlPointsController: (self newCPAPController t: 1 / 10).
-							aRSCanvas add: line.
-							line pushBack ] ] ].
-	self newTreeLayouter on: aRSCanvas nodes.
-	treeEdges := treeEdges asSet.
-	edges do: [ :edge |
-			(treeEdges includes: edge) ifFalse: [
-					| node1 node2 |
-					node1 := nodes at: edge node1.
-					node2 := nodes at: edge node2.
-					(aRSCanvas nodes
-						 detect: [ :node | node model = node1 ]
-						 ifNone: [ nil ]) ifNotNil: [ :from |
-							(aRSCanvas nodes
-								 detect: [ :node | node model = node2 ]
-								 ifNone: [ nil ]) ifNotNil: [ :to |
-									| line |
-									line := self newShapeForEdge: edge.
-									self
-										attach: line
-										from: from
-										to: to
-										in: aRSCanvas.
-									aRSCanvas add: line ] ] ] ].
-	aRSCanvas edges do: [ :bezier |
-			bezier model isMMEdge ifTrue: [
-					(self newLabelForEdge: bezier model) ifNotNil: [ :label |
-							label position: (bezier atT:
-									 (bezier controlPointsController
-										  ifNotNil: #labelT
-										  ifNil: [ 0.5 ])).
-							aRSCanvas addShape: label ] ] ]
-]
-
-{ #category : 'rendering' }
-MMGraphRoassalBuilder >> renderNodesIn: aRSCanvas [
-
-	nodes valuesDo: [ :node |
-			| shape |
-			shape := self newShapeForNode: node.
-			aRSCanvas
-				addNode: shape;
-				addShape: shape ]
-]
-
-{ #category : 'accessing' }
-MMGraphRoassalBuilder >> treeEdges [
-
-	| knownNodes |
-	knownNodes := Set new: nodes size.
-	^ Array streamContents: [ :stream |
-			  edges do: [ :edge |
-					  | node2 |
-					  node2 := edge node2.
-					  (knownNodes includes: node2) ifFalse: [
-							  knownNodes
-								  add: edge node1;
-								  add: node2.
-							  stream nextPut: edge ] ] ]
 ]
