@@ -3,20 +3,17 @@ I am an AST node that represent an edge in a Micromaid script.
 "
 Class {
 	#name : 'MMGraphEdge',
-	#superclass : 'Object',
-	#traits : 'TMMGraphEntity',
-	#classTraits : 'TMMGraphEntity classTrait',
+	#superclass : 'MMEdge',
 	#instVars : [
-		'node1',
-		'node2',
 		'label',
 		'head1',
 		'head2',
 		'line',
 		'length'
 	],
-	#category : 'Micromaid-Graph',
-	#package : 'Micromaid-Graph'
+	#category : 'Micromaid-Graph-AST',
+	#package : 'Micromaid-Graph',
+	#tag : 'AST'
 }
 
 { #category : 'building' }
@@ -58,12 +55,6 @@ MMGraphEdge >> initialize [
 	head2 := #none
 ]
 
-{ #category : 'testing' }
-MMGraphEdge >> isMMGraphEdge [
-
-	^ true
-]
-
 { #category : 'accessing' }
 MMGraphEdge >> label [
 
@@ -98,34 +89,4 @@ MMGraphEdge >> line [
 MMGraphEdge >> line: aSymbol [
 
 	line := aSymbol
-]
-
-{ #category : 'accessing' }
-MMGraphEdge >> node1 [
-
-	^ node1
-]
-
-{ #category : 'accessing' }
-MMGraphEdge >> node1: aString [
-
-	node1 := aString
-]
-
-{ #category : 'accessing' }
-MMGraphEdge >> node2 [
-
-	^ node2
-]
-
-{ #category : 'accessing' }
-MMGraphEdge >> node2: aString [
-
-	node2 := aString
-]
-
-{ #category : 'class access' }
-MMGraphEdge >> notificationClass [
-
-	^ MMGraphParserEdgeNotification
 ]

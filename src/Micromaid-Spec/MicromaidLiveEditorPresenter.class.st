@@ -4,7 +4,7 @@ The left one is a text editor where the user will edit a Micromaid script.
 The right one is a Roassal presenter where the system will render the diagram.
 "
 Class {
-	#name : 'MicrodownLiveEditorPresenter',
+	#name : 'MicromaidLiveEditorPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'text',
@@ -15,13 +15,13 @@ Class {
 }
 
 { #category : 'examples' }
-MicrodownLiveEditorPresenter class >> example [
+MicromaidLiveEditorPresenter class >> example [
 
 	^ self new open
 ]
 
 { #category : 'examples' }
-MicrodownLiveEditorPresenter class >> exampleREPL [
+MicromaidLiveEditorPresenter class >> exampleREPL [
 
 	^ self new
 		  text: 'flowchart TD
@@ -38,7 +38,7 @@ P --> R
 ]
 
 { #category : 'initialization' }
-MicrodownLiveEditorPresenter >> defaultLayout [
+MicromaidLiveEditorPresenter >> defaultLayout [
 
 	^ SpPanedLayout newHorizontal
 		  positionOfSlider: 0.5;
@@ -48,7 +48,7 @@ MicrodownLiveEditorPresenter >> defaultLayout [
 ]
 
 { #category : 'initialization' }
-MicrodownLiveEditorPresenter >> initializePresenters [
+MicromaidLiveEditorPresenter >> initializePresenters [
 
 	super initializePresenters.
 	text := self newText
@@ -56,17 +56,18 @@ MicrodownLiveEditorPresenter >> initializePresenters [
 		        yourself.
 	roassal := self newRoassal
 		           script: [ :canvas |
-				           | builder |
-				           builder := MMGraphBuilder fromString:
-						                      text text asString.
-				           builder container: canvas.
-				           canvas clear.
-				           builder build zoomToFit ];
+				           (MicromaidParser parse: text text asString) ifNotNil: [
+							           :graph |
+							           | builder |
+							           builder := graph roassalBuilder.
+							           builder container: canvas.
+							           canvas clear.
+							           builder build zoomToFit ] ];
 		           yourself
 ]
 
 { #category : 'initialization' }
-MicrodownLiveEditorPresenter >> initializeWindow: aSpWindowPresenter [
+MicromaidLiveEditorPresenter >> initializeWindow: aSpWindowPresenter [
 
 	super initializeWindow: aSpWindowPresenter.
 	aSpWindowPresenter
@@ -76,13 +77,13 @@ MicrodownLiveEditorPresenter >> initializeWindow: aSpWindowPresenter [
 ]
 
 { #category : 'accessing' }
-MicrodownLiveEditorPresenter >> text: aStirng [
+MicromaidLiveEditorPresenter >> text: aStirng [
 
 	text text: aStirng
 ]
 
 { #category : 'events handling' }
-MicrodownLiveEditorPresenter >> textChanged: aString [
+MicromaidLiveEditorPresenter >> textChanged: aString [
 
 	roassal refresh
 ]

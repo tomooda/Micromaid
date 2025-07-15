@@ -3,14 +3,13 @@ I am an AST node that represent a simple node, which consists of just an ID,  in
 "
 Class {
 	#name : 'MMGraphSimpleNode',
-	#superclass : 'Object',
-	#traits : 'TMMGraphEntity',
-	#classTraits : 'TMMGraphEntity classTrait',
+	#superclass : 'MMNode',
 	#instVars : [
 		'name'
 	],
-	#category : 'Micromaid-Graph',
-	#package : 'Micromaid-Graph'
+	#category : 'Micromaid-Graph-AST',
+	#package : 'Micromaid-Graph',
+	#tag : 'AST'
 }
 
 { #category : 'building' }
@@ -35,12 +34,6 @@ MMGraphSimpleNode >> name [
 MMGraphSimpleNode >> name: aString [
 
 	name := aString
-]
-
-{ #category : 'class access' }
-MMGraphSimpleNode >> notificationClass [
-
-	^ MMGraphParserNodeNotification
 ]
 
 { #category : 'accessing' }

@@ -3,10 +3,18 @@ I parse a Micromaid script emitting notifications of encountered AST nodes.
 "
 Class {
 	#name : 'MMGraphParser',
-	#superclass : 'PP2CompositeNode',
-	#category : 'Micromaid-Graph',
-	#package : 'Micromaid-Graph'
+	#superclass : 'MicromaidParser',
+	#category : 'Micromaid-Graph-AST',
+	#package : 'Micromaid-Graph',
+	#tag : 'AST'
 }
+
+{ #category : 'testing' }
+MMGraphParser class >> accepts: aString [
+
+	^ ('flowchart' asPParser / 'graph' asPParser , #blank asPParser
+		   parse: aString) isPetit2Success
+]
 
 { #category : 'parsing-shapes' }
 MMGraphParser >> asymmetricNode [
@@ -52,12 +60,24 @@ MMGraphParser >> cylinderNode [
 ]
 
 { #category : 'parsing' }
+MMGraphParser >> diagram [
+
+	^ 'graph' asPParser / 'flowchart' asPParser
+	  , self direction trimBlanks , #newline asPParser , self line star
+	  ==> [ :quartet |
+			  MMGraph new
+				  direction: quartet second;
+				  entities: (Array streamContents: [ :stream |
+							   quartet fourth do: [ :entities |
+									   stream nextPutAll: entities ] ]);
+				  yourself ]
+]
+
+{ #category : 'parsing' }
 MMGraphParser >> direction [
 
 	^ 'TB' asPParser / 'TD' asPParser / 'BT' asPParser / 'RL' asPParser
-	  / 'LR' asPParser ==> [ :str |
-		  MMGraphParserDirectionNotification signal: str asSymbol.
-		  str asSymbol ]
+	  / 'LR' asPParser ==> [ :str | str asSymbol ]
 ]
 
 { #category : 'parsing-shapes' }
@@ -80,13 +100,6 @@ MMGraphParser >> edgeLabel [
 
 	^ $| asPParser , ($| asPParser not , #any asPParser) star flatten
 	  , $| asPParser ==> #second
-]
-
-{ #category : 'parsing' }
-MMGraphParser >> graph [
-
-	^ 'graph' asPParser / 'flowchart' asPParser
-	  , self direction trimBlanks , #newline asPParser , self line star
 ]
 
 { #category : 'parsing' }
@@ -129,7 +142,6 @@ MMGraphParser >> line [
 	  , (#newline asPParser / #eoi asPParser) ==> [ :triple |
 		  | node1 |
 		  node1 := triple first.
-		  node1 notify.
 		  triple second ifNil: [ { node1 } ] ifNotNil: [ :edgeAndNode |
 				  | edge node2 |
 				  edge := edgeAndNode first.
@@ -137,8 +149,6 @@ MMGraphParser >> line [
 				  edge
 					  node1: node1 name;
 					  node2: node2 name.
-				  node2 notify.
-				  edge notify.
 				  {
 					  node1.
 					  node2.
@@ -279,7 +289,7 @@ MMGraphParser >> stadiumNode [
 { #category : 'accessing' }
 MMGraphParser >> start [
 
-	^ self graph
+	^ self diagram
 ]
 
 { #category : 'parsing-shapes' }

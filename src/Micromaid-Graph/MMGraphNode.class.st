@@ -8,8 +8,9 @@ Class {
 		'label',
 		'shape'
 	],
-	#category : 'Micromaid-Graph',
-	#package : 'Micromaid-Graph'
+	#category : 'Micromaid-Graph-AST',
+	#package : 'Micromaid-Graph',
+	#tag : 'AST'
 }
 
 { #category : 'building' }

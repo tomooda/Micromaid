@@ -2,7 +2,7 @@
 I build a Roassal canvas from nodes and links from Micromaid scripts.
 "
 Class {
-	#name : 'MMGraphBuilder',
+	#name : 'MMGraphRoassalBuilder',
 	#superclass : 'RSBuilder',
 	#instVars : [
 		'nodes',
@@ -10,53 +10,25 @@ Class {
 		'direction',
 		'gap'
 	],
-	#category : 'Micromaid-Graph',
-	#package : 'Micromaid-Graph'
+	#category : 'Micromaid-Graph-Roassal',
+	#package : 'Micromaid-Graph',
+	#tag : 'Roassal'
 }
 
-{ #category : 'examples' }
-MMGraphBuilder class >> example [
-
-	(MMGraphBuilder fromString: 'flowchart TD
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[Car]
-    G([stadium スタジアム])
-    H[[subroutine サブルーチン]]
-    G x-o|cross and circle heads| H') build
-		zoomToFit;
-		open
-]
-
-{ #category : 'instance creation' }
-MMGraphBuilder class >> fromString: aString [
-
-	| builder |
-	builder := self new.
-	[ MMGraphParser new parse: aString ]
-		on: MMGraphParserNotification
-		do: [ :ex |
-				ex applyToBuilder: builder.
-				ex resume ].
-	^ builder
-]
-
 { #category : 'adding' }
-MMGraphBuilder >> addEdge: aMMGraphEdge [
+MMGraphRoassalBuilder >> addEdge: aMMGraphEdge [
 
 	^ edges addLast: aMMGraphEdge
 ]
 
 { #category : 'adding' }
-MMGraphBuilder >> addNode: aMMGraphNode [
+MMGraphRoassalBuilder >> addNode: aMMGraphNode [
 
 	^ nodes at: aMMGraphNode name put: aMMGraphNode
 ]
 
 { #category : 'adding' }
-MMGraphBuilder >> addSimpleNode: aMMGraphSimpleNode [
+MMGraphRoassalBuilder >> addSimpleNode: aMMGraphSimpleNode [
 
 	^ nodes
 		  at: aMMGraphSimpleNode name
@@ -64,7 +36,7 @@ MMGraphBuilder >> addSimpleNode: aMMGraphSimpleNode [
 ]
 
 { #category : 'private' }
-MMGraphBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: aRSCanvas [
+MMGraphRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: aRSCanvas [
 
 	| margin others |
 	margin := gap.
@@ -170,37 +142,37 @@ MMGraphBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: aRSCan
 ]
 
 { #category : 'accessing' }
-MMGraphBuilder >> direction [
+MMGraphRoassalBuilder >> direction [
 
 	^ direction
 ]
 
 { #category : 'accessing' }
-MMGraphBuilder >> direction: aSymbol [
+MMGraphRoassalBuilder >> direction: aSymbol [
 
 	direction := aSymbol
 ]
 
 { #category : 'accessing' }
-MMGraphBuilder >> edges [
+MMGraphRoassalBuilder >> edges [
 
 	^ edges
 ]
 
 { #category : 'accessing' }
-MMGraphBuilder >> gap [
+MMGraphRoassalBuilder >> gap [
 
 	^ gap
 ]
 
 { #category : 'accessing' }
-MMGraphBuilder >> gap: aNumber [
+MMGraphRoassalBuilder >> gap: aNumber [
 
 	gap := aNumber
 ]
 
 { #category : 'controlling' }
-MMGraphBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
+MMGraphRoassalBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
 
 	^ (#( TB TD BT ) includes: direction)
 		  ifTrue: aBlock
@@ -208,7 +180,7 @@ MMGraphBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
 ]
 
 { #category : 'initialization' }
-MMGraphBuilder >> initialize [
+MMGraphRoassalBuilder >> initialize [
 
 	super initialize.
 	gap := 50.
@@ -217,7 +189,7 @@ MMGraphBuilder >> initialize [
 ]
 
 { #category : 'testing' }
-MMGraphBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
+MMGraphRoassalBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
 
 	| left right y |
 	left := aRSShape encompassingRectangle left.
@@ -230,7 +202,7 @@ MMGraphBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
 ]
 
 { #category : 'testing' }
-MMGraphBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
+MMGraphRoassalBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
 
 	| x top bottom |
 	x := aRSShape encompassingRectangle right.
@@ -243,7 +215,7 @@ MMGraphBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
 ]
 
 { #category : 'testing' }
-MMGraphBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
+MMGraphRoassalBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
 
 	| x top bottom |
 	x := aRSShape encompassingRectangle left.
@@ -256,7 +228,7 @@ MMGraphBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
 ]
 
 { #category : 'testing' }
-MMGraphBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
+MMGraphRoassalBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
 
 	| left right y |
 	left := aRSShape encompassingRectangle left.
@@ -269,7 +241,7 @@ MMGraphBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newCPAPController [
+MMGraphRoassalBuilder >> newCPAPController [
 
 	^ self
 		  ifVertical: [ MMGraphVerticalCPAPController new ]
@@ -277,7 +249,7 @@ MMGraphBuilder >> newCPAPController [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newLabelForEdge: aMMGraphEdge [
+MMGraphRoassalBuilder >> newLabelForEdge: aMMGraphEdge [
 
 	^ aMMGraphEdge label ifNotNil: [ :string |
 			  | label box |
@@ -296,7 +268,7 @@ MMGraphBuilder >> newLabelForEdge: aMMGraphEdge [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newLabelForNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newLabelForNode: aMMGraphNode [
 
 	| lines |
 	lines := aMMGraphNode label lines collect: #trim.
@@ -326,7 +298,7 @@ MMGraphBuilder >> newLabelForNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newMarkerFor: aSymbol [
+MMGraphRoassalBuilder >> newMarkerFor: aSymbol [
 
 	aSymbol = #arrowhead ifTrue: [
 			| shape marker |
@@ -372,7 +344,7 @@ MMGraphBuilder >> newMarkerFor: aSymbol [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForAsymmetricNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForAsymmetricNode: aMMGraphNode [
 
 	| label extent left right top bottom box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -399,7 +371,7 @@ MMGraphBuilder >> newShapeForAsymmetricNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForCircleNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForCircleNode: aMMGraphNode [
 
 	| label extent circle |
 	label := self newLabelForNode: aMMGraphNode.
@@ -417,7 +389,7 @@ MMGraphBuilder >> newShapeForCircleNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForCylinderNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForCylinderNode: aMMGraphNode [
 
 	| label extent box lid bottom leftBar rightBar |
 	label := self newLabelForNode: aMMGraphNode.
@@ -455,7 +427,7 @@ MMGraphBuilder >> newShapeForCylinderNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForDoubleCircleNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForDoubleCircleNode: aMMGraphNode [
 
 	| label extent circle circle2 |
 	label := self newLabelForNode: aMMGraphNode.
@@ -481,7 +453,7 @@ MMGraphBuilder >> newShapeForDoubleCircleNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForEdge: edge [
+MMGraphRoassalBuilder >> newShapeForEdge: edge [
 
 	^ RSBezier new
 		  model: edge;
@@ -492,7 +464,7 @@ MMGraphBuilder >> newShapeForEdge: edge [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForHexagonNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForHexagonNode: aMMGraphNode [
 
 	| label extent left right top bottom box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -520,7 +492,7 @@ MMGraphBuilder >> newShapeForHexagonNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForNode: aMMGraphNode [
 
 	aMMGraphNode shape = #rect ifTrue: [
 		^ self newShapeForRectNode: aMMGraphNode ].
@@ -554,7 +526,7 @@ MMGraphBuilder >> newShapeForNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForParallelogramAltNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForParallelogramAltNode: aMMGraphNode [
 
 	| label extent left right top bottom box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -580,7 +552,7 @@ MMGraphBuilder >> newShapeForParallelogramAltNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForParallelogramNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForParallelogramNode: aMMGraphNode [
 
 	| label extent left right top bottom box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -606,7 +578,7 @@ MMGraphBuilder >> newShapeForParallelogramNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForRectNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForRectNode: aMMGraphNode [
 
 	| label box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -623,7 +595,7 @@ MMGraphBuilder >> newShapeForRectNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForRhombusNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForRhombusNode: aMMGraphNode [
 
 	| label extent diamond |
 	label := self newLabelForNode: aMMGraphNode.
@@ -645,7 +617,7 @@ MMGraphBuilder >> newShapeForRhombusNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
 
 	| label box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -663,7 +635,7 @@ MMGraphBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForStadiumNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForStadiumNode: aMMGraphNode [
 
 	| label extent box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -682,7 +654,7 @@ MMGraphBuilder >> newShapeForStadiumNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForSubroutineNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForSubroutineNode: aMMGraphNode [
 
 	| label box1 box2 |
 	label := self newLabelForNode: aMMGraphNode.
@@ -701,7 +673,7 @@ MMGraphBuilder >> newShapeForSubroutineNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForTrapezoidAltNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForTrapezoidAltNode: aMMGraphNode [
 
 	| label extent left right top bottom box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -727,7 +699,7 @@ MMGraphBuilder >> newShapeForTrapezoidAltNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newShapeForTrapezoidNode: aMMGraphNode [
+MMGraphRoassalBuilder >> newShapeForTrapezoidNode: aMMGraphNode [
 
 	| label extent left right top bottom box |
 	label := self newLabelForNode: aMMGraphNode.
@@ -753,7 +725,7 @@ MMGraphBuilder >> newShapeForTrapezoidNode: aMMGraphNode [
 ]
 
 { #category : 'instance creation' }
-MMGraphBuilder >> newTreeLayouter [
+MMGraphRoassalBuilder >> newTreeLayouter [
 
 	direction = #LR ifTrue: [
 			^ RSHorizontalVanDerPloegTreeLayout new
@@ -775,13 +747,13 @@ MMGraphBuilder >> newTreeLayouter [
 ]
 
 { #category : 'accessing' }
-MMGraphBuilder >> nodes [
+MMGraphRoassalBuilder >> nodes [
 
 	^ nodes
 ]
 
 { #category : 'rendering' }
-MMGraphBuilder >> renderIn: aCanvas [
+MMGraphRoassalBuilder >> renderIn: aCanvas [
 
 	aCanvas color: (Color gray: 0.8).
 	self
@@ -790,7 +762,7 @@ MMGraphBuilder >> renderIn: aCanvas [
 ]
 
 { #category : 'rendering' }
-MMGraphBuilder >> renderLinksIn: aRSCanvas [
+MMGraphRoassalBuilder >> renderLinksIn: aRSCanvas [
 
 	| treeEdges |
 	treeEdges := self treeEdges.
@@ -835,7 +807,7 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 										in: aRSCanvas.
 									aRSCanvas add: line ] ] ] ].
 	aRSCanvas edges do: [ :bezier |
-			bezier model isMMGraphEdge ifTrue: [
+			bezier model isMMEdge ifTrue: [
 					(self newLabelForEdge: bezier model) ifNotNil: [ :label |
 							label position: (bezier atT:
 									 (bezier controlPointsController
@@ -845,7 +817,7 @@ MMGraphBuilder >> renderLinksIn: aRSCanvas [
 ]
 
 { #category : 'rendering' }
-MMGraphBuilder >> renderNodesIn: aRSCanvas [
+MMGraphRoassalBuilder >> renderNodesIn: aRSCanvas [
 
 	nodes valuesDo: [ :node |
 			| shape |
@@ -856,7 +828,7 @@ MMGraphBuilder >> renderNodesIn: aRSCanvas [
 ]
 
 { #category : 'accessing' }
-MMGraphBuilder >> treeEdges [
+MMGraphRoassalBuilder >> treeEdges [
 
 	| knownNodes |
 	knownNodes := Set new: nodes size.

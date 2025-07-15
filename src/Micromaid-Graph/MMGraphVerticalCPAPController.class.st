@@ -1,8 +1,9 @@
 Class {
 	#name : 'MMGraphVerticalCPAPController',
 	#superclass : 'MMGraphCPAPController',
-	#category : 'Micromaid-Graph',
-	#package : 'Micromaid-Graph'
+	#category : 'Micromaid-Graph-Roassal',
+	#package : 'Micromaid-Graph',
+	#tag : 'Roassal'
 }
 
 { #category : 'hooks' }

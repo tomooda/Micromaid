@@ -8,8 +8,9 @@ This class is necessary because the border attachment in the Roassal library pla
 Class {
 	#name : 'MMGraphAttachPoint',
 	#superclass : 'RSBorderAttachPoint',
-	#category : 'Micromaid-Graph',
-	#package : 'Micromaid-Graph'
+	#category : 'Micromaid-Graph-Roassal',
+	#package : 'Micromaid-Graph',
+	#tag : 'Roassal'
 }
 
 { #category : 'public - hooks' }

@@ -1,7 +1,13 @@
 Extension { #name : 'Object' }
 
 { #category : '*Micromaid-Graph' }
-Object >> isMMGraphEdge [
+Object >> isMMEdge [
+
+	^ false
+]
+
+{ #category : '*Micromaid-Graph' }
+Object >> isMMNode [
 
 	^ false
 ]

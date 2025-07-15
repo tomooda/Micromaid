@@ -14,13 +14,13 @@ BaselineOfMicromaid >> baseline: spec [
 		with: [ spec repository: 'github://kursjan/petitparser2:master' ].
 	spec for: #common do: [
 			spec
-				package: 'Micromaid-Graph'
+				package: 'Micromaid-Base'
 				with: [ spec requires: #( 'PetitParser2Core' ) ];
+				package: 'Micromaid-Graph'
+				with: [ spec requires: #( 'Micromaid-Base' ) ];
 				package: 'Micromaid-Spec'
-				with: [ spec requires: #( 'Micromaid-Graph' ) ];
-				package: 'Micromaid-Tests'
-				with: [ spec requires: #( 'Micromaid-Graph' ) ].
+				with: [ spec requires: #( 'Micromaid-Base' ) ].
 			spec
 				group: 'default'
-				with: #( 'Micromaid-Graph' 'Micromaid-Tests' ) ]
+				with: #( 'Micromaid-Base' 'Micromaid-Graph' 'Micromaid-Spec' ) ]
 ]
