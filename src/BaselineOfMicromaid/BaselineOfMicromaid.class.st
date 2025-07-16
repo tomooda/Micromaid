@@ -25,5 +25,6 @@ BaselineOfMicromaid >> baseline: spec [
 			spec
 				group: 'default'
 				with:
-				#( 'Micromaid-Base' 'Micromaid-Graph' 'Micromaid-StateDiagram''Micromaid-Spec' ) ]
+					#( 'Micromaid-Base' 'Micromaid-Graph' 'Micromaid-StateDiagram'
+					   'Micromaid-Spec' ) ]
 ]
