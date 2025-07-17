@@ -90,8 +90,8 @@ MicromaidLiveEditorPresenter >> initializeWindow: aSpWindowPresenter [
 	super initializeWindow: aSpWindowPresenter.
 	aSpWindowPresenter
 		title: 'Micromaid Live Editor';
-		initialExtent: 800 @ 600";
-		whenResizingDo: [ roassal refresh ]"
+		initialExtent: 800 @ 600;
+		whenResizingDo: [ roassal refresh ]
 ]
 
 { #category : 'accessing' }

@@ -319,7 +319,19 @@ MMRoassalBuilder >> newMarkerFor: aSymbol [
 			marker := shape asMarker.
 			marker offset: 5.
 			^ marker ].
-
+	aSymbol = #wedgehead ifTrue: [ 
+			| shape marker |
+			shape := RSPolygon new
+				         points: {
+						         (-6 @ 8).
+						         (0 @ 0).
+						         (6 @ 8).
+							   (0 @ 4) };
+				         color: Color black;
+				         yourself.
+			marker := shape asMarker.
+			marker offset: shape height / 2.
+			^ marker ].
 	^ nil
 ]
 

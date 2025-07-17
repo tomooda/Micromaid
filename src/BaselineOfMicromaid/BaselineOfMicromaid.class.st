@@ -20,11 +20,13 @@ BaselineOfMicromaid >> baseline: spec [
 				with: [ spec requires: #( 'Micromaid-Base' ) ];
 				package: 'Micromaid-StateDiagram'
 				with: [ spec requires: #( 'Micromaid-Base' ) ];
+				package: 'Micromaid-SequenceDiagram'
+				with: [ spec requires: #( 'Micromaid-Base' ) ];
 				package: 'Micromaid-Spec'
 				with: [ spec requires: #( 'Micromaid-Base' ) ].
 			spec
 				group: 'default'
 				with:
 					#( 'Micromaid-Base' 'Micromaid-Graph' 'Micromaid-StateDiagram'
-					   'Micromaid-Spec' ) ]
+					   'Micromaid-SequenceDiagram' 'Micromaid-Spec' ) ]
 ]
