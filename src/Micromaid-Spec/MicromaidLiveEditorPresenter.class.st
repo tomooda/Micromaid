@@ -37,6 +37,24 @@ P --> R
 		  open
 ]
 
+{ #category : 'examples' }
+MicromaidLiveEditorPresenter class >> exampleTwoStrokeEngine [
+
+	^ self new
+		  text: 'stateDiagram
+state "Intake/scavenging" as A
+state "Exhaust" as B
+state "Compression" as C
+state "Combustion" as D
+[*] --> A : kick start
+A --> B
+B --> C
+C --> D
+D --> A
+C --> [*] : ignition off';
+		  open
+]
+
 { #category : 'initialization' }
 MicromaidLiveEditorPresenter >> defaultLayout [
 
@@ -72,8 +90,8 @@ MicromaidLiveEditorPresenter >> initializeWindow: aSpWindowPresenter [
 	super initializeWindow: aSpWindowPresenter.
 	aSpWindowPresenter
 		title: 'Micromaid Live Editor';
-		initialExtent: 800 @ 600;
-		whenResizingDo: [ roassal refresh ]
+		initialExtent: 800 @ 600";
+		whenResizingDo: [ roassal refresh ]"
 ]
 
 { #category : 'accessing' }
