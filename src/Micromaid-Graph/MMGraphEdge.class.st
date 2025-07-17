@@ -7,8 +7,8 @@ Class {
 	#instVars : [
 		'head1',
 		'head2',
-		'line',
-		'length'
+		'length',
+		'linestyle'
 	],
 	#category : 'Micromaid-Graph-AST',
 	#package : 'Micromaid-Graph',
@@ -43,7 +43,7 @@ MMGraphEdge >> head2: aSymbol [
 MMGraphEdge >> initialize [
 
 	super initialize.
-	line := #normal.
+	linestyle := #normal.
 	head1 := #none.
 	head2 := #none
 ]
@@ -61,13 +61,13 @@ MMGraphEdge >> length: anInteger [
 ]
 
 { #category : 'accessing' }
-MMGraphEdge >> line [
+MMGraphEdge >> linestyle [
 
-	^ line
+	^ linestyle
 ]
 
 { #category : 'accessing' }
-MMGraphEdge >> line: aSymbol [
+MMGraphEdge >> linestyle: aSymbol [
 
-	line := aSymbol
+	linestyle := aSymbol
 ]

@@ -37,112 +37,6 @@ MMRoassalBuilder >> addSimpleNode: aMMGraphSimpleNode [
 		  ifAbsentPut: [ aMMGraphSimpleNode ]
 ]
 
-{ #category : 'private' }
-MMRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: aRSCanvas [
-
-	| margin others |
-	margin := gap.
-	others := aRSCanvas nodes copyWithoutAll: {
-			          aRSShape.
-			          anotherRSShape }.
-	((self isRightmostShape: aRSShape in: others) and: [
-		 self isRightmostShape: anotherRSShape in: others ]) ifTrue: [
-			| right |
-			right := (((others select: [ :shape |
-					            shape encompassingRectangle center y
-						            between: (aRSShape encompassingRectangle top min:
-								             anotherRSShape encompassingRectangle top)
-						            and: (aRSShape encompassingRectangle bottom max:
-								             anotherRSShape encompassingRectangle bottom) ])
-				           copyWithAll: {
-						           aRSShape.
-						           anotherRSShape }) collect: [ :shape |
-				          shape encompassingRectangle right ]) max.
-			right := right
-			         + (right - (aRSShape encompassingRectangle right max:
-					           anotherRSShape encompassingRectangle right)) + margin.
-			aRSBezier controlPoints: {
-					aRSShape encompassingRectangle rightCenter.
-					(right @ aRSShape encompassingRectangle center y).
-					(right @ anotherRSShape encompassingRectangle center y).
-					anotherRSShape encompassingRectangle rightCenter }.
-			^ self ].
-	((self isLeftmostShape: aRSShape in: others) and: [
-		 self isLeftmostShape: anotherRSShape in: others ]) ifTrue: [
-			| left |
-			left := (((others select: [ :shape |
-					           shape encompassingRectangle center y
-						           between: (aRSShape encompassingRectangle top min:
-								            anotherRSShape encompassingRectangle top)
-						           and: (aRSShape encompassingRectangle bottom max:
-								            anotherRSShape encompassingRectangle bottom) ])
-				          copyWithAll: {
-						          aRSShape.
-						          anotherRSShape }) collect: [ :shape |
-				         shape encompassingRectangle left ]) min.
-			left := left + ((aRSShape encompassingRectangle left min:
-				          anotherRSShape encompassingRectangle left) - left)
-			        - margin.
-			aRSBezier controlPoints: {
-					aRSShape encompassingRectangle leftCenter.
-					(left @ aRSShape encompassingRectangle center y).
-					(left @ anotherRSShape encompassingRectangle center y).
-					anotherRSShape encompassingRectangle leftCenter }.
-			^ self ].
-	((self isBottommostShape: aRSShape in: others) and: [
-		 self isBottommostShape: anotherRSShape in: others ]) ifTrue: [
-			| bottom |
-			bottom := (((others select: [ :shape |
-					             shape encompassingRectangle center x
-						             between: (aRSShape encompassingRectangle left min:
-								              anotherRSShape encompassingRectangle left)
-						             and: (aRSShape encompassingRectangle right max:
-								              anotherRSShape encompassingRectangle right) ])
-				            copyWithAll: {
-						            aRSShape.
-						            anotherRSShape }) collect: [ :shape |
-				           shape encompassingRectangle bottom ]) max.
-			bottom := bottom
-			          + (bottom - (aRSShape encompassingRectangle bottom max:
-					            anotherRSShape encompassingRectangle bottom))
-			          + margin.
-
-			aRSBezier controlPoints: {
-					aRSShape encompassingRectangle bottomCenter.
-					(aRSShape encompassingRectangle center x @ bottom).
-					(anotherRSShape encompassingRectangle center x @ bottom).
-					anotherRSShape encompassingRectangle bottomCenter }.
-			^ self ].
-	((self isTopmostShape: aRSShape in: others) and: [
-		 self isTopmostShape: anotherRSShape in: others ]) ifTrue: [
-			| top |
-			top := (((others select: [ :shape |
-					          shape encompassingRectangle center x
-						          between: (aRSShape encompassingRectangle left min:
-								           anotherRSShape encompassingRectangle left)
-						          and: (aRSShape encompassingRectangle right max:
-								           anotherRSShape encompassingRectangle right) ])
-				         copyWithAll: {
-						         aRSShape.
-						         anotherRSShape }) collect: [ :shape |
-				        shape encompassingRectangle top ]) min.
-			top := top + ((aRSShape encompassingRectangle top min:
-				         anotherRSShape encompassingRectangle top) - top) - margin.
-
-			aRSBezier controlPoints: {
-					aRSShape encompassingRectangle topCenter.
-					(aRSShape encompassingRectangle center x @ top).
-					(anotherRSShape encompassingRectangle center x @ top).
-					anotherRSShape encompassingRectangle topCenter }.
-			^ self ].
-
-	aRSBezier
-		attachPoint: MMAttachPoint new;
-		from: aRSShape;
-		to: anotherRSShape;
-		controlPointsController: (self newCPAPController t: 9 / 10)
-]
-
 { #category : 'accessing' }
 MMRoassalBuilder >> edges [
 
@@ -220,12 +114,6 @@ MMRoassalBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
 			  y < shape encompassingRectangle top or: [
 					  shape encompassingRectangle right < left or: [
 						  shape encompassingRectangle left > right ] ] ]
-]
-
-{ #category : 'instance creation' }
-MMRoassalBuilder >> newCPAPController [
-
-	^ self subclassResponsibility
 ]
 
 { #category : 'instance creation' }
@@ -469,6 +357,45 @@ MMRoassalBuilder >> newShapeForHexagonNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
+		  label } asShapeFor: aMMGraphNode
+]
+
+{ #category : 'instance creation' }
+MMRoassalBuilder >> newShapeForHumanNode: aMMGraphNode [
+
+	| label head arms stem legs |
+	label := self newLabelForNode: aMMGraphNode.
+	head := RSCircle new
+		        center: 0 @ -5;
+		        extent: 20 @ 20;
+		        color: Color lightGray;
+		        border: (RSBorder new color: Color gray);
+		        yourself.
+	arms := RSLine new
+		        controlPoints: {
+				        (-10 @ 10).
+				        (10 @ 10) };
+		        color: Color gray;
+		        yourself.
+	stem := RSLine new
+		        controlPoints: {
+				        (0 @ 5).
+				        (0 @ 20) };
+		        color: Color gray;
+		        yourself.
+	legs := RSPolyline new
+		        controlPoints: {
+				        (-10 @ 30).
+				        (0 @ 20).
+				        (10 @ 30) };
+		        color: Color gray;
+		        yourself.
+	label position: 0 @ (30 + (label extent y / 2)).
+	^ {
+		  head.
+		  stem.
+		  arms.
+		  legs.
 		  label } asShapeFor: aMMGraphNode
 ]
 

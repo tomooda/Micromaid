@@ -76,7 +76,7 @@ MicromaidParser >> diagram [
 MicromaidParser >> newline [
 
 	^ #newline asPParser trimBlanks star , #eoi asPParser trimBlanks
-	  / #newline asPParser trimBlanks plus
+	  / #newline asPParser trimBlanks plus ==> [ :array | nil ]
 ]
 
 { #category : 'parsing' }
