@@ -4,8 +4,7 @@ Class {
 	#instVars : [
 		'linestyle',
 		'head1',
-		'head2',
-		'content'
+		'head2'
 	],
 	#category : 'Micromaid-SequenceDiagram-AST',
 	#package : 'Micromaid-SequenceDiagram',
