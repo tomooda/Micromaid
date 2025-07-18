@@ -55,6 +55,27 @@ C --> [*] : ignition off';
 		  open
 ]
 
+{ #category : 'examples' }
+MicromaidLiveEditorPresenter class >> exampleWeb [
+
+	^ self new
+		  text: 'sequenceDiagram
+	actor User
+	participant Browser
+	participant Server
+	participant  Server2 as External Server
+	
+	User ->> Browser : open URL
+	Browser ->> Server : GET request 1
+	Server -->> Browser : response 1
+	Browser ->> Server : GET request 2
+	Browser ->> Server2 : GET request 3
+	Server -->> Browser : response 2
+	Server2 -->> Browser : response 3
+	Browser ->> User : render the page';
+		  open
+]
+
 { #category : 'initialization' }
 MicromaidLiveEditorPresenter >> defaultLayout [
 

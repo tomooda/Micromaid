@@ -43,14 +43,17 @@ MMGraphRoassalBuilder >> newCPAPController [
 ]
 
 { #category : 'instance creation' }
-MMGraphRoassalBuilder >> newShapeForEdge: edge [
+MMGraphRoassalBuilder >> newShapeForEdge: aMMGraphEdge [
 
-	^ RSBezier new
-		  model: edge;
-		  color: Color black;
-		  markerStart: (self newMarkerFor: edge head1);
-		  markerEnd: (self newMarkerFor: edge head2);
-		  yourself
+	| bezier |
+	bezier := RSBezier new
+		        model: aMMGraphEdge;
+		        color: Color black;
+		        markerStart: (self newMarkerFor: aMMGraphEdge head1);
+		        markerEnd: (self newMarkerFor: aMMGraphEdge head2);
+		        yourself.
+	aMMGraphEdge linestyle = #dotted ifTrue: [ bezier dashed ].
+	^ bezier
 ]
 
 { #category : 'instance creation' }

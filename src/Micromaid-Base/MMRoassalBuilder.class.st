@@ -207,19 +207,51 @@ MMRoassalBuilder >> newMarkerFor: aSymbol [
 			marker := shape asMarker.
 			marker offset: 5.
 			^ marker ].
-	aSymbol = #wedgehead ifTrue: [ 
+	aSymbol = #wedgehead ifTrue: [
 			| shape marker |
 			shape := RSPolygon new
 				         points: {
 						         (-6 @ 8).
 						         (0 @ 0).
 						         (6 @ 8).
-							   (0 @ 4) };
+						         (0 @ 4) };
 				         color: Color black;
 				         yourself.
 			marker := shape asMarker.
 			marker offset: shape height / 2.
 			^ marker ].
+	aSymbol = #aggregation ifTrue: [
+			^ (RSPolygon new
+				   points: {
+						   (-9 @ 0).
+						   (0 @ 12).
+						   (9 @ 0).
+						   (0 @ -12) };
+				   color: Color white;
+				   borderColor: Color black;
+				   borderWidth: 1;
+				   asMarker) offset: 12 ].
+	aSymbol = #composition ifTrue: [
+			^ (RSPolygon new
+				   points: {
+						   (-9 @ 0).
+						   (0 @ 12).
+						   (9 @ 0).
+						   (0 @ -12) };
+				   color: Color black;
+				   borderColor: Color black;
+				   borderWidth: 1;
+				   asMarker) offset: 12 ].
+	aSymbol = #inheritance ifTrue: [
+			^ (RSPolygon new
+				   points: {
+						   (-12 @ 12).
+						   (0 @ 0).
+						   (12 @ 12) };
+				   color: Color white;
+				   borderColor: Color black;
+				   borderWidth: 1;
+				   asMarker) offset: 6 ].
 	^ nil
 ]
 
