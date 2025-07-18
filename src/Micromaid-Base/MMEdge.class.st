@@ -1,6 +1,6 @@
 Class {
 	#name : 'MMEdge',
-	#superclass : 'Object',
+	#superclass : 'MMEntity',
 	#instVars : [
 		'node1',
 		'node2',

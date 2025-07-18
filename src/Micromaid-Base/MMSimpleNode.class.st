@@ -1,6 +1,6 @@
 Class {
 	#name : 'MMSimpleNode',
-	#superclass : 'Object',
+	#superclass : 'MMEntity',
 	#instVars : [
 		'name'
 	],

@@ -13,6 +13,13 @@ MMSequenceDiagramParser class >> accepts: aString [
 ]
 
 { #category : 'parsing' }
+MMSequenceDiagramParser >> activation [
+
+	^ 'activate' asPParser trimBlanks , self nodeName
+	  ==> [ :pair | {MMSequenceDiagramActivation new name: pair second} ]
+]
+
+{ #category : 'parsing' }
 MMSequenceDiagramParser >> actor [
 
 	^ 'actor' asPParser trimBlanks , self nodeName ==> #second
@@ -23,6 +30,13 @@ MMSequenceDiagramParser >> actor [
 	name: pair first;
 	label: (pair second ifNil: [ pair first ]);
 	yourself} ]
+]
+
+{ #category : 'parsing' }
+MMSequenceDiagramParser >> deactivation [
+
+	^ 'deactivate' asPParser trimBlanks , self nodeName
+	  ==> [ :pair | {MMSequenceDiagramDeactivation new name: pair second}]
 ]
 
 { #category : 'accessing' }
@@ -59,8 +73,8 @@ MMSequenceDiagramParser >> header [
 { #category : 'accessing' }
 MMSequenceDiagramParser >> line [
 
-	^ self participant / self actor / self message , self newline
-	  ==> #first
+	^ self participant / self actor / self activation / self deactivation
+	  / self message , self newline ==> #first
 ]
 
 { #category : 'parsing' }
@@ -84,22 +98,36 @@ MMSequenceDiagramParser >> link [
 { #category : 'parsing' }
 MMSequenceDiagramParser >> message [
 
-	^ self nodeName trimBlanks , self link , self nodeName trimBlanks
-	  , (':' asPParser trimBlanks
-		   , (self newline not , #any asPParser) plus flatten ==> #second)
-	  ==> [ :quartet |
-			  {
-				  (MMSequenceDiagramSimpleParticipant new
-					   name: quartet first;
-					   yourself).
-				  (MMSequenceDiagramSimpleParticipant new
-					   name: quartet third;
-					   yourself).
-				  (quartet second
-					   node1: quartet first;
-					   node2: quartet third;
-					   label: quartet fourth;
-					   yourself) } ]
+	^ self nodeName trimBlanks , self link
+	  , ($+ asPParser / $- asPParser) trimBlanks optional
+	  , self nodeName trimBlanks , (':' asPParser trimBlanks
+	   , (self newline not , #any asPParser) plus flatten ==> #second)
+	  ==> [ :array |
+			  | sender message activation receiver label |
+			  sender := array first.
+			  message := array second.
+			  activation := array third.
+			  receiver := array fourth.
+			  label := array fifth.
+			  Array streamContents: [ :stream |
+					  stream
+						  nextPut: (MMSequenceDiagramSimpleParticipant new
+								   name: sender;
+								   yourself);
+						  nextPut: (MMSequenceDiagramSimpleParticipant new
+								   name: receiver;
+								   yourself);
+						  nextPut: (message
+								   node1: sender;
+								   node2: receiver;
+								   label: label;
+								   yourself).
+					  activation = $+ ifTrue: [
+						  stream nextPut:
+							  (MMSequenceDiagramActivation new name: receiver) ].
+					  activation = $- ifTrue: [
+						  stream nextPut:
+							  (MMSequenceDiagramDeactivation new name: sender) ] ] ]
 ]
 
 { #category : 'parsing' }

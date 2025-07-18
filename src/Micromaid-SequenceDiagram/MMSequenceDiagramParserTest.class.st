@@ -26,6 +26,14 @@ MMSequenceDiagramParserTest >> setUp [
 ]
 
 { #category : 'tests' }
+MMSequenceDiagramParserTest >> testActivation [
+
+	| activation |
+	activation := (parser activation parse: '	activate A') first.
+	self assert: activation name equals: 'A'
+]
+
+{ #category : 'tests' }
 MMSequenceDiagramParserTest >> testActor [
 
 	| actor |
@@ -37,6 +45,14 @@ MMSequenceDiagramParserTest >> testActor [
 	self assert: actor isMMActor.
 	self assert: actor name equals: 'A'.
 	self assert: actor label equals: 'Alpha'
+]
+
+{ #category : 'tests' }
+MMSequenceDiagramParserTest >> testDeactivation [
+
+	| deactivation |
+	deactivation := (parser deactivation parse: '	deactivate A') first.
+	self assert: deactivation name equals: 'A'
 ]
 
 { #category : 'tests' }
@@ -90,16 +106,38 @@ MMSequenceDiagramParserTest >> testLink [
 { #category : 'tests' }
 MMSequenceDiagramParserTest >> testMessage [
 
-	| triple sender receiver message |
-	triple := parser message parse: '	A ->> B : Hello'.
-	sender := triple first.
-	receiver := triple second.
-	message := triple third.
+	| array sender receiver message activation deactivation |
+	array := parser message parse: '	A ->> B : Hello'.
+	sender := array first.
+	receiver := array second.
+	message := array third.
 	self assert: sender name equals: 'A'.
 	self assert: receiver name equals: 'B'.
 	self assert: message node1 equals: 'A'.
 	self assert: message node2 equals: 'B'.
-	self assert: message label equals: 'Hello'
+	self assert: message label equals: 'Hello'.
+	array := parser message parse: '	A ->>+ B : Hello'.
+	sender := array first.
+	receiver := array second.
+	message := array third.
+	activation := array fourth.
+	self assert: sender name equals: 'A'.
+	self assert: receiver name equals: 'B'.
+	self assert: message node1 equals: 'A'.
+	self assert: message node2 equals: 'B'.
+	self assert: message label equals: 'Hello'.
+	self assert: activation name equals: 'B'.
+	array := parser message parse: '	B -->>- A : Howdy'.
+	sender := array first.
+	receiver := array second.
+	message := array third.
+	deactivation := array fourth.
+	self assert: sender name equals: 'B'.
+	self assert: receiver name equals: 'A'.
+	self assert: message node1 equals: 'B'.
+	self assert: message node2 equals: 'A'.
+	self assert: message label equals: 'Howdy'.
+	self assert: deactivation name equals: 'B'
 ]
 
 { #category : 'tests' }

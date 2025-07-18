@@ -37,6 +37,12 @@ MMRoassalBuilder >> addSimpleNode: aMMGraphSimpleNode [
 		  ifAbsentPut: [ aMMGraphSimpleNode ]
 ]
 
+{ #category : 'defaults' }
+MMRoassalBuilder >> defaultGap [
+
+	^ 50
+]
+
 { #category : 'accessing' }
 MMRoassalBuilder >> edges [
 
@@ -61,7 +67,7 @@ MMRoassalBuilder >> initialize [
 	super initialize.
 	nodes := OrderedDictionary new.
 	edges := OrderedCollection new.
-	gap := 50
+	gap := self defaultGap
 ]
 
 { #category : 'testing' }
