@@ -1,7 +1,7 @@
 # Micromaid
 Micromaid is a small subset of [Mermaid](https://mermaid.live/) for Pharo 13 and later.
 
-## Viewいんg mermaid diagrams embedded in markdown documents on Pharo
+## Viewing mermaid diagrams embedded in markdown documents on Pharo
 
 The following is the REPL flowchart embedded as a mermaid script.
 
