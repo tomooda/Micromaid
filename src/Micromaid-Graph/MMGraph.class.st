@@ -1,3 +1,33 @@
+"
+I am an AST of flowchart/graph script.
+I can draw a flowchart or a DAG with various kinds of nodes and directed edges.
+For example, a simple flowchart of a REPL interpreter can be dawn by the following script.
+```text
+ ```mermaid
+flowchart TD
+R[Read]
+E[Eval]
+P[Print]
+A([Init]) --> R
+R -->  E
+E -->|quit| Q([quit])
+E --> P
+P --> R
+ ```
+```
+
+```mermaid
+flowchart TD
+R[Read]
+E[Eval]
+P[Print]
+A([Init]) --> R
+R -->  E
+E -->|quit| Q([quit])
+E --> P
+P --> R
+```
+"
 Class {
 	#name : 'MMGraph',
 	#superclass : 'MMDiagram',
