@@ -26,9 +26,9 @@ On Pharo, you can view this document like the below.
 You can embed a micromaid script in [Microdown](https://github.com/pillar-markup/Microdown) documents, including class comments.
 For example, if your class has a comment as below,
 
-```text
+````text
 I am a REPL interpreter.
- ```mermaid
+```mermaid
 flowchart TD
 R[Read]
 E[Eval]
@@ -38,9 +38,10 @@ R -->  E
 E -->|quit| Q([quit])
 E --> P
 P --> R
- ```
 ```
+````
 you'll have the following presentation on the browser.
+
 <img width="650" height="547" alt="class-comment" src="https://github.com/user-attachments/assets/c2b6e307-7a81-4bed-ac0c-06e415180b26" />
 
 ## Authoring Micromaid/Mermaid scripts with Spec UI
