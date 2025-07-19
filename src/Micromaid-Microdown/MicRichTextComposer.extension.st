@@ -6,9 +6,9 @@ MicRichTextComposer >> visitMicromaidScript: aMicromaidScriptBlock [
 	| script form anchor resText |
 	script := MicromaidParser parse: aMicromaidScriptBlock body.
 	script isPetit2Failure ifTrue: [ ^ self ].
-	form := script roassalBuilder build
-		        zoomToFit;
-		        asForm.
+	form := (script roassalBuilder build
+		         zoomToFit;
+		         asForm) magnifyBy: 0.5.
 	anchor := self anchorFor: form of: aMicromaidScriptBlock.
 	resText := (self textWithImage: form usingAnchor: anchor)
 	           , ' ' asText.
