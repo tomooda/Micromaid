@@ -51,3 +51,19 @@ you'll have the following presentation on the browser.
 <img width="817" height="487" alt="live-authoring" src="https://github.com/user-attachments/assets/0497f4f0-b3b4-4eb9-aba1-afb446476ef1" />
 
 The diagram on the right will be update as you type in the left source pane.
+
+## Supported diagrams
+
+Subsets of the following diagrams from mermaid are supported in Micromaid.
+
+* [flowchart/graph](https://mermaid.js.org/syntax/flowchart.html)
+  
+  <img width="230" height="243" alt="REPL" src="https://github.com/user-attachments/assets/219400ff-6469-4004-930c-b9d641e55850" />
+
+* [state diagram](https://mermaid.js.org/syntax/stateDiagram.html)
+  
+  <img width="324" height="369" alt="2-stroke" src="https://github.com/user-attachments/assets/202b3c24-2990-46a4-8de2-1c4cf4f96514" />
+
+* [sequence diagram](https://mermaid.js.org/syntax/sequenceDiagram.html)
+  
+  <img width="423" height="581" alt="web-browsing" src="https://github.com/user-attachments/assets/01aa0e67-6140-49d7-a1da-9608754bcb56" />
