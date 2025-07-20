@@ -73,6 +73,9 @@ MMSequenceDiagramRoassalBuilder >> initialize [
 MMSequenceDiagramRoassalBuilder >> newShapeForEdge: aMMSequenceDiagramMessage y: aNumber [
 
 	| line centerX positions label lineY |
+	aMMSequenceDiagramMessage node1 = aMMSequenceDiagramMessage node2
+		ifTrue: [
+		^ self newShapeForLoopEdge: aMMSequenceDiagramMessage y: aNumber ].
 	centerX := (nodePositions at: aMMSequenceDiagramMessage node2)
 	           + (nodePositions at: aMMSequenceDiagramMessage node1) / 2.
 	positions := self xPositionsOfMessage: aMMSequenceDiagramMessage.
@@ -96,6 +99,51 @@ MMSequenceDiagramRoassalBuilder >> newShapeForEdge: aMMSequenceDiagramMessage y:
 	aMMSequenceDiagramMessage linestyle = #dotted ifTrue: [ line dashed ].
 	^ {
 		  line.
+		  label } asShapeFor: aMMSequenceDiagramMessage
+]
+
+{ #category : 'instance creation' }
+MMSequenceDiagramRoassalBuilder >> newShapeForLoopEdge: aMMSequenceDiagramMessage y: aNumber [
+
+	| centerX positions label lineY line1 line2 line3 |
+	centerX := (nodePositions at: aMMSequenceDiagramMessage node1)
+	           + (gap / 2).
+	positions := self xPositionsOfMessage: aMMSequenceDiagramMessage.
+	label := RSLabel new
+		         metricsProvider: RSPharoMetricsProvider new;
+		         text: aMMSequenceDiagramMessage label;
+		         color: Color black;
+		         yourself.
+	label translateTo: centerX @ (aNumber + (label height / 2)).
+	lineY := label encompassingRectangle bottom + 4.
+	line1 := RSLine new
+		         startPoint: positions first @ lineY;
+		         endPoint: centerX @ lineY;
+		         color: Color black;
+		         markerStart:
+			         (self newMarkerFor: aMMSequenceDiagramMessage head1);
+		         yourself.
+	line2 := RSLine new
+		         startPoint: centerX @ lineY;
+		         endPoint: centerX @ (lineY + 20);
+		         color: Color black;
+		         yourself.
+	line3 := RSLine new
+		         startPoint: centerX @ (lineY + 20);
+		         endPoint: positions second @ (lineY + 20);
+		         color: Color black;
+		         markerEnd:
+			         (self newMarkerFor: aMMSequenceDiagramMessage head2);
+		         yourself.
+	edgePositions at: aMMSequenceDiagramMessage put: lineY + 20.
+	aMMSequenceDiagramMessage linestyle = #dotted ifTrue: [
+			line1 dashed.
+			line2 dashed.
+			line3 dashed ].
+	^ {
+		  line1.
+		  line2.
+		  line3.
 		  label } asShapeFor: aMMSequenceDiagramMessage
 ]
 
@@ -211,13 +259,18 @@ MMSequenceDiagramRoassalBuilder >> xPositionsOfMessage: aMMSequenceDiagramMessag
 	node1 := aMMSequenceDiagramMessage node1.
 	node2 := aMMSequenceDiagramMessage node2.
 	messageIndex := edges indexOf: aMMSequenceDiagramMessage.
-	^ (nodePositions at: node1) <= (nodePositions at: node2)
+	^ node1 = node2
 		  ifTrue: [
-				  {
-					  (self nodeRightAt: node1 messageIndex: messageIndex).
-					  (self nodeLeftAt: node2 messageIndex: messageIndex) } ]
+				 {self nodeRightAt: node1 messageIndex: messageIndex - 1.
+self nodeRightAt: node1 messageIndex: messageIndex} ]
 		  ifFalse: [
-				  {
-					  (self nodeLeftAt: node1 messageIndex: messageIndex).
-					  (self nodeRightAt: node2 messageIndex: messageIndex) } ]
+				  (nodePositions at: node1) <= (nodePositions at: node2)
+					  ifTrue: [
+							  {
+								  (self nodeRightAt: node1 messageIndex: messageIndex).
+								  (self nodeLeftAt: node2 messageIndex: messageIndex) } ]
+					  ifFalse: [
+							  {
+								  (self nodeLeftAt: node1 messageIndex: messageIndex).
+								  (self nodeRightAt: node2 messageIndex: messageIndex) } ] ]
 ]
