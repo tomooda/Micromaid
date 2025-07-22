@@ -19,34 +19,54 @@ MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: 
 			          anotherRSShape }.
 	aRSShape = anotherRSShape ifTrue: [
 		^ self attach: aRSBezier loopAt: aRSShape in: aRSCanvas ].
-	((self isRightmostShape: aRSShape in: others) and: [
-		 self isRightmostShape: anotherRSShape in: others ]) ifTrue: [
-			^ self
-				  attach: aRSBezier
-				  fromRight: aRSShape
-				  toRight: anotherRSShape
-				  in: aRSCanvas ].
-	((self isLeftmostShape: aRSShape in: others) and: [
-		 self isLeftmostShape: anotherRSShape in: others ]) ifTrue: [
-			^ self
-				  attach: aRSBezier
-				  fromLeft: aRSShape
-				  toLeft: anotherRSShape
-				  in: aRSCanvas ].
-	((self isBottommostShape: aRSShape in: others) and: [
-		 self isBottommostShape: anotherRSShape in: others ]) ifTrue: [
-			^ self
-				  attach: aRSBezier
-				  fromBottom: aRSShape
-				  toBottom: anotherRSShape
-				  in: aRSCanvas ].
-	((self isTopmostShape: aRSShape in: others) and: [
-		 self isTopmostShape: anotherRSShape in: others ]) ifTrue: [
-			^ self
-				  attach: aRSBezier
-				  fromTop: aRSShape
-				  toTop: anotherRSShape
-				  in: aRSCanvas ].
+	aRSShape encompassingRectangle center y
+	<= anotherRSShape encompassingRectangle center y
+		ifTrue: [
+				(self
+					 attach: aRSBezier
+					 fromRight: aRSShape
+					 toRight: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ].
+				(self
+					 attach: aRSBezier
+					 fromLeft: aRSShape
+					 toLeft: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ] ]
+		ifFalse: [
+				(self
+					 attach: aRSBezier
+					 fromLeft: aRSShape
+					 toLeft: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ].
+				(self
+					 attach: aRSBezier
+					 fromRight: aRSShape
+					 toRight: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ] ].
+	aRSShape encompassingRectangle center x
+	<= anotherRSShape encompassingRectangle center x
+		ifTrue: [
+				(self
+					 attach: aRSBezier
+					 fromTop: aRSShape
+					 toTop: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ].
+				(self
+					 attach: aRSBezier
+					 fromBottom: aRSShape
+					 toBottom: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ] ]
+		ifFalse: [
+				(self
+					 attach: aRSBezier
+					 fromBottom: aRSShape
+					 toBottom: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ].
+				(self
+					 attach: aRSBezier
+					 fromTop: aRSShape
+					 toTop: anotherRSShape
+					 in: aRSCanvas) ifNotNil: [ ^ self ] ].
 
 	aRSBezier
 		attachPoint: MMAttachPoint new;
@@ -59,10 +79,13 @@ MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: 
 MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: anotherRSShape in: aRSCanvas [
 
 	| margin others bottom |
-	margin := gap.
 	others := aRSCanvas nodes copyWithoutAll: {
 			          aRSShape.
 			          anotherRSShape }.
+	((self isBottommostShape: aRSShape in: others) and: [
+		 self isBottommostShape: anotherRSShape in: others ]) ifFalse: [
+		^ nil ].
+	margin := gap.
 	bottom := (((others select: [ :shape |
 			             shape encompassingRectangle center x
 				             between: (aRSShape encompassingRectangle left min:
@@ -88,10 +111,13 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: another
 MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSShape in: aRSCanvas [
 
 	| margin others left |
-	margin := gap.
 	others := aRSCanvas nodes copyWithoutAll: {
 			          aRSShape.
 			          anotherRSShape }.
+	((self isLeftmostShape: aRSShape in: others) and: [
+		 self isLeftmostShape: anotherRSShape in: others ]) ifFalse: [
+		^ nil ].
+	margin := gap.
 	left := (((others select: [ :shape |
 			           shape encompassingRectangle center y
 				           between: (aRSShape encompassingRectangle top min:
@@ -116,10 +142,13 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSSh
 MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRSShape in: aRSCanvas [
 
 	| margin others right |
-	margin := gap.
 	others := aRSCanvas nodes copyWithoutAll: {
 			          aRSShape.
 			          anotherRSShape }.
+	((self isRightmostShape: aRSShape in: others) and: [
+		 self isRightmostShape: anotherRSShape in: others ]) ifFalse: [
+		^ nil ].
+	margin := gap.
 	right := (((others select: [ :shape |
 			            shape encompassingRectangle center y
 				            between: (aRSShape encompassingRectangle top min:
@@ -143,10 +172,12 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRS
 MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShape in: aRSCanvas [
 
 	| margin others top |
-	margin := gap.
 	others := aRSCanvas nodes copyWithoutAll: {
 			          aRSShape.
 			          anotherRSShape }.
+	((self isTopmostShape: aRSShape in: others) and: [
+		 self isTopmostShape: anotherRSShape in: others ]) ifFalse: [ ^ nil ].
+	margin := gap.
 	top := (((others select: [ :shape |
 			          shape encompassingRectangle center x
 				          between: (aRSShape encompassingRectangle left min:
