@@ -27,18 +27,6 @@ MMSimpleNode >> isMMNode [
 	^ true
 ]
 
-{ #category : 'testing' }
-MMSimpleNode >> isStartState [
-
-	^ false
-]
-
-{ #category : 'testing' }
-MMSimpleNode >> isStopState [
-
-	^ false
-]
-
 { #category : 'accessing' }
 MMSimpleNode >> label [
 
