@@ -7,7 +7,7 @@ Class {
 }
 
 { #category : 'building' }
-MMEntity >> applyToBuilder: aMMGraphBuilder [
+MMEntity >> applyToBuilder: aMMRoassalBuilder [
 
 	^ self subclassResponsibility
 ]

@@ -18,9 +18,9 @@ MMEdge class >> isAbstract [
 ]
 
 { #category : 'building' }
-MMEdge >> applyToBuilder: aMMGraphBuilder [
+MMEdge >> applyToBuilder: aMMRoassalBuilder [
 
-	aMMGraphBuilder addEdge: self
+	aMMRoassalBuilder addEdge: self
 ]
 
 { #category : 'testing' }

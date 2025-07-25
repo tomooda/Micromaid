@@ -22,9 +22,9 @@ MMDiagram >> entities [
 ]
 
 { #category : 'accessing' }
-MMDiagram >> entities: anArrayOfMMGraphNodeOrMMGraphEdge [
+MMDiagram >> entities: anArrayOfMMEntity [
 
-	entities := anArrayOfMMGraphNodeOrMMGraphEdge
+	entities := anArrayOfMMEntity
 ]
 
 { #category : 'enumerating' }
@@ -38,7 +38,7 @@ MMDiagram >> roassalBuilder [
 
 	| builder |
 	builder := self roassalBuilderClass new.
-	self entitiesDo: [ :nodeOrEdge | nodeOrEdge applyToBuilder: builder ].
+	self entitiesDo: [ :entity | entity applyToBuilder: builder ].
 	^ builder
 ]
 

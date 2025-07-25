@@ -82,7 +82,8 @@ MicromaidParser >> newline [
 { #category : 'parsing' }
 MicromaidParser >> nodeName [
 
-	^ (#letter asPParser / #digit asPParser) plus flatten
+	^ (#letter asPParser , (#letter asPParser / #digit asPParser) star)
+		  flatten trimBlanks
 ]
 
 { #category : 'accessing' }

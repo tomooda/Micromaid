@@ -17,9 +17,9 @@ MMNode class >> isAbstract [
 ]
 
 { #category : 'building' }
-MMNode >> applyToBuilder: aMMGraphBuilder [
+MMNode >> applyToBuilder: aMMRoassalBuilder [
 
-	aMMGraphBuilder addNode: self
+	aMMRoassalBuilder addNode: self
 ]
 
 { #category : 'testing' }

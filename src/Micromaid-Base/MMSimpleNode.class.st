@@ -16,9 +16,9 @@ MMSimpleNode class >> isAbstract [
 ]
 
 { #category : 'building' }
-MMSimpleNode >> applyToBuilder: aMMGraphBuilder [
+MMSimpleNode >> applyToBuilder: aMMRoassalBuilder [
 
-	aMMGraphBuilder addSimpleNode: self
+	aMMRoassalBuilder addSimpleNode: self
 ]
 
 { #category : 'testing' }

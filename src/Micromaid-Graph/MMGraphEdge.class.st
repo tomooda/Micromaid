@@ -43,7 +43,7 @@ MMGraphEdge >> head2: aSymbol [
 MMGraphEdge >> initialize [
 
 	super initialize.
-	linestyle := #normal.
+	linestyle := #solid.
 	head1 := #none.
 	head2 := #none
 ]

@@ -18,23 +18,23 @@ MMRoassalBuilder class >> isAbstract [
 ]
 
 { #category : 'adding' }
-MMRoassalBuilder >> addEdge: aMMGraphEdge [
+MMRoassalBuilder >> addEdge: aMMEdge [
 
-	^ edges addLast: aMMGraphEdge
+	^ edges addLast: aMMEdge
 ]
 
 { #category : 'adding' }
-MMRoassalBuilder >> addNode: aMMGraphNode [
+MMRoassalBuilder >> addNode: aMMNode [
 
-	^ nodes at: aMMGraphNode name put: aMMGraphNode
+	^ nodes at: aMMNode name put: aMMNode
 ]
 
 { #category : 'adding' }
-MMRoassalBuilder >> addSimpleNode: aMMGraphSimpleNode [
+MMRoassalBuilder >> addSimpleNode: aMMSimpleNode [
 
 	^ nodes
-		  at: aMMGraphSimpleNode name
-		  ifAbsentPut: [ aMMGraphSimpleNode ]
+		  at: aMMSimpleNode name
+		  ifAbsentPut: [ aMMSimpleNode ]
 ]
 
 { #category : 'defaults' }
@@ -123,9 +123,9 @@ MMRoassalBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newLabelForEdge: aMMGraphEdge [
+MMRoassalBuilder >> newLabelForEdge: aMMEdge [
 
-	^ aMMGraphEdge label ifNotNil: [ :string |
+	^ aMMEdge label ifNotNil: [ :string |
 			  | label box |
 			  label := RSLabel new
 				           metricsProvider: RSPharoMetricsProvider new;
@@ -138,14 +138,14 @@ MMRoassalBuilder >> newLabelForEdge: aMMGraphEdge [
 				         yourself.
 			  {
 				  box.
-				  label } asShapeFor: aMMGraphEdge ]
+				  label } asShapeFor: aMMEdge ]
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newLabelForNode: aMMGraphNode [
+MMRoassalBuilder >> newLabelForNode: aMMNode [
 
 	| lines |
-	lines := aMMGraphNode label lines collect: #trim.
+	lines := aMMNode label lines collect: #trim.
 	^ lines size = 1
 		  ifTrue: [
 				  RSLabel new
@@ -262,10 +262,10 @@ MMRoassalBuilder >> newMarkerFor: aSymbol [
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForAsymmetricNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForAsymmetricNode: aMMNode [
 
 	| label extent left right top bottom box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + 20.
 	left := extent x / -2 - 10.
 	right := extent x / 2.
@@ -285,14 +285,14 @@ MMRoassalBuilder >> newShapeForAsymmetricNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForCircleNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForCircleNode: aMMNode [
 
 	| label extent circle |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := (label extent x max: label extent y) asPoint.
 	circle := RSCircle new
 		          extent: (extent x squared + extent y squared) sqrt asPoint;
@@ -303,14 +303,14 @@ MMRoassalBuilder >> newShapeForCircleNode: aMMGraphNode [
 		          yourself.
 	^ {
 		  circle.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForCylinderNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForCylinderNode: aMMNode [
 
 	| label extent box lid bottom leftBar rightBar |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + (20 @ 10).
 	box := RSBox new
 		       position: 0 @ (extent x / -16);
@@ -341,14 +341,14 @@ MMRoassalBuilder >> newShapeForCylinderNode: aMMGraphNode [
 		  lid.
 		  leftBar.
 		  rightBar.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForDoubleCircleNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForDoubleCircleNode: aMMNode [
 
 	| label extent circle circle2 |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := (label extent x max: label extent y) asPoint.
 	circle := RSCircle new
 		          extent: (extent x squared + extent y squared) sqrt asPoint;
@@ -367,14 +367,14 @@ MMRoassalBuilder >> newShapeForDoubleCircleNode: aMMGraphNode [
 	^ {
 		  circle2.
 		  circle.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForHexagonNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForHexagonNode: aMMNode [
 
 	| label extent left right top bottom box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + 20.
 	left := extent x / -2.
 	right := extent x / 2.
@@ -395,14 +395,14 @@ MMRoassalBuilder >> newShapeForHexagonNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForHumanNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForHumanNode: aMMNode [
 
 	| label head arms stem legs |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	head := RSCircle new
 		        center: 0 @ -5;
 		        extent: 20 @ 20;
@@ -434,14 +434,14 @@ MMRoassalBuilder >> newShapeForHumanNode: aMMGraphNode [
 		  stem.
 		  arms.
 		  legs.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForParallelogramAltNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForParallelogramAltNode: aMMNode [
 
 	| label extent left right top bottom box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + 20.
 	left := extent x / -2.
 	right := extent x / 2.
@@ -460,14 +460,14 @@ MMRoassalBuilder >> newShapeForParallelogramAltNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForParallelogramNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForParallelogramNode: aMMNode [
 
 	| label extent left right top bottom box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + 20.
 	left := extent x / -2.
 	right := extent x / 2.
@@ -486,14 +486,14 @@ MMRoassalBuilder >> newShapeForParallelogramNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForRectNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForRectNode: aMMNode [
 
 	| label box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	box := RSBox new
 		       extent: label extent + 20;
 		       color: Color white;
@@ -503,14 +503,14 @@ MMRoassalBuilder >> newShapeForRectNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForRhombusNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForRhombusNode: aMMNode [
 
 	| label extent diamond |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := (label extent x max: label extent y) asPoint.
 	diamond := RSPolygon new
 		           points: {
@@ -525,14 +525,14 @@ MMRoassalBuilder >> newShapeForRhombusNode: aMMGraphNode [
 		           yourself.
 	^ {
 		  diamond.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForRoundedRectNode: aMMNode [
 
 	| label box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	box := RSBox new
 		       extent: label extent + 20;
 		       cornerRadius: 5;
@@ -543,14 +543,14 @@ MMRoassalBuilder >> newShapeForRoundedRectNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForStadiumNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForStadiumNode: aMMNode [
 
 	| label extent box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + 20.
 	box := RSBox new
 		       extent: (extent x max: extent y) + 20 @ extent y;
@@ -562,14 +562,14 @@ MMRoassalBuilder >> newShapeForStadiumNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForSubroutineNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForSubroutineNode: aMMNode [
 
 	| label box1 box2 |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	box1 := RSBox new
 		        extent: label extent + 20;
 		        color: Color white;
@@ -581,14 +581,14 @@ MMRoassalBuilder >> newShapeForSubroutineNode: aMMGraphNode [
 	^ {
 		  box2.
 		  box1.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForTrapezoidAltNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForTrapezoidAltNode: aMMNode [
 
 	| label extent left right top bottom box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + 20.
 	left := extent x / -2.
 	right := extent x / 2.
@@ -607,14 +607,14 @@ MMRoassalBuilder >> newShapeForTrapezoidAltNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'instance creation' }
-MMRoassalBuilder >> newShapeForTrapezoidNode: aMMGraphNode [
+MMRoassalBuilder >> newShapeForTrapezoidNode: aMMNode [
 
 	| label extent left right top bottom box |
-	label := self newLabelForNode: aMMGraphNode.
+	label := self newLabelForNode: aMMNode.
 	extent := label extent + 20.
 	left := extent x / -2.
 	right := extent x / 2.
@@ -633,7 +633,7 @@ MMRoassalBuilder >> newShapeForTrapezoidNode: aMMGraphNode [
 		       yourself.
 	^ {
 		  box.
-		  label } asShapeFor: aMMGraphNode
+		  label } asShapeFor: aMMNode
 ]
 
 { #category : 'accessing' }
