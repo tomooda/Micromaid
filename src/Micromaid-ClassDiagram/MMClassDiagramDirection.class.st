@@ -12,7 +12,7 @@ Class {
 { #category : 'building' }
 MMClassDiagramDirection >> applyToBuilder: aMMClassDiagramRoassalBuilder [
 
-	aMMClassDiagramRoassalBuilder direction: direction
+	aMMClassDiagramRoassalBuilder direction: direction asSymbol
 ]
 
 { #category : 'accessing' }
@@ -24,5 +24,5 @@ MMClassDiagramDirection >> direction [
 { #category : 'accessing' }
 MMClassDiagramDirection >> direction: aSymbol [
 
-	direction := aSymbol
+	direction := aSymbol asSymbol
 ]

@@ -127,6 +127,25 @@ MMClassDiagramParserTest >> testClassDefinition [
 ]
 
 { #category : 'tests' }
+MMClassDiagramParserTest >> testDiagram [
+
+	(parser diagram end parse: 'classDiagram
+	direction LR
+	class Foo
+	Foo : bar
+	class Baz {
+		%% methods
+		quux
+	}
+	Foo <|-- Baz') in: [ :diagram |
+			self assert: diagram entities first direction equals: #LR.
+			self assert: diagram entities second name equals: 'Foo'.
+			self
+				assert: diagram entities eighth class name
+				equals: #MMClassDiagramInheritance ]
+]
+
+{ #category : 'tests' }
 MMClassDiagramParserTest >> testDirection [
 
 	self
@@ -222,4 +241,35 @@ MMClassDiagramParserTest >> testMemberLine [
 	self
 		assert: (parser memberLine parse: '      quuux    ') name
 		equals: 'quuux'
+]
+
+{ #category : 'tests' }
+MMClassDiagramParserTest >> testStatement [
+
+	self
+		assert: (parser statement end parse: '%% attributes') className
+		equals: #MMClassDiagramBeginAttributes.
+	self
+		assert: (parser statement end parse: '%% operations') className
+		equals: #MMClassDiagramBeginOperations.
+	self
+		assert: (parser statement end parse: 'direction TD') className
+		equals: #MMClassDiagramDirection.
+	self
+		assert: (parser statement end parse: 'Foo <|-- Quuux') className
+		equals: #MMClassDiagramInheritance.
+	self
+		assert: (parser statement end parse: 'Foo : quuux') className
+		equals: #MMClassDiagramMember.
+	self
+		assert: (parser statement end parse: 'class Foo {
+	foo
+	bar
+	%% methods
+	+quuux
+	}') last class name
+		equals: #MMClassDiagramEndClass.
+	self
+		assert: (parser statement end parse: 'class Foo["Quuux"]') className
+		equals: #MMClassDiagramClass
 ]

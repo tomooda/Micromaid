@@ -26,7 +26,9 @@ MMClassDiagramBeginClass >> annotations: anArrayOfString [
 { #category : 'building' }
 MMClassDiagramBeginClass >> applyToBuilder: aMMClassDiagramRoassalBuilder [
 
-	aMMClassDiagramRoassalBuilder beginClass: name
+	aMMClassDiagramRoassalBuilder
+		beginClass: name
+		label: (label ifNil: [ name ])
 ]
 
 { #category : 'accessing' }

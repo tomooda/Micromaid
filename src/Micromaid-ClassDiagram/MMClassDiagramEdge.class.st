@@ -6,8 +6,27 @@ Class {
 	#tag : 'AST'
 }
 
-{ #category : 'testing' }
-MMClassDiagramEdge >> isTreeEdge [
+{ #category : 'accessing' }
+MMClassDiagramEdge >> head1 [
+
+	^ self subclassResponsibility
+]
+
+{ #category : 'accessing' }
+MMClassDiagramEdge >> head2 [
+
+	^ self subclassResponsibility
+]
+
+{ #category : 'accessing' }
+MMClassDiagramEdge >> linestyle [
+
+	^ self subclassResponsibility
+]
+
+{ #category : 'accessing' }
+MMClassDiagramEdge >> treeEdgePriority [
+	"less number, higher priority. nil for never"
 
 	^ self subclassResponsibility
 ]

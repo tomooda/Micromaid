@@ -6,6 +6,12 @@ Class {
 	#tag : 'AST'
 }
 
+{ #category : 'testing' }
+MMClassDiagramParser class >> accepts: aString [
+
+	^ ('classDiagram' asPParser parse: aString) isPetit2Success
+]
+
 { #category : 'parsing' }
 MMClassDiagramParser >> annotation [
 
@@ -82,7 +88,9 @@ MMClassDiagramParser >> classDefinition [
 { #category : 'accessing' }
 MMClassDiagramParser >> diagram [
 
-	^ '' asPParser
+	^ self header , (self statement , self newline ==> #first) star
+	  ==> [ :pair |
+	  MMClassDiagram new entities: pair second asArray flattened ]
 ]
 
 { #category : 'parsing' }
@@ -105,7 +113,7 @@ MMClassDiagramParser >> endClass [
 { #category : 'parsing' }
 MMClassDiagramParser >> header [
 
-	^ 'classDiagram' asPParser , self newline
+	^ 'classDiagram' asPParser , self newline ==> #first
 ]
 
 { #category : 'parsing' }
@@ -157,4 +165,19 @@ MMClassDiagramParser >> memberLine [
 		  MMClassDiagramMember new
 			  name: line trim;
 			  yourself ]
+]
+
+{ #category : 'parsing' }
+MMClassDiagramParser >> skipLine [
+
+	^ (self newline not , #any asPParser) star flatten
+	  ==> [ :string | nil ]
+]
+
+{ #category : 'parsing' }
+MMClassDiagramParser >> statement [
+
+	^ self beginAttributes / self beginOperations / self direction
+	  / self inheritance / self memberDeclaration / self classDefinition
+	  / self classDeclaration
 ]

@@ -44,6 +44,18 @@ MMClassDiagramNode >> annotations: anArrayOfString [
 	annotations := anArrayOfString asOrderedCollection
 ]
 
+{ #category : 'enumerating' }
+MMClassDiagramNode >> annotationsCollect: aBlock [
+
+	^ self annotations collect: aBlock
+]
+
+{ #category : 'enumerating' }
+MMClassDiagramNode >> annotationsDo: aBlock [
+
+	annotations do: aBlock
+]
+
 { #category : 'building' }
 MMClassDiagramNode >> applyToBuilder: aMMGraphBuilder [
 
@@ -60,6 +72,18 @@ MMClassDiagramNode >> attributes [
 MMClassDiagramNode >> attributes: anArrayOfString [
 
 	attributes := anArrayOfString asOrderedCollection
+]
+
+{ #category : 'enumerating' }
+MMClassDiagramNode >> attributesCollect: aBlock [
+
+	^ self attributes collect: aBlock
+]
+
+{ #category : 'enumerating' }
+MMClassDiagramNode >> attributesDo: aBlock [
+
+	attributes do: aBlock
 ]
 
 { #category : 'initialization' }
@@ -88,4 +112,16 @@ MMClassDiagramNode >> operations [
 MMClassDiagramNode >> operations: anArrayOfString [
 
 	operations := anArrayOfString asOrderedCollection
+]
+
+{ #category : 'enumerating' }
+MMClassDiagramNode >> operationsCollect: aBlock [
+
+	^ self operations collect: aBlock
+]
+
+{ #category : 'enumerating' }
+MMClassDiagramNode >> operationsDo: aBlock [
+
+	operations do: aBlock
 ]
