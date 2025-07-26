@@ -1,3 +1,9 @@
+"
+I am an abstract class that represents an AST node for edge in Micromaid scripts.
+
+I implement the `applyToBuilder:` method that adds myself to a roassal builder as an edge.
+
+"
 Class {
 	#name : 'MMEdge',
 	#superclass : 'MMEntity',

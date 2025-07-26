@@ -1,3 +1,13 @@
+"
+I am an abstract class that represents parsers for various Micromaid scripts.
+
+Micromaid is not single notation but includes different diagrams such as class diagrams, state diagrams and sequence diagrams.
+The first line of a Micromaid script specify the kind of diagram.
+
+My class method `parse:` choose a parser from my subclasses and returns an instance of `MMDiagram`'s concrete subclass.
+My subclass should implement a class method named `accepts:` that returns whether or not the subclass supports the given script.
+My subclass also has to implement the `diagram` method to parse the entire script.
+"
 Class {
 	#name : 'MicromaidParser',
 	#superclass : 'PP2CompositeNode',

@@ -1,5 +1,5 @@
 "
-This package provides class diagram to Micromaid, like the following.
+This package provides class diagram to Micromaid, like the below.
 ```mermaid
 classDiagram
 	class Collection {

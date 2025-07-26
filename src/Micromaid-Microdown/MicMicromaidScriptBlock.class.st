@@ -28,6 +28,34 @@ E --> P
 P --> R
 ```
  
+You can also specify the extent of the image like
+
+```language=text
+ ```mermaid|extent=100@150
+flowchart TD
+R[Read]
+E[Eval]
+P[Print]
+A([Init]) --> R
+R -->  E
+E -->|quit| Q([quit])
+E --> P
+P --> R
+ ```
+```
+Gives:
+```mermaid|extent=100@150
+flowchart TD
+R[Read]
+E[Eval]
+P[Print]
+A([Init]) --> R
+R -->  E
+E -->|quit| Q([quit])
+E --> P
+P --> R
+```
+
 "
 Class {
 	#name : 'MicMicromaidScriptBlock',
