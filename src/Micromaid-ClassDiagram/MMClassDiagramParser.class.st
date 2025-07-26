@@ -12,6 +12,29 @@ MMClassDiagramParser class >> accepts: aString [
 	^ ('classDiagram' asPParser parse: aString) isPetit2Success
 ]
 
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> aggregation [
+
+	^ self nodeName , 'o--' asPParser ==> #first , self nodeName
+	  , ($: asPParser trimBlanks
+		   , (self newline not , #any asPParser) star flatten ==> #second)
+			  optional ==> [ :triple |
+		  MMClassDiagramAggregation new
+			  node1: triple first;
+			  node2: triple second;
+			  label: triple third;
+			  yourself ]
+	  / (self nodeName , '--o' asPParser ==> #first , self nodeName
+		   , ($: asPParser trimBlanks
+			    , (self newline not , #any asPParser) star flatten ==> #second)
+				   optional ==> [ :triple |
+			   MMClassDiagramAggregation new
+				   node1: triple second;
+				   node2: triple first;
+				   label: triple third;
+				   yourself ])
+]
+
 { #category : 'parsing' }
 MMClassDiagramParser >> annotation [
 
@@ -20,6 +43,37 @@ MMClassDiagramParser >> annotation [
 	  (('>>' asPParser / self newline) not , #any asPParser) star flatten
 	  , '>>' asPParser trimBlanks , self newline and ==> [ :triple |
 	  MMClassDiagramAnnotation new annotation: triple second trim ]
+]
+
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> arrow [
+
+	^ self inheritance / self composition / self aggregation
+	  / self association / self dependency / self realization
+	  / self solidLink / self dashedLink
+]
+
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> association [
+
+	^ self nodeName , '<--' asPParser ==> #first , self nodeName
+	  , ($: asPParser trimBlanks
+		   , (self newline not , #any asPParser) star flatten ==> #second)
+			  optional ==> [ :triple |
+		  MMClassDiagramAssociation new
+			  node1: triple first;
+			  node2: triple second;
+			  label: triple third;
+			  yourself ]
+	  / (self nodeName , '-->' asPParser ==> #first , self nodeName
+		   , ($: asPParser trimBlanks
+			    , (self newline not , #any asPParser) star flatten ==> #second)
+				   optional ==> [ :triple |
+			   MMClassDiagramAssociation new
+				   node1: triple second;
+				   node2: triple first;
+				   label: triple third;
+				   yourself ])
 ]
 
 { #category : 'parsing' }
@@ -85,6 +139,66 @@ MMClassDiagramParser >> classDefinition [
 	  { triple first } , triple second , { triple third } ]
 ]
 
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> composition [
+
+	^ self nodeName , '*--' asPParser ==> #first , self nodeName
+	  , ($: asPParser trimBlanks
+		   , (self newline not , #any asPParser) star flatten ==> #second)
+			  optional ==> [ :triple |
+		  MMClassDiagramComposition new
+			  node1: triple first;
+			  node2: triple second;
+			  label: triple third;
+			  yourself ]
+	  / (self nodeName , '--*' asPParser ==> #first , self nodeName
+		   , ($: asPParser trimBlanks
+			    , (self newline not , #any asPParser) star flatten ==> #second)
+				   optional ==> [ :triple |
+			   MMClassDiagramComposition new
+				   node1: triple second;
+				   node2: triple first;
+				   label: triple third;
+				   yourself ])
+]
+
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> dashedLink [
+
+	^ self nodeName , '..' asPParser ==> #first , self nodeName
+	  , ($: asPParser trimBlanks
+		   , (self newline not , #any asPParser) star flatten ==> #second)
+			  optional ==> [ :triple |
+		  MMClassDiagramDashedLink new
+			  node1: triple first;
+			  node2: triple second;
+			  label: triple third;
+			  yourself ]
+]
+
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> dependency [
+
+	^ self nodeName , '<..' asPParser ==> #first , self nodeName
+	  , ($: asPParser trimBlanks
+		   , (self newline not , #any asPParser) star flatten ==> #second)
+			  optional ==> [ :triple |
+		  MMClassDiagramDependency new
+			  node1: triple first;
+			  node2: triple second;
+			  label: triple third;
+			  yourself ]
+	  / (self nodeName , '..>' asPParser ==> #first , self nodeName
+		   , ($: asPParser trimBlanks
+			    , (self newline not , #any asPParser) star flatten ==> #second)
+				   optional ==> [ :triple |
+			   MMClassDiagramDependency new
+				   node1: triple second;
+				   node2: triple first;
+				   label: triple third;
+				   yourself ])
+]
+
 { #category : 'accessing' }
 MMClassDiagramParser >> diagram [
 
@@ -116,7 +230,7 @@ MMClassDiagramParser >> header [
 	^ 'classDiagram' asPParser , self newline ==> #first
 ]
 
-{ #category : 'parsing' }
+{ #category : 'parsing - arrows' }
 MMClassDiagramParser >> inheritance [
 
 	^ self nodeName , '<|--' asPParser ==> #first , self nodeName
@@ -167,6 +281,29 @@ MMClassDiagramParser >> memberLine [
 			  yourself ]
 ]
 
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> realization [
+
+	^ self nodeName , '<|..' asPParser ==> #first , self nodeName
+	  , ($: asPParser trimBlanks
+		   , (self newline not , #any asPParser) star flatten ==> #second)
+			  optional ==> [ :triple |
+		  MMClassDiagramRealization new
+			  node1: triple first;
+			  node2: triple second;
+			  label: triple third;
+			  yourself ]
+	  / (self nodeName , '..|>' asPParser ==> #first , self nodeName
+		   , ($: asPParser trimBlanks
+			    , (self newline not , #any asPParser) star flatten ==> #second)
+				   optional ==> [ :triple |
+			   MMClassDiagramRealization new
+				   node1: triple second;
+				   node2: triple first;
+				   label: triple third;
+				   yourself ])
+]
+
 { #category : 'parsing' }
 MMClassDiagramParser >> skipLine [
 
@@ -174,10 +311,24 @@ MMClassDiagramParser >> skipLine [
 	  ==> [ :string | nil ]
 ]
 
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> solidLink [
+
+	^ self nodeName , '--' asPParser ==> #first , self nodeName
+	  , ($: asPParser trimBlanks
+		   , (self newline not , #any asPParser) star flatten ==> #second)
+			  optional ==> [ :triple |
+		  MMClassDiagramSolidLink new
+			  node1: triple first;
+			  node2: triple second;
+			  label: triple third;
+			  yourself ]
+]
+
 { #category : 'parsing' }
 MMClassDiagramParser >> statement [
 
 	^ self beginAttributes / self beginOperations / self direction
-	  / self inheritance / self memberDeclaration / self classDefinition
+	  / self arrow / self memberDeclaration / self classDefinition
 	  / self classDeclaration
 ]

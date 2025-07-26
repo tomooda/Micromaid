@@ -67,7 +67,8 @@ MicromaidLiveEditorPresenter class >> exampleCollection [
 	Collection <|-- SequenceableCollection
 	SequenceableCollection <|-- Array
 	SequenceableCollection <|-- OrderedCollection
-	Collection <|-- Set';
+	Collection <|-- Set
+	Array <.. OrderedCollection';
 		  open
 ]
 
@@ -154,7 +155,9 @@ MicromaidLiveEditorPresenter >> initializePresenters [
 							           builder := graph roassalBuilder.
 							           builder container: canvas.
 							           canvas clear.
-							           builder build zoomToFit ] ];
+							           builder build
+								           @ RSCanvasController;
+								           zoomToFit ] ];
 		           yourself
 ]
 

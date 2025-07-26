@@ -14,28 +14,6 @@ Class {
 }
 
 { #category : 'examples' }
-MMClassDiagramRoassalBuilder class >> exampleClassDiagram [
-
-	| diagram |
-	diagram := MMClassDiagramParser new parse: 'classDiagram
-	class Foo["My Foo"] <<abstract>>
-	Foo : bar
-	Foo : baaaaaar
-	class Baz["My Baz"] { 
-		<<concrete>>
-		<<service>>
-		%% methods
-		char
-		quuux
-	}
-	Foo <|-- Baz'.
-	diagram roassalBuilder build
-		zoomToFit;
-		@ RSCanvasController;
-		openWithTitle: self class name , ' class >>' , thisContext selector
-]
-
-{ #category : 'examples' }
 MMClassDiagramRoassalBuilder class >> exampleCollection [
 
 	| diagram |
@@ -82,7 +60,8 @@ MMClassDiagramRoassalBuilder class >> exampleCollection [
 	Collection <|-- SequenceableCollection
 	SequenceableCollection <|-- Array
 	SequenceableCollection <|-- OrderedCollection
-	Collection <|-- Set'.
+	Collection <|-- Set
+	Array <.. OrderedCollection'.
 	diagram roassalBuilder build
 		zoomToFit;
 		@ RSCanvasController;

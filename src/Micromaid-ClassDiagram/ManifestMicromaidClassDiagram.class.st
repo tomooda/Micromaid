@@ -45,6 +45,7 @@ classDiagram
 	SequenceableCollection <|-- Array
 	SequenceableCollection <|-- OrderedCollection
 	Collection <|-- Set
+	Array <.. OrderedCollection
 ```
 "
 Class {

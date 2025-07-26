@@ -78,15 +78,12 @@ MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: 
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: anotherRSShape in: aRSCanvas [
 
-	| margin others bottom |
-	others := aRSCanvas nodes copyWithoutAll: {
-			          aRSShape.
-			          anotherRSShape }.
-	((self isBottommostShape: aRSShape in: others) and: [
-		 self isBottommostShape: anotherRSShape in: others ]) ifFalse: [
-		^ nil ].
+	| margin bottom |
+	((self isBottommostShape: aRSShape in: aRSCanvas nodes) and: [
+		 self isBottommostShape: anotherRSShape in: aRSCanvas nodes ])
+		ifFalse: [ ^ nil ].
 	margin := gap.
-	bottom := (((others select: [ :shape |
+	bottom := (((aRSCanvas nodes select: [ :shape |
 			             shape encompassingRectangle center x
 				             between: (aRSShape encompassingRectangle left min:
 						              anotherRSShape encompassingRectangle left)
@@ -110,15 +107,12 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: another
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSShape in: aRSCanvas [
 
-	| margin others left |
-	others := aRSCanvas nodes copyWithoutAll: {
-			          aRSShape.
-			          anotherRSShape }.
-	((self isLeftmostShape: aRSShape in: others) and: [
-		 self isLeftmostShape: anotherRSShape in: others ]) ifFalse: [
-		^ nil ].
+	| margin left |
+	((self isLeftmostShape: aRSShape in: aRSCanvas nodes) and: [
+		 self isLeftmostShape: anotherRSShape in: aRSCanvas nodes ])
+		ifFalse: [ ^ nil ].
 	margin := gap.
-	left := (((others select: [ :shape |
+	left := (((aRSCanvas nodes select: [ :shape |
 			           shape encompassingRectangle center y
 				           between: (aRSShape encompassingRectangle top min:
 						            anotherRSShape encompassingRectangle top)
@@ -141,15 +135,12 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSSh
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRSShape in: aRSCanvas [
 
-	| margin others right |
-	others := aRSCanvas nodes copyWithoutAll: {
-			          aRSShape.
-			          anotherRSShape }.
-	((self isRightmostShape: aRSShape in: others) and: [
-		 self isRightmostShape: anotherRSShape in: others ]) ifFalse: [
-		^ nil ].
+	| margin right |
+	((self isRightmostShape: aRSShape in: aRSCanvas nodes) and: [
+		 self isRightmostShape: anotherRSShape in: aRSCanvas nodes ])
+		ifFalse: [ ^ nil ].
 	margin := gap.
-	right := (((others select: [ :shape |
+	right := (((aRSCanvas nodes select: [ :shape |
 			            shape encompassingRectangle center y
 				            between: (aRSShape encompassingRectangle top min:
 						             anotherRSShape encompassingRectangle top)
@@ -171,14 +162,12 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRS
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShape in: aRSCanvas [
 
-	| margin others top |
-	others := aRSCanvas nodes copyWithoutAll: {
-			          aRSShape.
-			          anotherRSShape }.
-	((self isTopmostShape: aRSShape in: others) and: [
-		 self isTopmostShape: anotherRSShape in: others ]) ifFalse: [ ^ nil ].
+	| margin top |
+	((self isTopmostShape: aRSShape in: aRSCanvas nodes) and: [
+		 self isTopmostShape: anotherRSShape in: aRSCanvas nodes ])
+		ifFalse: [ ^ nil ].
 	margin := gap.
-	top := (((others select: [ :shape |
+	top := (((aRSCanvas nodes select: [ :shape |
 			          shape encompassingRectangle center x
 				          between: (aRSShape encompassingRectangle left min:
 						           anotherRSShape encompassingRectangle left)
@@ -368,9 +357,10 @@ MMTDagRoassalBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
 	right := aRSShape encompassingRectangle right.
 	y := aRSShape encompassingRectangle top.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  y > shape encompassingRectangle bottom or: [
-					  shape encompassingRectangle right < left or: [
-						  shape encompassingRectangle left > right ] ] ]
+			  shape == aRSShape or: [
+					  y > shape encompassingRectangle bottom or: [
+							  shape encompassingRectangle right < left or: [
+								  shape encompassingRectangle left > right ] ] ] ]
 ]
 
 { #category : 'testing' }
@@ -381,9 +371,10 @@ MMTDagRoassalBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
 	top := aRSShape encompassingRectangle top.
 	bottom := aRSShape encompassingRectangle bottom.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  x < shape encompassingRectangle left or: [
-					  shape encompassingRectangle bottom < top or: [
-						  shape encompassingRectangle top > bottom ] ] ]
+			  shape == aRSShape or: [
+					  x < shape encompassingRectangle left or: [
+							  shape encompassingRectangle bottom < top or: [
+								  shape encompassingRectangle top > bottom ] ] ] ]
 ]
 
 { #category : 'testing' }
@@ -394,9 +385,10 @@ MMTDagRoassalBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
 	top := aRSShape encompassingRectangle top.
 	bottom := aRSShape encompassingRectangle bottom.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  x > shape encompassingRectangle right or: [
-					  shape encompassingRectangle bottom < top or: [
-						  shape encompassingRectangle top > bottom ] ] ]
+			  shape == aRSShape or: [
+					  x > shape encompassingRectangle right or: [
+							  shape encompassingRectangle bottom < top or: [
+								  shape encompassingRectangle top > bottom ] ] ] ]
 ]
 
 { #category : 'testing' }
@@ -407,9 +399,10 @@ MMTDagRoassalBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
 	right := aRSShape encompassingRectangle right.
 	y := aRSShape encompassingRectangle bottom.
 	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  y < shape encompassingRectangle top or: [
-					  shape encompassingRectangle right < left or: [
-						  shape encompassingRectangle left > right ] ] ]
+			  shape == aRSShape or: [
+					  y < shape encompassingRectangle top or: [
+							  shape encompassingRectangle right < left or: [
+								  shape encompassingRectangle left > right ] ] ] ]
 ]
 
 { #category : 'instance creation' }
