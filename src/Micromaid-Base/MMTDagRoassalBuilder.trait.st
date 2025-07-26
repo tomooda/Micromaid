@@ -360,6 +360,58 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromTopToTop: aRSShape in: aRSCanv
 			point }
 ]
 
+{ #category : 'testing' }
+MMTDagRoassalBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
+
+	| left right y |
+	left := aRSShape encompassingRectangle left.
+	right := aRSShape encompassingRectangle right.
+	y := aRSShape encompassingRectangle top.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  y > shape encompassingRectangle bottom or: [
+					  shape encompassingRectangle right < left or: [
+						  shape encompassingRectangle left > right ] ] ]
+]
+
+{ #category : 'testing' }
+MMTDagRoassalBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
+
+	| x top bottom |
+	x := aRSShape encompassingRectangle right.
+	top := aRSShape encompassingRectangle top.
+	bottom := aRSShape encompassingRectangle bottom.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  x < shape encompassingRectangle left or: [
+					  shape encompassingRectangle bottom < top or: [
+						  shape encompassingRectangle top > bottom ] ] ]
+]
+
+{ #category : 'testing' }
+MMTDagRoassalBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
+
+	| x top bottom |
+	x := aRSShape encompassingRectangle left.
+	top := aRSShape encompassingRectangle top.
+	bottom := aRSShape encompassingRectangle bottom.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  x > shape encompassingRectangle right or: [
+					  shape encompassingRectangle bottom < top or: [
+						  shape encompassingRectangle top > bottom ] ] ]
+]
+
+{ #category : 'testing' }
+MMTDagRoassalBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
+
+	| left right y |
+	left := aRSShape encompassingRectangle left.
+	right := aRSShape encompassingRectangle right.
+	y := aRSShape encompassingRectangle bottom.
+	^ aCollectionOfRSShape allSatisfy: [ :shape |
+			  y < shape encompassingRectangle top or: [
+					  shape encompassingRectangle right < left or: [
+						  shape encompassingRectangle left > right ] ] ]
+]
+
 { #category : 'instance creation' }
 MMTDagRoassalBuilder >> newCPAPController [
 

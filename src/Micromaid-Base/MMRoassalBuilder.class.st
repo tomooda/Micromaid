@@ -1,3 +1,10 @@
+"
+I am an abstract class that represent roassal builder for Micromaid script.
+I store nodes, edges and some other parameters to drow a diagram.
+
+My subclasses should implement the `renderIn:` method to render the diagram.
+I mainly provide various shape creation methods for nodes and edges.
+"
 Class {
 	#name : 'MMRoassalBuilder',
 	#superclass : 'RSBuilder',
@@ -15,96 +22,6 @@ Class {
 MMRoassalBuilder class >> isAbstract [
 
 	^ self = MMRoassalBuilder
-]
-
-{ #category : 'instance creation' }
-MMRoassalBuilder >> RSMarkerkerFor: aSymbol [
-
-	aSymbol = #arrowhead ifTrue: [
-			| shape marker |
-			shape := RSPolygon new
-				         points: {
-						         (-6 @ 8).
-						         (0 @ 0).
-						         (6 @ 8) };
-				         color: Color black;
-				         yourself.
-			marker := shape asMarker.
-			marker offset: shape height / 2.
-			^ marker ].
-	aSymbol = #circle ifTrue: [
-			| shape marker |
-			shape := RSCircle new
-				         extent: 8 @ 8;
-				         color: Color black;
-				         yourself.
-			marker := shape asMarker.
-			marker offset: 4.
-			^ marker ].
-	aSymbol = #cross ifTrue: [
-			| shape marker |
-			shape := {
-				         (RSLine new
-					          startPoint: -5 @ -5;
-					          endPoint: 5 @ 5;
-					          width: 2;
-					          color: Color black;
-					          yourself).
-				         (RSLine new
-					          startPoint: 5 @ -5;
-					          endPoint: -5 @ 5;
-					          color: Color black;
-					          width: 2;
-					          yourself) } asShape.
-			marker := shape asMarker.
-			marker offset: 5.
-			^ marker ].
-	aSymbol = #wedgehead ifTrue: [
-			| shape marker |
-			shape := RSPolygon new
-				         points: {
-						         (-6 @ 8).
-						         (0 @ 0).
-						         (6 @ 8).
-						         (0 @ 4) };
-				         color: Color black;
-				         yourself.
-			marker := shape asMarker.
-			marker offset: shape height / 2.
-			^ marker ].
-	aSymbol = #aggregation ifTrue: [
-			^ (RSPolygon new
-				   points: {
-						   (-9 @ 0).
-						   (0 @ 12).
-						   (9 @ 0).
-						   (0 @ -12) };
-				   color: Color white;
-				   borderColor: Color black;
-				   borderWidth: 1;
-				   asMarker) offset: 12 ].
-	aSymbol = #composition ifTrue: [
-			^ (RSPolygon new
-				   points: {
-						   (-9 @ 0).
-						   (0 @ 12).
-						   (9 @ 0).
-						   (0 @ -12) };
-				   color: Color black;
-				   borderColor: Color black;
-				   borderWidth: 1;
-				   asMarker) offset: 12 ].
-	aSymbol = #inheritance ifTrue: [
-			^ (RSPolygon new
-				   points: {
-						   (-12 @ 0).
-						   (0 @ -12).
-						   (12 @ 0) };
-				   color: Color white;
-				   borderColor: Color black;
-				   borderWidth: 1;
-				   asMarker) offset: 6 ].
-	^ nil
 ]
 
 { #category : 'adding' }
@@ -158,58 +75,6 @@ MMRoassalBuilder >> initialize [
 	nodes := OrderedDictionary new.
 	edges := OrderedCollection new.
 	gap := self defaultGap
-]
-
-{ #category : 'testing' }
-MMRoassalBuilder >> isBottommostShape: aRSShape in: aCollectionOfRSShape [
-
-	| left right y |
-	left := aRSShape encompassingRectangle left.
-	right := aRSShape encompassingRectangle right.
-	y := aRSShape encompassingRectangle top.
-	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  y > shape encompassingRectangle bottom or: [
-					  shape encompassingRectangle right < left or: [
-						  shape encompassingRectangle left > right ] ] ]
-]
-
-{ #category : 'testing' }
-MMRoassalBuilder >> isLeftmostShape: aRSShape in: aCollectionOfRSShape [
-
-	| x top bottom |
-	x := aRSShape encompassingRectangle right.
-	top := aRSShape encompassingRectangle top.
-	bottom := aRSShape encompassingRectangle bottom.
-	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  x < shape encompassingRectangle left or: [
-					  shape encompassingRectangle bottom < top or: [
-						  shape encompassingRectangle top > bottom ] ] ]
-]
-
-{ #category : 'testing' }
-MMRoassalBuilder >> isRightmostShape: aRSShape in: aCollectionOfRSShape [
-
-	| x top bottom |
-	x := aRSShape encompassingRectangle left.
-	top := aRSShape encompassingRectangle top.
-	bottom := aRSShape encompassingRectangle bottom.
-	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  x > shape encompassingRectangle right or: [
-					  shape encompassingRectangle bottom < top or: [
-						  shape encompassingRectangle top > bottom ] ] ]
-]
-
-{ #category : 'testing' }
-MMRoassalBuilder >> isTopmostShape: aRSShape in: aCollectionOfRSShape [
-
-	| left right y |
-	left := aRSShape encompassingRectangle left.
-	right := aRSShape encompassingRectangle right.
-	y := aRSShape encompassingRectangle bottom.
-	^ aCollectionOfRSShape allSatisfy: [ :shape |
-			  y < shape encompassingRectangle top or: [
-					  shape encompassingRectangle right < left or: [
-						  shape encompassingRectangle left > right ] ] ]
 ]
 
 { #category : 'instance creation' }
