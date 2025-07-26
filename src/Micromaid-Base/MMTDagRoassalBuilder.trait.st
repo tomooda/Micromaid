@@ -72,13 +72,13 @@ MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: 
 		attachPoint: MMAttachPoint new;
 		from: aRSShape;
 		to: anotherRSShape;
-		controlPointsController: (self newCPAPController t: 9 / 10)
+		controlPointsController: (self newCPAPController t: 0.5)
 ]
 
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: anotherRSShape in: aRSCanvas [
 
-	| margin bottom |
+	| margin bottom point1 point2 |
 	((self isBottommostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isBottommostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -96,18 +96,19 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: another
 	bottom := bottom
 	          + (bottom - (aRSShape encompassingRectangle bottom max:
 			            anotherRSShape encompassingRectangle bottom)) + margin.
-
+	point1 := self attachPointFromBottomOf: aRSShape to: anotherRSShape.
+	point2 := self attachPointFromBottomOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
-			aRSShape encompassingRectangle bottomCenter.
-			(aRSShape encompassingRectangle center x @ bottom).
-			(anotherRSShape encompassingRectangle center x @ bottom).
-			anotherRSShape encompassingRectangle bottomCenter }
+			point1.
+			(point1 x @ bottom).
+			(point2 x @ bottom).
+			point2 }
 ]
 
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSShape in: aRSCanvas [
 
-	| margin left |
+	| margin left point1 point2 |
 	((self isLeftmostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isLeftmostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -125,17 +126,19 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSSh
 	left := left + ((aRSShape encompassingRectangle left min:
 		          anotherRSShape encompassingRectangle left) - left)
 	        - margin.
+	point1 := self attachPointFromLeftOf: aRSShape to: anotherRSShape.
+	point2 := self attachPointFromLeftOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
-			aRSShape encompassingRectangle leftCenter.
-			(left @ aRSShape encompassingRectangle center y).
-			(left @ anotherRSShape encompassingRectangle center y).
-			anotherRSShape encompassingRectangle leftCenter }
+			point1.
+			(left @ point1 y).
+			(left @ point2 y).
+			point2 }
 ]
 
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRSShape in: aRSCanvas [
 
-	| margin right |
+	| margin right point1 point2 |
 	((self isRightmostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isRightmostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -152,17 +155,19 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRS
 		          shape encompassingRectangle right ]) max.
 	right := right + (right - (aRSShape encompassingRectangle right max:
 		           anotherRSShape encompassingRectangle right)) + margin.
+	point1 := self attachPointFromRightOf: aRSShape to: anotherRSShape.
+	point2 := self attachPointFromRightOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
-			aRSShape encompassingRectangle rightCenter.
-			(right @ aRSShape encompassingRectangle center y).
-			(right @ anotherRSShape encompassingRectangle center y).
-			anotherRSShape encompassingRectangle rightCenter }
+			point1.
+			(right @ point1 y).
+			(right @ point2 y).
+			point2 }
 ]
 
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShape in: aRSCanvas [
 
-	| margin top |
+	| margin top point1 point2 |
 	((self isTopmostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isTopmostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -179,12 +184,13 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShap
 		        shape encompassingRectangle top ]) min.
 	top := top + ((aRSShape encompassingRectangle top min:
 		         anotherRSShape encompassingRectangle top) - top) - margin.
-
+	point1 := self attachPointFromTopOf: aRSShape to: anotherRSShape.
+	point2 := self attachPointFromTopOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
-			aRSShape encompassingRectangle topCenter.
-			(aRSShape encompassingRectangle center x @ top).
-			(anotherRSShape encompassingRectangle center x @ top).
-			anotherRSShape encompassingRectangle topCenter }
+			point1.
+			(point1 x @ top).
+			(point2 x @ top).
+			point2 }
 ]
 
 { #category : 'private' }
@@ -347,6 +353,62 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromTopToTop: aRSShape in: aRSCanv
 			(point + (delta negated @ delta negated)).
 			(point + (delta @ delta negated)).
 			point }
+]
+
+{ #category : 'private' }
+MMTDagRoassalBuilder >> attachPointFromBottomOf: aRSShape to: anotherRSShape [
+
+	| theta rect |
+	theta := ((GLine
+		           through: aRSShape encompassingRectangle center
+		           and: anotherRSShape encompassingRectangle center)
+		          angleWith: (GLine through: 0 @ 0 and: 0 @ 1))
+	         \\ (Float pi * 2).
+	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
+	rect := aRSShape encompassingRectangle.
+	^ rect bottomCenter + (theta / Float pi * rect width / 2.0 @ 0)
+]
+
+{ #category : 'private' }
+MMTDagRoassalBuilder >> attachPointFromLeftOf: aRSShape to: anotherRSShape [
+
+	| theta rect |
+	theta := ((GLine
+		           through: aRSShape encompassingRectangle center
+		           and: anotherRSShape encompassingRectangle center)
+		          angleWith: (GLine through: 1 @ 0 and: 0 @ 0))
+	         \\ (Float pi * 2).
+	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
+	rect := aRSShape encompassingRectangle.
+	^ rect leftCenter + (0 @ (theta / Float pi * rect height / 2.0))
+]
+
+{ #category : 'private' }
+MMTDagRoassalBuilder >> attachPointFromRightOf: aRSShape to: anotherRSShape [
+
+	| theta rect |
+	theta := ((GLine
+		           through: aRSShape encompassingRectangle center
+		           and: anotherRSShape encompassingRectangle center)
+		          angleWith: (GLine through: 1 @ 0 and: 0 @ 0))
+	         \\ (Float pi * 2).
+	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
+	rect := aRSShape encompassingRectangle.
+	^ rect rightCenter + (0 @ (theta / Float pi * rect height / 2.0))
+]
+
+{ #category : 'private' }
+MMTDagRoassalBuilder >> attachPointFromTopOf: aRSShape to: anotherRSShape [
+
+	| theta rect |
+	theta := ((GLine
+		           through: aRSShape encompassingRectangle center
+		           and: anotherRSShape encompassingRectangle center)
+		          angleWith: (GLine through: 0 @ 0 and: 0 @ 1))
+	         \\ (Float pi * 2).
+	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
+	rect := aRSShape encompassingRectangle.
+	^ rect topCenter + (theta / Float pi * rect width / 2.0 @ 0)
 ]
 
 { #category : 'testing' }

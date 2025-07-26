@@ -61,7 +61,8 @@ MMClassDiagramRoassalBuilder class >> exampleCollection [
 	SequenceableCollection <|-- Array
 	SequenceableCollection <|-- OrderedCollection
 	Collection <|-- Set
-	Array <.. OrderedCollection'.
+	Array <.. OrderedCollection : internal containter
+	Array <.. Set : hash table'.
 	diagram roassalBuilder build
 		zoomToFit;
 		@ RSCanvasController;
@@ -117,6 +118,20 @@ MMClassDiagramRoassalBuilder >> beginClass: aString label: anotherString [
 MMClassDiagramRoassalBuilder >> beginOperations [
 
 	self enforcesOperation: true
+]
+
+{ #category : 'private' }
+MMClassDiagramRoassalBuilder >> cardinalityLabelPositionFor: aRSLabel in: aRSBezier atT: aNumber [
+
+	| extent position delta theta |
+	extent := aRSLabel extent.
+	position := aRSBezier atT: aNumber.
+	delta := (aRSBezier atT: (aNumber + 0.1 min: 1.0))
+	         - (aRSBezier atT: (aNumber - 0.1 max: 0.0)).
+	theta := delta theta.
+	aNumber >= 0.5 ifTrue: [ theta := theta + Float pi ].
+	^ (Point r: 1.0 theta: delta theta + (Float pi / 2))
+	  + (Point r: 1.0 theta: theta) * extent * 1.5 + position
 ]
 
 { #category : 'accessing' }
@@ -192,6 +207,18 @@ MMClassDiagramRoassalBuilder >> newCPAPController [
 	^ self
 		  ifVertical: [ MMVerticalCPAPController new ]
 		  ifHorizontal: [ MMHorizontalCPAPController new ]
+]
+
+{ #category : 'instance creation' }
+MMClassDiagramRoassalBuilder >> newLabelForCardinality: aStringOrNil [
+
+	^ aStringOrNil ifNotNil: [
+			  RSLabel new
+				  metricsProvider: RSPharoMetricsProvider new;
+				  text: aStringOrNil;
+				  fontSize: RSLabel defaultFontSize - 2;
+				  color: Color darkGray;
+				  yourself ]
 ]
 
 { #category : 'instance creation' }
@@ -413,7 +440,17 @@ MMClassDiagramRoassalBuilder >> renderLinksIn: aRSCanvas [
 									 (bezier controlPointsController
 										  ifNotNil: #labelT
 										  ifNil: [ 0.5 ])).
-							aRSCanvas addShape: label ] ] ]
+							aRSCanvas addShape: label ].
+					(self newLabelForCardinality: bezier model cardinality1)
+						ifNotNil: [ :label |
+								label position:
+									(self cardinalityLabelPositionFor: label in: bezier atT: 0.0).
+								aRSCanvas addShape: label ].
+					(self newLabelForCardinality: bezier model cardinality2)
+						ifNotNil: [ :label |
+								label position:
+									(self cardinalityLabelPositionFor: label in: bezier atT: 1.0).
+								aRSCanvas addShape: label ] ] ]
 ]
 
 { #category : 'accessing' }

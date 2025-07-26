@@ -45,7 +45,8 @@ classDiagram
 	SequenceableCollection <|-- Array
 	SequenceableCollection <|-- OrderedCollection
 	Collection <|-- Set
-	Array <.. OrderedCollection
+	Array <.. OrderedCollection : internal containter
+	Array <.. Set : hash table
 ```
 "
 Class {

@@ -25,14 +25,19 @@ MMClassDiagramParserTest >> testAggregation [
 				equals: #MMClassDiagramAggregation.
 			self assert: aggregation node1 equals: 'Object'.
 			self assert: aggregation node2 equals: 'Quuux'.
+			self assert: aggregation cardinality1 isNil.
+			self assert: aggregation cardinality2 isNil.
 			self assert: aggregation label isNil ].
-	(parser arrow parse: 'Object o-- Quuux : Blah') in: [ :aggregation |
+	(parser arrow parse: 'Object "1" o-- "many" Quuux : Blah') in: [
+			:aggregation |
 			self assert: aggregation isPetit2Success.
 			self
 				assert: aggregation class name
 				equals: #MMClassDiagramAggregation.
 			self assert: aggregation node1 equals: 'Object'.
 			self assert: aggregation node2 equals: 'Quuux'.
+			self assert: aggregation cardinality1 equals: '1'.
+			self assert: aggregation cardinality2 equals: 'many'.
 			self assert: aggregation label equals: 'Blah' ].
 	(parser arrow parse: 'Quuux --o Object') in: [ :aggregation |
 			self assert: aggregation isPetit2Success.
@@ -41,14 +46,19 @@ MMClassDiagramParserTest >> testAggregation [
 				equals: #MMClassDiagramAggregation.
 			self assert: aggregation node1 equals: 'Object'.
 			self assert: aggregation node2 equals: 'Quuux'.
+			self assert: aggregation cardinality1 isNil.
+			self assert: aggregation cardinality2 isNil.
 			self assert: aggregation label isNil ].
-	(parser arrow parse: 'Quuux --o Object:Blah') in: [ :aggregation |
+	(parser arrow parse: 'Quuux "1" --o "many" Object:Blah') in: [
+			:aggregation |
 			self assert: aggregation isPetit2Success.
 			self
 				assert: aggregation class name
 				equals: #MMClassDiagramAggregation.
 			self assert: aggregation node1 equals: 'Object'.
 			self assert: aggregation node2 equals: 'Quuux'.
+			self assert: aggregation cardinality1 equals: 'many'.
+			self assert: aggregation cardinality2 equals: '1'.
 			self assert: aggregation label equals: 'Blah' ]
 ]
 
@@ -62,14 +72,18 @@ MMClassDiagramParserTest >> testAssociation [
 				equals: #MMClassDiagramAssociation.
 			self assert: association node1 equals: 'Object'.
 			self assert: association node2 equals: 'Quuux'.
+			self assert: association cardinality1 isNil.
+			self assert: association cardinality2 isNil.
 			self assert: association label isNil ].
-	(parser arrow parse: 'Object <-- Quuux : Blah') in: [ :association |
+	(parser arrow parse: 'Object "1" <-- "many" Quuux : Blah') in: [ :association |
 			self assert: association isPetit2Success.
 			self
 				assert: association class name
 				equals: #MMClassDiagramAssociation.
 			self assert: association node1 equals: 'Object'.
 			self assert: association node2 equals: 'Quuux'.
+			self assert: association cardinality1 equals: '1'.
+			self assert: association cardinality2 equals: 'many'.
 			self assert: association label equals: 'Blah' ].
 	(parser arrow parse: 'Quuux --> Object') in: [ :association |
 			self assert: association isPetit2Success.
@@ -78,14 +92,18 @@ MMClassDiagramParserTest >> testAssociation [
 				equals: #MMClassDiagramAssociation.
 			self assert: association node1 equals: 'Object'.
 			self assert: association node2 equals: 'Quuux'.
+			self assert: association cardinality1 isNil.
+			self assert: association cardinality2 isNil.
 			self assert: association label isNil ].
-	(parser arrow parse: 'Quuux --> Object:Blah') in: [ :association |
+	(parser arrow parse: 'Quuux  "many" --> "1" Object:Blah') in: [ :association |
 			self assert: association isPetit2Success.
 			self
 				assert: association class name
 				equals: #MMClassDiagramAssociation.
 			self assert: association node1 equals: 'Object'.
 			self assert: association node2 equals: 'Quuux'.
+			self assert: association cardinality1 equals: '1'.
+			self assert: association cardinality2 equals: 'many'.
 			self assert: association label equals: 'Blah' ]
 ]
 
@@ -210,14 +228,18 @@ MMClassDiagramParserTest >> testComposition [
 				equals: #MMClassDiagramComposition.
 			self assert: composition node1 equals: 'Object'.
 			self assert: composition node2 equals: 'Quuux'.
+			self assert: composition cardinality1 isNil.
+			self assert: composition cardinality2 isNil.
 			self assert: composition label isNil ].
-	(parser arrow parse: 'Object *-- Quuux : Blah') in: [ :composition |
+	(parser arrow parse: 'Object "1" *-- "many" Quuux : Blah') in: [ :composition |
 			self assert: composition isPetit2Success.
 			self
 				assert: composition class name
 				equals: #MMClassDiagramComposition.
 			self assert: composition node1 equals: 'Object'.
 			self assert: composition node2 equals: 'Quuux'.
+			self assert: composition cardinality1 equals: '1'.
+			self assert: composition cardinality2 equals: 'many'.
 			self assert: composition label equals: 'Blah' ].
 	(parser arrow parse: 'Quuux --* Object') in: [ :composition |
 			self assert: composition isPetit2Success.
@@ -226,14 +248,18 @@ MMClassDiagramParserTest >> testComposition [
 				equals: #MMClassDiagramComposition.
 			self assert: composition node1 equals: 'Object'.
 			self assert: composition node2 equals: 'Quuux'.
+			self assert: composition cardinality1 isNil.
+			self assert: composition cardinality2 isNil.
 			self assert: composition label isNil ].
-	(parser arrow parse: 'Quuux --* Object:Blah') in: [ :composition |
+	(parser arrow parse: 'Quuux "many" --* "1" Object:Blah') in: [ :composition |
 			self assert: composition isPetit2Success.
 			self
 				assert: composition class name
 				equals: #MMClassDiagramComposition.
 			self assert: composition node1 equals: 'Object'.
 			self assert: composition node2 equals: 'Quuux'.
+			self assert: composition cardinality1 equals: '1'.
+			self assert: composition cardinality2 equals: 'many'.
 			self assert: composition label equals: 'Blah' ]
 ]
 
@@ -245,12 +271,16 @@ MMClassDiagramParserTest >> testDashedLink [
 			self assert: solidLink class name equals: #MMClassDiagramDashedLink.
 			self assert: solidLink node1 equals: 'Object'.
 			self assert: solidLink node2 equals: 'Quuux'.
+			self assert: solidLink cardinality1 isNil.
+			self assert: solidLink cardinality2 isNil.
 			self assert: solidLink label isNil ].
-	(parser arrow parse: 'Object .. Quuux : Blah') in: [ :solidLink |
+	(parser arrow parse: 'Object "1" .. "many" Quuux : Blah') in: [ :solidLink |
 			self assert: solidLink isPetit2Success.
 			self assert: solidLink class name equals: #MMClassDiagramDashedLink.
 			self assert: solidLink node1 equals: 'Object'.
 			self assert: solidLink node2 equals: 'Quuux'.
+			self assert: solidLink cardinality1 equals: '1'.
+			self assert: solidLink cardinality2 equals: 'many'.
 			self assert: solidLink label equals: 'Blah' ]
 ]
 
@@ -264,14 +294,18 @@ MMClassDiagramParserTest >> testDependency [
 				equals: #MMClassDiagramDependency.
 			self assert: dependency node1 equals: 'Object'.
 			self assert: dependency node2 equals: 'Quuux'.
+			self assert: dependency cardinality1 isNil.
+			self assert: dependency cardinality2 isNil.
 			self assert: dependency label isNil ].
-	(parser arrow parse: 'Object <.. Quuux : Blah') in: [ :dependency |
+	(parser arrow parse: 'Object "1" <.. "many" Quuux : Blah') in: [ :dependency |
 			self assert: dependency isPetit2Success.
 			self
 				assert: dependency class name
 				equals: #MMClassDiagramDependency.
 			self assert: dependency node1 equals: 'Object'.
 			self assert: dependency node2 equals: 'Quuux'.
+			self assert: dependency cardinality1 equals: '1'.
+			self assert: dependency cardinality2 equals: 'many'.
 			self assert: dependency label equals: 'Blah' ].
 	(parser arrow parse: 'Quuux ..> Object') in: [ :dependency |
 			self assert: dependency isPetit2Success.
@@ -280,14 +314,18 @@ MMClassDiagramParserTest >> testDependency [
 				equals: #MMClassDiagramDependency.
 			self assert: dependency node1 equals: 'Object'.
 			self assert: dependency node2 equals: 'Quuux'.
+			self assert: dependency cardinality1 isNil.
+			self assert: dependency cardinality2 isNil.
 			self assert: dependency label isNil ].
-	(parser arrow parse: 'Quuux ..> Object:Blah') in: [ :dependency |
+	(parser arrow parse: 'Quuux "many" ..> "1" Object:Blah') in: [ :dependency |
 			self assert: dependency isPetit2Success.
 			self
 				assert: dependency class name
 				equals: #MMClassDiagramDependency.
 			self assert: dependency node1 equals: 'Object'.
 			self assert: dependency node2 equals: 'Quuux'.
+			self assert: dependency cardinality1 equals: '1'.
+			self assert: dependency cardinality2 equals: 'many'.
 			self assert: dependency label equals: 'Blah' ]
 ]
 
@@ -431,14 +469,18 @@ MMClassDiagramParserTest >> testRealization [
 				equals: #MMClassDiagramRealization.
 			self assert: realization node1 equals: 'Object'.
 			self assert: realization node2 equals: 'Quuux'.
+			self assert: realization cardinality1 isNil.
+			self assert: realization cardinality2 isNil.
 			self assert: realization label isNil ].
-	(parser arrow parse: 'Object <|.. Quuux : Blah') in: [ :realization |
+	(parser arrow parse: 'Object "1" <|.. "many" Quuux : Blah') in: [ :realization |
 			self assert: realization isPetit2Success.
 			self
 				assert: realization class name
 				equals: #MMClassDiagramRealization.
 			self assert: realization node1 equals: 'Object'.
 			self assert: realization node2 equals: 'Quuux'.
+			self assert: realization cardinality1 equals: '1'.
+			self assert: realization cardinality2 equals: 'many'.
 			self assert: realization label equals: 'Blah' ].
 	(parser arrow parse: 'Quuux ..|> Object') in: [ :realization |
 			self assert: realization isPetit2Success.
@@ -447,14 +489,18 @@ MMClassDiagramParserTest >> testRealization [
 				equals: #MMClassDiagramRealization.
 			self assert: realization node1 equals: 'Object'.
 			self assert: realization node2 equals: 'Quuux'.
+			self assert: realization cardinality1 isNil.
+			self assert: realization cardinality2 isNil.
 			self assert: realization label isNil ].
-	(parser arrow parse: 'Quuux ..|> Object:Blah') in: [ :realization |
+	(parser arrow parse: 'Quuux "many" ..|> "1" Object:Blah') in: [ :realization |
 			self assert: realization isPetit2Success.
 			self
 				assert: realization class name
 				equals: #MMClassDiagramRealization.
 			self assert: realization node1 equals: 'Object'.
 			self assert: realization node2 equals: 'Quuux'.
+			self assert: realization cardinality1 equals: '1'.
+			self assert: realization cardinality2 equals: 'many'.
 			self assert: realization label equals: 'Blah' ]
 ]
 
@@ -466,12 +512,17 @@ MMClassDiagramParserTest >> testSolidLink [
 			self assert: solidLink class name equals: #MMClassDiagramSolidLink.
 			self assert: solidLink node1 equals: 'Object'.
 			self assert: solidLink node2 equals: 'Quuux'.
+			self assert: solidLink cardinality1 isNil.
+			self assert: solidLink cardinality2 isNil.
 			self assert: solidLink label isNil ].
-	(parser arrow parse: 'Object -- Quuux : Blah') in: [ :solidLink |
+	(parser arrow parse: 'Object "1" -- "many" Quuux : Blah') in: [
+			:solidLink |
 			self assert: solidLink isPetit2Success.
 			self assert: solidLink class name equals: #MMClassDiagramSolidLink.
 			self assert: solidLink node1 equals: 'Object'.
 			self assert: solidLink node2 equals: 'Quuux'.
+			self assert: solidLink cardinality1 equals: '1'.
+			self assert: solidLink cardinality2 equals: 'many'.
 			self assert: solidLink label equals: 'Blah' ]
 ]
 

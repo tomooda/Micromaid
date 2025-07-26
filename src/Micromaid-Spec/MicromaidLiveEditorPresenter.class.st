@@ -68,7 +68,8 @@ MicromaidLiveEditorPresenter class >> exampleCollection [
 	SequenceableCollection <|-- Array
 	SequenceableCollection <|-- OrderedCollection
 	Collection <|-- Set
-	Array <.. OrderedCollection';
+	Array <.. OrderedCollection : internal container
+	Array <.. Set : hash table';
 		  open
 ]
 

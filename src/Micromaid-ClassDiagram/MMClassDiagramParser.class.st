@@ -15,24 +15,30 @@ MMClassDiagramParser class >> accepts: aString [
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> aggregation [
 
-	^ self nodeName , 'o--' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , 'o--' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramAggregation new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
-			  yourself ]
-	  / (self nodeName , '--o' asPParser ==> #first , self nodeName
-		   , ($: asPParser trimBlanks
-			    , (self newline not , #any asPParser) star flatten ==> #second)
-				   optional ==> [ :triple |
-			   MMClassDiagramAggregation new
-				   node1: triple second;
-				   node2: triple first;
-				   label: triple third;
-				   yourself ])
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
+			  yourself ] / (self nodeName , self cardinality optional
+	   , ('--o' asPParser , self cardinality optional ==> #second)
+	   , self nodeName , ($: asPParser trimBlanks
+	    , (self newline not , #any asPParser) star flatten ==> #second)
+		   optional ==> [ :quintet |
+		   MMClassDiagramAggregation new
+			   node2: quintet first;
+			   cardinality2: quintet second;
+			   cardinality1: quintet third;
+			   node1: quintet fourth;
+			   label: quintet fifth;
+			   yourself ])
 ]
 
 { #category : 'parsing' }
@@ -56,24 +62,31 @@ MMClassDiagramParser >> arrow [
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> association [
 
-	^ self nodeName , '<--' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , '<--' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramAssociation new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
-			  yourself ]
-	  / (self nodeName , '-->' asPParser ==> #first , self nodeName
-		   , ($: asPParser trimBlanks
-			    , (self newline not , #any asPParser) star flatten ==> #second)
-				   optional ==> [ :triple |
-			   MMClassDiagramAssociation new
-				   node1: triple second;
-				   node2: triple first;
-				   label: triple third;
-				   yourself ])
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
+			  yourself ] / (self nodeName
+	   , (self cardinality optional , '-->' asPParser ==> #first)
+	   , self cardinality optional , self nodeName
+	   , ($: asPParser trimBlanks
+		    , (self newline not , #any asPParser) star flatten ==> #second)
+			   optional ==> [ :quintet |
+		   MMClassDiagramAssociation new
+			   node2: quintet first;
+			   cardinality2: quintet second;
+			   cardinality1: quintet third;
+			   node1: quintet fourth;
+			   label: quintet fifth;
+			   yourself ])
 ]
 
 { #category : 'parsing' }
@@ -111,6 +124,14 @@ MMClassDiagramParser >> beginOperations [
 	  ==> [ :array | MMClassDiagramBeginOperations new ]
 ]
 
+{ #category : 'parsing - arrows' }
+MMClassDiagramParser >> cardinality [
+
+	^ $" asPParser trimBlanks
+	  , ($" asPParser not , #any asPParser) star flatten
+	  , $" asPParser trimBlanks ==> #second
+]
+
 { #category : 'parsing' }
 MMClassDiagramParser >> classDeclaration [
 
@@ -142,61 +163,79 @@ MMClassDiagramParser >> classDefinition [
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> composition [
 
-	^ self nodeName , '*--' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , '*--' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramComposition new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
-			  yourself ]
-	  / (self nodeName , '--*' asPParser ==> #first , self nodeName
-		   , ($: asPParser trimBlanks
-			    , (self newline not , #any asPParser) star flatten ==> #second)
-				   optional ==> [ :triple |
-			   MMClassDiagramComposition new
-				   node1: triple second;
-				   node2: triple first;
-				   label: triple third;
-				   yourself ])
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
+			  yourself ] / (self nodeName
+	   , (self cardinality optional , '--*' asPParser ==> #first)
+	   , self cardinality optional , self nodeName
+	   , ($: asPParser trimBlanks
+		    , (self newline not , #any asPParser) star flatten ==> #second)
+			   optional ==> [ :quintet |
+		   MMClassDiagramComposition new
+			   node2: quintet first;
+			   cardinality2: quintet second;
+			   cardinality1: quintet third;
+			   node1: quintet fourth;
+			   label: quintet fifth;
+			   yourself ])
 ]
 
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> dashedLink [
 
-	^ self nodeName , '..' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , '..' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramDashedLink new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
 			  yourself ]
 ]
 
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> dependency [
 
-	^ self nodeName , '<..' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , '<..' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramDependency new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
-			  yourself ]
-	  / (self nodeName , '..>' asPParser ==> #first , self nodeName
-		   , ($: asPParser trimBlanks
-			    , (self newline not , #any asPParser) star flatten ==> #second)
-				   optional ==> [ :triple |
-			   MMClassDiagramDependency new
-				   node1: triple second;
-				   node2: triple first;
-				   label: triple third;
-				   yourself ])
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
+			  yourself ] / (self nodeName
+	   , (self cardinality optional , '..>' asPParser ==> #first)
+	   , self cardinality optional , self nodeName
+	   , ($: asPParser trimBlanks
+		    , (self newline not , #any asPParser) star flatten ==> #second)
+			   optional ==> [ :quintet |
+		   MMClassDiagramDependency new
+			   node2: quintet first;
+			   cardinality2: quintet second;
+			   cardinality1: quintet third;
+			   node1: quintet fourth;
+			   label: quintet fifth;
+			   yourself ])
 ]
 
 { #category : 'accessing' }
@@ -233,24 +272,31 @@ MMClassDiagramParser >> header [
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> inheritance [
 
-	^ self nodeName , '<|--' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , '<|--' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramInheritance new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
-			  yourself ]
-	  / (self nodeName , '--|>' asPParser ==> #first , self nodeName
-		   , ($: asPParser trimBlanks
-			    , (self newline not , #any asPParser) star flatten ==> #second)
-				   optional ==> [ :triple |
-			   MMClassDiagramInheritance new
-				   node1: triple second;
-				   node2: triple first;
-				   label: triple third;
-				   yourself ])
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
+			  yourself ] / (self nodeName
+	   , (self cardinality optional , '--|>' asPParser ==> #first)
+	   , self cardinality optional , self nodeName
+	   , ($: asPParser trimBlanks
+		    , (self newline not , #any asPParser) star flatten ==> #second)
+			   optional ==> [ :quintet |
+		   MMClassDiagramInheritance new
+			   node2: quintet first;
+			   cardinality2: quintet second;
+			   cardinality1: quintet third;
+			   node1: quintet fourth;
+			   label: quintet fifth;
+			   yourself ])
 ]
 
 { #category : 'parsing' }
@@ -284,24 +330,31 @@ MMClassDiagramParser >> memberLine [
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> realization [
 
-	^ self nodeName , '<|..' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , '<|..' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramRealization new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
-			  yourself ]
-	  / (self nodeName , '..|>' asPParser ==> #first , self nodeName
-		   , ($: asPParser trimBlanks
-			    , (self newline not , #any asPParser) star flatten ==> #second)
-				   optional ==> [ :triple |
-			   MMClassDiagramRealization new
-				   node1: triple second;
-				   node2: triple first;
-				   label: triple third;
-				   yourself ])
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
+			  yourself ] / (self nodeName
+	   , (self cardinality optional , '..|>' asPParser ==> #first)
+	   , self cardinality optional , self nodeName
+	   , ($: asPParser trimBlanks
+		    , (self newline not , #any asPParser) star flatten ==> #second)
+			   optional ==> [ :quintet |
+		   MMClassDiagramRealization new
+			   node2: quintet first;
+			   cardinality2: quintet second;
+			   cardinality1: quintet third;
+			   node1: quintet fourth;
+			   label: quintet fifth;
+			   yourself ])
 ]
 
 { #category : 'parsing' }
@@ -314,14 +367,18 @@ MMClassDiagramParser >> skipLine [
 { #category : 'parsing - arrows' }
 MMClassDiagramParser >> solidLink [
 
-	^ self nodeName , '--' asPParser ==> #first , self nodeName
+	^ self nodeName
+	  , (self cardinality optional , '--' asPParser ==> #first)
+	  , self cardinality optional , self nodeName
 	  , ($: asPParser trimBlanks
 		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :triple |
+			  optional ==> [ :quintet |
 		  MMClassDiagramSolidLink new
-			  node1: triple first;
-			  node2: triple second;
-			  label: triple third;
+			  node1: quintet first;
+			  cardinality1: quintet second;
+			  cardinality2: quintet third;
+			  node2: quintet fourth;
+			  label: quintet fifth;
 			  yourself ]
 ]
 
