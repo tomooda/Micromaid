@@ -35,6 +35,60 @@ MMClassDiagramRoassalBuilder class >> exampleClassDiagram [
 		openWithTitle: self class name , ' class >>' , thisContext selector
 ]
 
+{ #category : 'examples' }
+MMClassDiagramRoassalBuilder class >> exampleCollection [
+
+	| diagram |
+	diagram := MMClassDiagramParser new parse: 'classDiagram
+	class Collection {
+		<<abstract>>
+		%% methods
+		<<abstract>> size () : Integer
+		<<abstract>> do: (BlockClosure)
+		collect: (BlockClosure)
+	}
+	class SequenceableCollection { 
+		<<abstract>> 
+		%% methods
+		<<abstract>> at: (Integer) : Object
+		<<abstract>> at:put: (Integer, Object) : Object
+		do: (BlockClosure)
+	}
+	class Array {
+		<<variable>>
+		%% methods
+		<<primitive>> at: (Integer) : Object
+		<<primitive>> at:put: (Integer, Object) : Object
+		<<primitive>> size () : Integer
+	}
+	class OrderedCollection {
+		array : Array
+		firstIndex : Integer
+		lastIndex : Integer
+		%% methods
+		at: (Integer) : Object
+		at:put: (Integer, Object) : Object
+		size () : Integer
+		- compact ()
+	}
+	class Set { 
+		tally : Integer
+		array : Array
+		%% methods
+		size () : Integer
+		do: (BlockClosure)
+		-rehash ()
+	}
+	Collection <|-- SequenceableCollection
+	SequenceableCollection <|-- Array
+	SequenceableCollection <|-- OrderedCollection
+	Collection <|-- Set'.
+	diagram roassalBuilder build
+		zoomToFit;
+		@ RSCanvasController;
+		openWithTitle: self class name , ' class >>' , thisContext selector
+]
+
 { #category : 'operations' }
 MMClassDiagramRoassalBuilder >> addAnnotation: aString [
 
@@ -179,37 +233,89 @@ MMClassDiagramRoassalBuilder >> newShapeForEdge: aMMClassDiagramEdge [
 MMClassDiagramRoassalBuilder >> newShapeForNode: aMMClassDiagramNode [
 
 	| classNameShapes attributeShapes methodShapes memberShapes rect y1 y2 |
-	classNameShapes := (aMMClassDiagramNode annotationsCollect: [
-		                    :annotation |
-		                    Color darkGray -> ('<<' , annotation , '>>') ])
-	                   , { (Color black
-		                    ->
-		                    (aMMClassDiagramNode label ifNil: [
-			                     aMMClassDiagramNode name ])) } collect: [
-			                   :assoc |
+	classNameShapes := Array streamContents: [ :stream |
 			                   | label |
+			                   aMMClassDiagramNode annotationsDo: [ :annotation |
+					                   annotation ~= 'abstract' ifTrue: [
+							                   stream nextPut: (RSLabel new
+									                    text: '<<' , annotation , '>>';
+									                    color: Color darkGray) ] ].
 			                   label := RSLabel new
-				                            text: assoc value;
-				                            color: assoc key.
+				                            text:
+					                            (aMMClassDiagramNode label ifNil: [
+							                             aMMClassDiagramNode name ]);
+				                            color: Color black.
+			                   (aMMClassDiagramNode includesAnnotation:
+				                    'abstract') ifTrue: [ label italic ].
 			                   label extent x < 100 ifTrue: [
 				                   label extent: 100 @ label extent y ].
-			                   label ].
+			                   stream nextPut: label ].
 	RSVerticalLineLayout new
 		alignCenter;
 		on: classNameShapes.
 	classNameShapes := classNameShapes asShapeFor: aMMClassDiagramNode.
 	attributeShapes := aMMClassDiagramNode attributesCollect: [ :string |
-			                   RSLabel new
-				                   text: string;
-				                   color: Color darkGray ].
+			                   | text isAbstract isStatic label |
+			                   text := string.
+			                   (isAbstract := text includesSubstring:
+				                                  '<<abstract>>') ifTrue: [
+					                   | index |
+					                   index := text indexOfSubCollection:
+						                            '<<abstract>>'.
+					                   text := ((text copyFrom: 1 to: index - 1)
+					                            ,
+					                            (text
+						                             copyFrom:
+						                             index + '<<abstract>>' size
+						                             to: text size)) trim ].
+			                   (isStatic := text includesSubstring:
+				                                '<<static>>') ifTrue: [
+					                   | index |
+					                   index := text indexOfSubCollection:
+						                            '<<static>>'.
+					                   text := ((text copyFrom: 1 to: index - 1)
+					                            ,
+					                            (text
+						                             copyFrom: index + '<<static>>' size
+						                             to: text size)) trim ].
+			                   label := RSLabel new
+				                            text: text;
+				                            color: Color darkGray.
+			                   isAbstract ifTrue: [ label italic ].
+			                   isStatic ifTrue: [ label underline ].
+			                   label ].
 	RSVerticalLineLayout new
 		alignLeft;
 		on: attributeShapes.
 	attributeShapes := attributeShapes asShapeFor: aMMClassDiagramNode.
 	methodShapes := aMMClassDiagramNode operationsCollect: [ :string |
-			                RSLabel new
-				                text: string;
-				                color: Color darkGray ].
+			                | text isAbstract isStatic label |
+			                text := string.
+			                (isAbstract := text includesSubstring:
+				                               '<<abstract>>') ifTrue: [
+					                | index |
+					                index := text indexOfSubCollection:
+						                         '<<abstract>>'.
+					                text := ((text copyFrom: 1 to: index - 1)
+					                         ,
+					                         (text
+						                          copyFrom: index + '<<abstract>>' size
+						                          to: text size)) trim ].
+			                (isStatic := text includesSubstring: '<<static>>')
+				                ifTrue: [
+						                | index |
+						                index := text indexOfSubCollection: '<<static>>'.
+						                text := ((text copyFrom: 1 to: index - 1)
+						                         ,
+						                         (text
+							                          copyFrom: index + '<<static>>' size
+							                          to: text size)) trim ].
+			                label := RSLabel new
+				                         text: text;
+				                         color: Color darkGray.
+			                isAbstract ifTrue: [ label italic ].
+			                isStatic ifTrue: [ label underline ].
+			                label ].
 	RSVerticalLineLayout new
 		alignLeft;
 		on: methodShapes.
@@ -274,6 +380,61 @@ MMClassDiagramRoassalBuilder >> newTreeLayouter [
 	^ RSVanDerPloegTreeLayout new
 		  verticalGap: gap;
 		  horizontalGap: gap
+]
+
+{ #category : 'rendering' }
+MMClassDiagramRoassalBuilder >> renderLinksIn: aRSCanvas [
+
+	| treeEdges |
+	treeEdges := self treeEdges.
+	treeEdges do: [ :edge |
+			| node1 node2 |
+			node1 := nodes at: edge node1.
+			node2 := nodes at: edge node2.
+			(aRSCanvas nodes
+				 detect: [ :node | node model = node1 ]
+				 ifNone: [ nil ]) ifNotNil: [ :from |
+					(aRSCanvas nodes
+						 detect: [ :node | node model = node2 ]
+						 ifNone: [ nil ]) ifNotNil: [ :to |
+							| line |
+							line := self newShapeForEdge: edge.
+							line
+								attachPoint: MMAttachPoint new;
+								from: from;
+								to: to;
+								controlPointsController: (self newCPAPController t: 0.5).
+							aRSCanvas add: line.
+							line pushBack ] ] ].
+	self newTreeLayouter on: aRSCanvas nodes.
+	treeEdges := treeEdges asSet.
+	edges do: [ :edge |
+			(treeEdges includes: edge) ifFalse: [
+					| node1 node2 |
+					node1 := nodes at: edge node1.
+					node2 := nodes at: edge node2.
+					(aRSCanvas nodes
+						 detect: [ :node | node model = node1 ]
+						 ifNone: [ nil ]) ifNotNil: [ :from |
+							(aRSCanvas nodes
+								 detect: [ :node | node model = node2 ]
+								 ifNone: [ nil ]) ifNotNil: [ :to |
+									| line |
+									line := self newShapeForEdge: edge.
+									self
+										attach: line
+										from: from
+										to: to
+										in: aRSCanvas.
+									aRSCanvas add: line ] ] ] ].
+	aRSCanvas edges do: [ :bezier |
+			bezier model isMMEdge ifTrue: [
+					(self newLabelForEdge: bezier model) ifNotNil: [ :label |
+							label position: (bezier atT:
+									 (bezier controlPointsController
+										  ifNotNil: #labelT
+										  ifNil: [ 0.5 ])).
+							aRSCanvas addShape: label ] ] ]
 ]
 
 { #category : 'accessing' }

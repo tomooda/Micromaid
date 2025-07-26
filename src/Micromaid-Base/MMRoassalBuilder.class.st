@@ -17,6 +17,96 @@ MMRoassalBuilder class >> isAbstract [
 	^ self = MMRoassalBuilder
 ]
 
+{ #category : 'instance creation' }
+MMRoassalBuilder >> RSMarkerkerFor: aSymbol [
+
+	aSymbol = #arrowhead ifTrue: [
+			| shape marker |
+			shape := RSPolygon new
+				         points: {
+						         (-6 @ 8).
+						         (0 @ 0).
+						         (6 @ 8) };
+				         color: Color black;
+				         yourself.
+			marker := shape asMarker.
+			marker offset: shape height / 2.
+			^ marker ].
+	aSymbol = #circle ifTrue: [
+			| shape marker |
+			shape := RSCircle new
+				         extent: 8 @ 8;
+				         color: Color black;
+				         yourself.
+			marker := shape asMarker.
+			marker offset: 4.
+			^ marker ].
+	aSymbol = #cross ifTrue: [
+			| shape marker |
+			shape := {
+				         (RSLine new
+					          startPoint: -5 @ -5;
+					          endPoint: 5 @ 5;
+					          width: 2;
+					          color: Color black;
+					          yourself).
+				         (RSLine new
+					          startPoint: 5 @ -5;
+					          endPoint: -5 @ 5;
+					          color: Color black;
+					          width: 2;
+					          yourself) } asShape.
+			marker := shape asMarker.
+			marker offset: 5.
+			^ marker ].
+	aSymbol = #wedgehead ifTrue: [
+			| shape marker |
+			shape := RSPolygon new
+				         points: {
+						         (-6 @ 8).
+						         (0 @ 0).
+						         (6 @ 8).
+						         (0 @ 4) };
+				         color: Color black;
+				         yourself.
+			marker := shape asMarker.
+			marker offset: shape height / 2.
+			^ marker ].
+	aSymbol = #aggregation ifTrue: [
+			^ (RSPolygon new
+				   points: {
+						   (-9 @ 0).
+						   (0 @ 12).
+						   (9 @ 0).
+						   (0 @ -12) };
+				   color: Color white;
+				   borderColor: Color black;
+				   borderWidth: 1;
+				   asMarker) offset: 12 ].
+	aSymbol = #composition ifTrue: [
+			^ (RSPolygon new
+				   points: {
+						   (-9 @ 0).
+						   (0 @ 12).
+						   (9 @ 0).
+						   (0 @ -12) };
+				   color: Color black;
+				   borderColor: Color black;
+				   borderWidth: 1;
+				   asMarker) offset: 12 ].
+	aSymbol = #inheritance ifTrue: [
+			^ (RSPolygon new
+				   points: {
+						   (-12 @ 0).
+						   (0 @ -12).
+						   (12 @ 0) };
+				   color: Color white;
+				   borderColor: Color black;
+				   borderWidth: 1;
+				   asMarker) offset: 6 ].
+	^ nil
+]
+
 { #category : 'adding' }
 MMRoassalBuilder >> addEdge: aMMEdge [
 
@@ -251,9 +341,9 @@ MMRoassalBuilder >> newMarkerFor: aSymbol [
 	aSymbol = #inheritance ifTrue: [
 			^ (RSPolygon new
 				   points: {
-						   (-12 @ 12).
-						   (0 @ 0).
-						   (12 @ 12) };
+						   (-12 @ 0).
+						   (0 @ -12).
+						   (12 @ 0) };
 				   color: Color white;
 				   borderColor: Color black;
 				   borderWidth: 1;

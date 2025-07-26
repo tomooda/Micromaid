@@ -240,7 +240,10 @@ MMClassDiagramParserTest >> testMemberLine [
 
 	self
 		assert: (parser memberLine parse: '      quuux    ') name
-		equals: 'quuux'
+		equals: 'quuux'.
+	self
+		assert: (parser memberLine parse: '      <<annotated>> quuux    ') name
+		equals: '<<annotated>> quuux'
 ]
 
 { #category : 'tests' }

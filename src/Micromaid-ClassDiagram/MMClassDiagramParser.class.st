@@ -18,7 +18,7 @@ MMClassDiagramParser >> annotation [
 	^ '<<' asPParser trimBlanks
 	  ,
 	  (('>>' asPParser / self newline) not , #any asPParser) star flatten
-	  , '>>' asPParser trimBlanks ==> [ :triple |
+	  , '>>' asPParser trimBlanks , self newline and ==> [ :triple |
 	  MMClassDiagramAnnotation new annotation: triple second trim ]
 ]
 

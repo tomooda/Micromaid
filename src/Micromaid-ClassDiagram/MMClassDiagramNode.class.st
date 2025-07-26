@@ -86,6 +86,12 @@ MMClassDiagramNode >> attributesDo: aBlock [
 	attributes do: aBlock
 ]
 
+{ #category : 'testing' }
+MMClassDiagramNode >> includesAnnotation: aString [
+
+	^ annotations includes: aString
+]
+
 { #category : 'initialization' }
 MMClassDiagramNode >> initialize [
 
