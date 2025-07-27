@@ -60,6 +60,10 @@ Subsets of the following diagrams from mermaid are supported in Micromaid.
   
   <img width="230" height="243" alt="REPL" src="https://github.com/user-attachments/assets/219400ff-6469-4004-930c-b9d641e55850" />
 
+* [class diagram](https://mermaid.js.org/syntax/classDiagram.html)
+
+<img width="487" height="408" alt="ClassDiagram" src="https://github.com/user-attachments/assets/d57a88a2-bf5c-479e-8694-b7858cad22d0" />
+
 * [state diagram](https://mermaid.js.org/syntax/stateDiagram.html)
   
   <img width="324" height="369" alt="2-stroke" src="https://github.com/user-attachments/assets/202b3c24-2990-46a4-8de2-1c4cf4f96514" />
