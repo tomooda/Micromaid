@@ -41,7 +41,7 @@ MMSequenceDiagramMessage >> initialize [
 	super initialize.
 	head1 := #none.
 	head2 := #arrowhead.
-	linestyle := #normal.
+	linestyle := #solid.
 	label := ''
 ]
 

@@ -185,7 +185,7 @@ MMGraphParser >> normalLink [
 			  label: (array third ifNil: [ array sixth ]);
 			  head1: array first;
 			  head2: array fifth;
-			  linestyle: #normal;
+			  linestyle: #solid;
 			  length: array fourth size + 1;
 			  yourself ]
 ]

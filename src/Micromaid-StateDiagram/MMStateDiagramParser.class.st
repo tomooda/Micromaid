@@ -46,7 +46,7 @@ MMStateDiagramParser >> line [
 { #category : 'parsing' }
 MMStateDiagramParser >> simpleState [
 
-	^ self nodeName trimBlanks ==> [ :name |
+	^ self nodeName ==> [ :name |
 		  MMStateDiagramSimpleState new
 			  name: name;
 			  yourself ]
@@ -80,7 +80,7 @@ MMStateDiagramParser >> stateAs [
 { #category : 'parsing' }
 MMStateDiagramParser >> stateWithLabel [
 
-	^ self nodeName trimBlanks , $: asPParser trimBlanks
+	^ self nodeName , $: asPParser trimBlanks
 	  ,
 		  ((#newline asPParser / #eoi asPParser) not , #any asPParser) plus
 			  flatten ==> [ :triple |

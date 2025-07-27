@@ -21,6 +21,59 @@ MicromaidLiveEditorPresenter class >> example [
 ]
 
 { #category : 'examples' }
+MicromaidLiveEditorPresenter class >> exampleCollection [
+
+	^ self new
+		  text: 'classDiagram
+	class Collection {
+		<<abstract>>
+		%% methods
+		<<abstract>> size () : Integer
+		<<abstract>> do: (BlockClosure)
+		collect: (BlockClosure)
+	}
+	class SequenceableCollection { 
+		<<abstract>> 
+		%% methods
+		<<abstract>> at: (Integer) : Object
+		<<abstract>> at:put: (Integer, Object) : Object
+		do: (BlockClosure)
+	}
+	class Array {
+		<<variable>>
+		%% methods
+		<<primitive>> at: (Integer) : Object
+		<<primitive>> at:put: (Integer, Object) : Object
+		<<primitive>> size () : Integer
+	}
+	class OrderedCollection {
+		array : Array
+		firstIndex : Integer
+		lastIndex : Integer
+		%% methods
+		at: (Integer) : Object
+		at:put: (Integer, Object) : Object
+		size () : Integer
+		- compact ()
+	}
+	class Set { 
+		tally : Integer
+		array : Array
+		%% methods
+		size () : Integer
+		do: (BlockClosure)
+		-rehash ()
+	}
+	Collection <|-- SequenceableCollection
+	SequenceableCollection <|-- Array
+	SequenceableCollection <|-- OrderedCollection
+	Collection <|-- Set
+	Array <.. OrderedCollection : internal container
+	Array <.. Set : hash table';
+		  open
+]
+
+{ #category : 'examples' }
 MicromaidLiveEditorPresenter class >> exampleREPL [
 
 	^ self new
@@ -103,7 +156,9 @@ MicromaidLiveEditorPresenter >> initializePresenters [
 							           builder := graph roassalBuilder.
 							           builder container: canvas.
 							           canvas clear.
-							           builder build zoomToFit ] ];
+							           builder build
+								           @ RSCanvasController;
+								           zoomToFit ] ];
 		           yourself
 ]
 

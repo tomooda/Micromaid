@@ -81,7 +81,7 @@ MMSequenceDiagramParser >> line [
 MMSequenceDiagramParser >> linestyle [
 
 	^ '--' asPParser ==> [ :str | #dotted ]
-	  / ('-' asPParser ==> [ :str | #normal ])
+	  / ('-' asPParser ==> [ :str | #solid ])
 ]
 
 { #category : 'parsing' }
@@ -98,10 +98,10 @@ MMSequenceDiagramParser >> link [
 { #category : 'parsing' }
 MMSequenceDiagramParser >> message [
 
-	^ self nodeName trimBlanks , self link
-	  , ($+ asPParser / $- asPParser) trimBlanks optional
-	  , self nodeName trimBlanks , (':' asPParser trimBlanks
-	   , (self newline not , #any asPParser) plus flatten ==> #second)
+	^ self nodeName , self link
+	  , ($+ asPParser / $- asPParser) trimBlanks optional , self nodeName
+	  , (':' asPParser trimBlanks
+		   , (self newline not , #any asPParser) plus flatten ==> #second)
 	  ==> [ :array |
 			  | sender message activation receiver label |
 			  sender := array first.

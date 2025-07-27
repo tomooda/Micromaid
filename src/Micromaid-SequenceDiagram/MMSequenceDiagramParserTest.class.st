@@ -73,31 +73,31 @@ MMSequenceDiagramParserTest >> testLink [
 
 	self
 		assert: (self arrayFromMessage: (parser link parse: '->'))
-		equals: #( none normal none '' ).
+		equals: #( none solid none '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '-->'))
 		equals: #( none dotted none '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '->>'))
-		equals: #( none normal arrowhead '' ).
+		equals: #( none solid arrowhead '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '-->>'))
 		equals: #( none dotted arrowhead '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '<<->>'))
-		equals: #( arrowhead normal arrowhead '' ).
+		equals: #( arrowhead solid arrowhead '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '<<-->>'))
 		equals: #( arrowhead dotted arrowhead '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '-x'))
-		equals: #( none normal cross '' ).
+		equals: #( none solid cross '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '--x'))
 		equals: #( none dotted cross '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '-)'))
-		equals: #( none normal wedgehead '' ).
+		equals: #( none solid wedgehead '' ).
 	self
 		assert: (self arrayFromMessage: (parser link parse: '--)'))
 		equals: #( none dotted wedgehead '' )
