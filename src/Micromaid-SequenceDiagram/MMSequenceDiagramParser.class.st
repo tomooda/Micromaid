@@ -131,6 +131,13 @@ MMSequenceDiagramParser >> message [
 ]
 
 { #category : 'parsing' }
+MMSequenceDiagramParser >> nodeName [
+
+	^ ((#newline asPParser / $: asPParser / self link) not
+	   , #any asPParser) plus flatten ==> [ :str | str trim ]
+]
+
+{ #category : 'parsing' }
 MMSequenceDiagramParser >> participant [
 
 	^ 'participant' asPParser trimBlanks , self nodeName ==> #second
