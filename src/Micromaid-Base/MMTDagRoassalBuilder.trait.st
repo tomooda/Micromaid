@@ -72,7 +72,9 @@ MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: 
 		attachPoint: MMAttachPoint new;
 		from: aRSShape;
 		to: anotherRSShape;
-		controlPointsController: (self newCPAPController t: 0.5)
+		controlPointsController: ((self
+				  newCPAPControllerBetween: aRSShape position
+				  and: anotherRSShape position) t: 0.5)
 ]
 
 { #category : 'private' }
@@ -474,6 +476,22 @@ MMTDagRoassalBuilder >> newCPAPController [
 ]
 
 { #category : 'instance creation' }
+MMTDagRoassalBuilder >> newCPAPControllerBetween: aPoint and: anotherPoint [
+
+	| v |
+	v := anotherPoint - aPoint.
+	^ v x abs <= v y abs
+		  ifTrue: [ self newVerticalCPAPController ]
+		  ifFalse: [ self newHorizontalCPAPController ]
+]
+
+{ #category : 'instance creation' }
+MMTDagRoassalBuilder >> newHorizontalCPAPController [
+
+	^ MMHorizontalCPAPController new
+]
+
+{ #category : 'instance creation' }
 MMTDagRoassalBuilder >> newShapeForEdge: aMMEdge [
 
 	^ self subclassResponsibility
@@ -489,6 +507,12 @@ MMTDagRoassalBuilder >> newShapeForNode: aMMNode [
 MMTDagRoassalBuilder >> newTreeLayouter [
 
 	^ self subclassResponsibility
+]
+
+{ #category : 'instance creation' }
+MMTDagRoassalBuilder >> newVerticalCPAPController [
+
+	^ MMVerticalCPAPController new
 ]
 
 { #category : 'rendering' }
@@ -575,7 +599,7 @@ MMTDagRoassalBuilder >> treeEdges [
 			  edges do: [ :edge |
 					  | node2 |
 					  node2 := edge node2.
-					  ((knownNodes includes: node2) or: [ node2 == edge node1 ])
+					  ((knownNodes includes: node2) or: [ node2 = edge node1 ])
 						  ifFalse: [
 								  knownNodes
 									  add: edge node1;

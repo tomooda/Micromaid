@@ -20,7 +20,7 @@ MMStateDiagramRoassalBuilder >> newShapeForEdge: aMMEdge [
 	^ RSBezier new
 		  model: aMMEdge;
 		  color: Color black;
-		  markerEnd: (self newMarkerFor: #wedgehead);
+		  markerEnd: (self newMarkerFor: #arrowhead);
 		  yourself
 ]
 
