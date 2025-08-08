@@ -575,9 +575,10 @@ MMTDagRoassalBuilder >> treeEdges [
 			  edges do: [ :edge |
 					  | node2 |
 					  node2 := edge node2.
-					  (knownNodes includes: node2) ifFalse: [
-							  knownNodes
-								  add: edge node1;
-								  add: node2.
-							  stream nextPut: edge ] ] ]
+					  ((knownNodes includes: node2) or: [ node2 == edge node1 ])
+						  ifFalse: [
+								  knownNodes
+									  add: edge node1;
+									  add: node2.
+								  stream nextPut: edge ] ] ]
 ]

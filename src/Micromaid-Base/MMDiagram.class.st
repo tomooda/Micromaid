@@ -59,6 +59,24 @@ MMDiagram >> entitiesDo: aBlock [
 ]
 
 { #category : 'accessing' }
+MMDiagram >> open [
+
+	^ self openWithTitle: 'Micromaid'
+]
+
+{ #category : 'accessing' }
+MMDiagram >> openWithTitle: aString [
+
+	| canvas |
+	canvas := self roassalBuilder build.
+	^ canvas
+		  extent: canvas encompassingRectangle extent + (20 @ 20);
+		  zoomToFit;
+		  @ RSCanvasController;
+		  openWithTitle: aString
+]
+
+{ #category : 'accessing' }
 MMDiagram >> roassalBuilder [
 
 	| builder |
