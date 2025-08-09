@@ -74,7 +74,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: 
 		to: anotherRSShape;
 		controlPointsController: ((self
 				  newCPAPControllerBetween: aRSShape position
-				  and: anotherRSShape position) t: 0.5)
+				  and: anotherRSShape position) t: 0.4)
 ]
 
 { #category : 'private' }

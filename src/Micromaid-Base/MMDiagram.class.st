@@ -67,13 +67,7 @@ MMDiagram >> open [
 { #category : 'accessing' }
 MMDiagram >> openWithTitle: aString [
 
-	| canvas |
-	canvas := self roassalBuilder build.
-	^ canvas
-		  extent: canvas encompassingRectangle extent + (20 @ 20);
-		  zoomToFit;
-		  @ RSCanvasController;
-		  openWithTitle: aString
+	^ self roassalBuilderWith: [ :builder |  ] openWithTitle: aString
 ]
 
 { #category : 'accessing' }
@@ -89,4 +83,18 @@ MMDiagram >> roassalBuilder [
 MMDiagram >> roassalBuilderClass [
 
 	^ self subclassResponsibility
+]
+
+{ #category : 'accessing' }
+MMDiagram >> roassalBuilderWith: aBlock openWithTitle: aString [
+
+	| builder canvas |
+	builder := self roassalBuilder.
+	aBlock value: builder.
+	canvas := builder build.
+	^ canvas
+		  extent: canvas encompassingRectangle extent + (20 @ 20);
+		  zoomToFit;
+		  @ RSCanvasController;
+		  openWithTitle: aString
 ]

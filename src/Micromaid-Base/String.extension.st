@@ -7,8 +7,14 @@ String >> openMicromaid [
 ]
 
 { #category : '*Micromaid-Base' }
-String >> openMicromaidWithTitle: aString [
+String >> openMicromaidBuilderWith: aBlock title: aString [
 
 	^ (MicromaidParser parse: self) ifNotNil: [ :diagram |
-		  diagram openWithTitle: aString ]
+		  diagram roassalBuilderWith: aBlock openWithTitle: aString ]
+]
+
+{ #category : '*Micromaid-Base' }
+String >> openMicromaidWithTitle: aString [
+
+	^ self openMicromaidBuilderWith: [ :builder |  ] title: aString
 ]
