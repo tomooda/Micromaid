@@ -458,15 +458,20 @@ MMClassDiagramRoassalBuilder >> treeEdges [
 
 	| knownNodes |
 	knownNodes := Set new: nodes size.
-
 	^ Array streamContents: [ :stream |
 			  ((edges select: [ :edge | edge treeEdgePriority notNil ])
 				   asSortedCollection: #treeEdgePriority ascending) do: [ :edge |
-					  | node2 |
-					  node2 := edge node2.
-					  (knownNodes includes: node2) ifFalse: [
-							  knownNodes
-								  add: edge node1;
-								  add: node2.
-							  stream nextPut: edge ] ] ]
+					  edge isSelfLoop ifFalse: [
+							  (knownNodes includes: edge node2)
+								  ifTrue: [
+										  (knownNodes includes: edge node1) ifFalse: [
+												  knownNodes
+													  add: edge node1;
+													  add: edge node2.
+												  stream nextPut: edge inversed ] ]
+								  ifFalse: [
+										  knownNodes
+											  add: edge node1;
+											  add: edge node2.
+										  stream nextPut: edge ] ] ] ]
 ]
