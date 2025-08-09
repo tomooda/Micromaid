@@ -10,6 +10,14 @@ Class {
 	#tag : 'AST'
 }
 
+{ #category : 'building' }
+MMClassDiagramEdge >> applyToBuilder: aMMClassDiagramRoassalBuilder [
+
+	aMMClassDiagramRoassalBuilder ensureClassNamed: node1.
+	aMMClassDiagramRoassalBuilder ensureClassNamed: node2.
+	super applyToBuilder: aMMClassDiagramRoassalBuilder
+]
+
 { #category : 'accessing' }
 MMClassDiagramEdge >> cardinality1 [
 
@@ -44,6 +52,12 @@ MMClassDiagramEdge >> head1 [
 MMClassDiagramEdge >> head2 [
 
 	^ self subclassResponsibility
+]
+
+{ #category : 'accessing' }
+MMClassDiagramEdge >> inversed [
+
+	^ MMClassDiagramInverseEdge new baseEdge: self
 ]
 
 { #category : 'accessing' }

@@ -49,6 +49,16 @@ MMGraphEdge >> initialize [
 ]
 
 { #category : 'accessing' }
+MMGraphEdge >> inversed [
+
+	| inversed |
+	inversed := self copy.
+	inversed head1: head2.
+	inversed head2: head1.
+	^ inversed
+]
+
+{ #category : 'accessing' }
 MMGraphEdge >> length [
 
 	^ length

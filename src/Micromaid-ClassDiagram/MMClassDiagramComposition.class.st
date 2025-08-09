@@ -6,14 +6,6 @@ Class {
 	#tag : 'AST'
 }
 
-{ #category : 'building' }
-MMClassDiagramComposition >> applyToBuilder: aMMClassDiagramRoassalBuilder [
-
-	aMMClassDiagramRoassalBuilder ensureClassNamed: node1.
-	aMMClassDiagramRoassalBuilder ensureClassNamed: node2.
-	super applyToBuilder: aMMClassDiagramRoassalBuilder
-]
-
 { #category : 'accessing' }
 MMClassDiagramComposition >> head1 [
 

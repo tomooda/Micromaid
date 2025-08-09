@@ -29,10 +29,22 @@ MMEdge >> applyToBuilder: aMMRoassalBuilder [
 	aMMRoassalBuilder addEdge: self
 ]
 
+{ #category : 'accessing' }
+MMEdge >> inversed [
+
+	^ self subclassResponsibility
+]
+
 { #category : 'testing' }
 MMEdge >> isMMEdge [
 
 	^ true
+]
+
+{ #category : 'testing' }
+MMEdge >> isSelfLoop [
+
+	^ node1 = node2
 ]
 
 { #category : 'accessing' }
