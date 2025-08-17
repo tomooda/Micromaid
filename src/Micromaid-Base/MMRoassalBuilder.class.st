@@ -74,7 +74,8 @@ MMRoassalBuilder >> initialize [
 	super initialize.
 	nodes := OrderedDictionary new.
 	edges := OrderedCollection new.
-	gap := self defaultGap
+	gap := self defaultGap.
+	self canvas color: Color transparent
 ]
 
 { #category : 'instance creation' }
