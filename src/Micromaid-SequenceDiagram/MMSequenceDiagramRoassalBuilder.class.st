@@ -174,7 +174,6 @@ MMSequenceDiagramRoassalBuilder >> nodeRightAt: aString messageIndex: anInteger 
 { #category : 'rendering' }
 MMSequenceDiagramRoassalBuilder >> renderIn: aCanvas [
 
-	aCanvas color: (Color gray: 0.8).
 	nodePositions := Dictionary new.
 	edgePositions := Dictionary new.
 	self

@@ -518,7 +518,6 @@ MMTDagRoassalBuilder >> newVerticalCPAPController [
 { #category : 'rendering' }
 MMTDagRoassalBuilder >> renderIn: aCanvas [
 
-	aCanvas color: (Color gray: 0.8).
 	self
 		renderNodesIn: aCanvas;
 		renderLinksIn: aCanvas
