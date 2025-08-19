@@ -96,8 +96,10 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: another
 				            anotherRSShape }) collect: [ :shape |
 		           shape encompassingRectangle bottom ]) max.
 	bottom := bottom + margin.
-	bottomRect := aRSShape position x @ (bottom - (margin / 2)) corner:
-		              anotherRSShape position x @ bottom.
+	bottomRect := aRSShape position x @ bottom corner:
+		              anotherRSShape position x
+		              @ ((aRSShape encompassingRectangle bottom max:
+				                anotherRSShape encompassingRectangle bottom) + 10).
 	(aRSCanvas nodes anySatisfy: [ :shape |
 		 bottomRect intersects: shape encompassingRectangle ]) ifTrue: [
 		^ nil ].
@@ -130,7 +132,9 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSSh
 		         shape encompassingRectangle left ]) min.
 	left := left - margin.
 	leftRect := left @ aRSShape position y corner:
-		            left + (margin / 2) @ anotherRSShape position y.
+		            (aRSShape encompassingRectangle left min:
+			             anotherRSShape encompassingRectangle left) - 10
+		            @ anotherRSShape position y.
 	(aRSCanvas nodes anySatisfy: [ :shape |
 		 leftRect intersects: shape encompassingRectangle ]) ifTrue: [
 		^ nil ].
@@ -162,8 +166,10 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRS
 				           anotherRSShape }) collect: [ :shape |
 		          shape encompassingRectangle right ]) max.
 	right := right + margin.
-	rightRect := right - (margin / 2) @ aRSShape position y corner:
-		             right @ anotherRSShape position y.
+	rightRect := right @ aRSShape position y corner:
+		             (aRSShape encompassingRectangle right max:
+			              anotherRSShape encompassingRectangle right) + 10
+		             @ anotherRSShape position y.
 	(aRSCanvas nodes anySatisfy: [ :shape |
 		 rightRect intersects: shape encompassingRectangle ]) ifTrue: [
 		^ nil ].
@@ -196,7 +202,9 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShap
 		        shape encompassingRectangle top ]) min.
 	top := top - margin.
 	topRect := aRSShape position x @ top corner:
-		           anotherRSShape position x @ (top + (margin / 2)).
+		           anotherRSShape position x
+		           @ ((aRSShape encompassingRectangle top min:
+				             anotherRSShape encompassingRectangle top) - 10).
 	(aRSCanvas nodes anySatisfy: [ :shape |
 		 topRect intersects: shape encompassingRectangle ]) ifTrue: [ ^ nil ].
 	point1 := self attachPointFromTopOf: aRSShape to: anotherRSShape.
