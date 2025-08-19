@@ -80,7 +80,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: 
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: anotherRSShape in: aRSCanvas [
 
-	| margin bottom point1 point2 |
+	| margin bottom bottomRect point1 point2 |
 	((self isBottommostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isBottommostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -98,6 +98,11 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: another
 	bottom := bottom
 	          + (bottom - (aRSShape encompassingRectangle bottom max:
 			            anotherRSShape encompassingRectangle bottom)) + margin.
+	bottomRect := aRSShape position x @ (bottom - 10) corner:
+		              anotherRSShape position x @ bottom.
+	(aRSCanvas nodes anySatisfy: [ :shape |
+		 bottomRect intersects: shape encompassingRectangle ]) ifTrue: [
+		^ nil ].
 	point1 := self attachPointFromBottomOf: aRSShape to: anotherRSShape.
 	point2 := self attachPointFromBottomOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
@@ -110,7 +115,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: another
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSShape in: aRSCanvas [
 
-	| margin left point1 point2 |
+	| margin left leftRect point1 point2 |
 	((self isLeftmostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isLeftmostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -128,6 +133,11 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSSh
 	left := left + ((aRSShape encompassingRectangle left min:
 		          anotherRSShape encompassingRectangle left) - left)
 	        - margin.
+	leftRect := left @ aRSShape position y corner:
+		            left + 10 @ anotherRSShape position y.
+	(aRSCanvas nodes anySatisfy: [ :shape |
+		 leftRect intersects: shape encompassingRectangle ]) ifTrue: [
+		^ nil ].
 	point1 := self attachPointFromLeftOf: aRSShape to: anotherRSShape.
 	point2 := self attachPointFromLeftOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
@@ -140,7 +150,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSSh
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRSShape in: aRSCanvas [
 
-	| margin right point1 point2 |
+	| margin right rightRect point1 point2 |
 	((self isRightmostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isRightmostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -157,6 +167,11 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRS
 		          shape encompassingRectangle right ]) max.
 	right := right + (right - (aRSShape encompassingRectangle right max:
 		           anotherRSShape encompassingRectangle right)) + margin.
+	rightRect := right - 10 @ aRSShape position y corner:
+		             right + 10 @ anotherRSShape position y.
+	(aRSCanvas nodes anySatisfy: [ :shape |
+		 rightRect intersects: shape encompassingRectangle ]) ifTrue: [
+		^ nil ].
 	point1 := self attachPointFromRightOf: aRSShape to: anotherRSShape.
 	point2 := self attachPointFromRightOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
@@ -169,7 +184,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRS
 { #category : 'private' }
 MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShape in: aRSCanvas [
 
-	| margin top point1 point2 |
+	| margin top topRect point1 point2 |
 	((self isTopmostShape: aRSShape in: aRSCanvas nodes) and: [
 		 self isTopmostShape: anotherRSShape in: aRSCanvas nodes ])
 		ifFalse: [ ^ nil ].
@@ -186,6 +201,10 @@ MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShap
 		        shape encompassingRectangle top ]) min.
 	top := top + ((aRSShape encompassingRectangle top min:
 		         anotherRSShape encompassingRectangle top) - top) - margin.
+	topRect := aRSShape position x @ top corner:
+		           anotherRSShape position x @ (top + 10).
+	(aRSCanvas nodes anySatisfy: [ :shape |
+		 topRect intersects: shape encompassingRectangle ]) ifTrue: [ ^ nil ].
 	point1 := self attachPointFromTopOf: aRSShape to: anotherRSShape.
 	point2 := self attachPointFromTopOf: anotherRSShape to: aRSShape.
 	aRSBezier controlPoints: {
