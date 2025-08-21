@@ -10,213 +10,26 @@ Trait {
 	#tag : 'Roassal'
 }
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier from: aRSShape to: anotherRSShape in: aRSCanvas [
 
-	| others |
-	others := aRSCanvas nodes copyWithoutAll: {
-			          aRSShape.
-			          anotherRSShape }.
-	aRSShape = anotherRSShape ifTrue: [
-		^ self attach: aRSBezier loopAt: aRSShape in: aRSCanvas ].
-	aRSShape encompassingRectangle center y
-	<= anotherRSShape encompassingRectangle center y
-		ifTrue: [
-				(self
-					 attach: aRSBezier
-					 fromRight: aRSShape
-					 toRight: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ].
-				(self
-					 attach: aRSBezier
-					 fromLeft: aRSShape
-					 toLeft: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ] ]
+	aRSShape == anotherRSShape
+		ifTrue: [ self attach: aRSBezier loopAt: aRSShape in: aRSCanvas ]
 		ifFalse: [
 				(self
-					 attach: aRSBezier
-					 fromLeft: aRSShape
-					 toLeft: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ].
-				(self
-					 attach: aRSBezier
-					 fromRight: aRSShape
-					 toRight: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ] ].
-	aRSShape encompassingRectangle center x
-	<= anotherRSShape encompassingRectangle center x
-		ifTrue: [
-				(self
-					 attach: aRSBezier
-					 fromTop: aRSShape
-					 toTop: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ].
-				(self
-					 attach: aRSBezier
-					 fromBottom: aRSShape
-					 toBottom: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ] ]
-		ifFalse: [
-				(self
-					 attach: aRSBezier
-					 fromBottom: aRSShape
-					 toBottom: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ].
-				(self
-					 attach: aRSBezier
-					 fromTop: aRSShape
-					 toTop: anotherRSShape
-					 in: aRSCanvas) ifNotNil: [ ^ self ] ].
-
-	aRSBezier
-		attachPoint: MMAttachPoint new;
-		from: aRSShape;
-		to: anotherRSShape;
-		controlPointsController: ((self
-				  newCPAPControllerBetween: aRSShape position
-				  and: anotherRSShape position) t: 0.4)
+					 controlPointsFrom: aRSShape encompassingRectangle
+					 to: anotherRSShape encompassingRectangle
+					 inCanvas: aRSCanvas)
+					ifNotNil: [ :cp | aRSBezier controlPoints: cp ]
+					ifNil: [
+							aRSBezier
+								attachPoint: RSBorderAttachPoint new;
+								from: aRSShape;
+								to: anotherRSShape;
+								controlPointsController: RSDirectedBezierCPAPController new ] ]
 ]
 
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attach: aRSBezier fromBottom: aRSShape toBottom: anotherRSShape in: aRSCanvas [
-
-	| margin bottom bottomRect point1 point2 |
-	((self isBottommostShape: aRSShape in: aRSCanvas nodes) and: [
-		 self isBottommostShape: anotherRSShape in: aRSCanvas nodes ])
-		ifFalse: [ ^ nil ].
-	margin := gap * 1.5.
-	bottom := (((aRSCanvas nodes select: [ :shape |
-			             shape encompassingRectangle center x
-				             between: (aRSShape encompassingRectangle left min:
-						              anotherRSShape encompassingRectangle left)
-				             and: (aRSShape encompassingRectangle right max:
-						              anotherRSShape encompassingRectangle right) ])
-		            copyWithAll: {
-				            aRSShape.
-				            anotherRSShape }) collect: [ :shape |
-		           shape encompassingRectangle bottom ]) max.
-	bottom := bottom + margin.
-	bottomRect := aRSShape position x @ bottom corner:
-		              anotherRSShape position x
-		              @ ((aRSShape encompassingRectangle bottom max:
-				                anotherRSShape encompassingRectangle bottom) + 10).
-	(aRSCanvas nodes anySatisfy: [ :shape |
-		 bottomRect intersects: shape encompassingRectangle ]) ifTrue: [
-		^ nil ].
-	point1 := self attachPointFromBottomOf: aRSShape to: anotherRSShape.
-	point2 := self attachPointFromBottomOf: anotherRSShape to: aRSShape.
-	aRSBezier controlPoints: {
-			point1.
-			(point1 x @ bottom).
-			(point2 x @ bottom).
-			point2 }
-]
-
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attach: aRSBezier fromLeft: aRSShape toLeft: anotherRSShape in: aRSCanvas [
-
-	| margin left leftRect point1 point2 |
-	((self isLeftmostShape: aRSShape in: aRSCanvas nodes) and: [
-		 self isLeftmostShape: anotherRSShape in: aRSCanvas nodes ])
-		ifFalse: [ ^ nil ].
-	margin := gap * 1.5.
-	left := (((aRSCanvas nodes select: [ :shape |
-			           shape encompassingRectangle center y
-				           between: (aRSShape encompassingRectangle top min:
-						            anotherRSShape encompassingRectangle top)
-				           and: (aRSShape encompassingRectangle bottom max:
-						            anotherRSShape encompassingRectangle bottom) ])
-		          copyWithAll: {
-				          aRSShape.
-				          anotherRSShape }) collect: [ :shape |
-		         shape encompassingRectangle left ]) min.
-	left := left - margin.
-	leftRect := left @ aRSShape position y corner:
-		            (aRSShape encompassingRectangle left min:
-			             anotherRSShape encompassingRectangle left) - 10
-		            @ anotherRSShape position y.
-	(aRSCanvas nodes anySatisfy: [ :shape |
-		 leftRect intersects: shape encompassingRectangle ]) ifTrue: [
-		^ nil ].
-	point1 := self attachPointFromLeftOf: aRSShape to: anotherRSShape.
-	point2 := self attachPointFromLeftOf: anotherRSShape to: aRSShape.
-	aRSBezier controlPoints: {
-			point1.
-			(left @ point1 y).
-			(left @ point2 y).
-			point2 }
-]
-
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attach: aRSBezier fromRight: aRSShape toRight: anotherRSShape in: aRSCanvas [
-
-	| margin right rightRect point1 point2 |
-	((self isRightmostShape: aRSShape in: aRSCanvas nodes) and: [
-		 self isRightmostShape: anotherRSShape in: aRSCanvas nodes ])
-		ifFalse: [ ^ nil ].
-	margin := gap * 1.5.
-	right := (((aRSCanvas nodes select: [ :shape |
-			            shape encompassingRectangle center y
-				            between: (aRSShape encompassingRectangle top min:
-						             anotherRSShape encompassingRectangle top)
-				            and: (aRSShape encompassingRectangle bottom max:
-						             anotherRSShape encompassingRectangle bottom) ])
-		           copyWithAll: {
-				           aRSShape.
-				           anotherRSShape }) collect: [ :shape |
-		          shape encompassingRectangle right ]) max.
-	right := right + margin.
-	rightRect := right @ aRSShape position y corner:
-		             (aRSShape encompassingRectangle right max:
-			              anotherRSShape encompassingRectangle right) + 10
-		             @ anotherRSShape position y.
-	(aRSCanvas nodes anySatisfy: [ :shape |
-		 rightRect intersects: shape encompassingRectangle ]) ifTrue: [
-		^ nil ].
-	point1 := self attachPointFromRightOf: aRSShape to: anotherRSShape.
-	point2 := self attachPointFromRightOf: anotherRSShape to: aRSShape.
-	aRSBezier controlPoints: {
-			point1.
-			(right @ point1 y).
-			(right @ point2 y).
-			point2 }
-]
-
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attach: aRSBezier fromTop: aRSShape toTop: anotherRSShape in: aRSCanvas [
-
-	| margin top topRect point1 point2 |
-	((self isTopmostShape: aRSShape in: aRSCanvas nodes) and: [
-		 self isTopmostShape: anotherRSShape in: aRSCanvas nodes ])
-		ifFalse: [ ^ nil ].
-	margin := gap * 1.5.
-	top := (((aRSCanvas nodes select: [ :shape |
-			          shape encompassingRectangle center x
-				          between: (aRSShape encompassingRectangle left min:
-						           anotherRSShape encompassingRectangle left)
-				          and: (aRSShape encompassingRectangle right max:
-						           anotherRSShape encompassingRectangle right) ])
-		         copyWithAll: {
-				         aRSShape.
-				         anotherRSShape }) collect: [ :shape |
-		        shape encompassingRectangle top ]) min.
-	top := top - margin.
-	topRect := aRSShape position x @ top corner:
-		           anotherRSShape position x
-		           @ ((aRSShape encompassingRectangle top min:
-				             anotherRSShape encompassingRectangle top) - 10).
-	(aRSCanvas nodes anySatisfy: [ :shape |
-		 topRect intersects: shape encompassingRectangle ]) ifTrue: [ ^ nil ].
-	point1 := self attachPointFromTopOf: aRSShape to: anotherRSShape.
-	point2 := self attachPointFromTopOf: anotherRSShape to: aRSShape.
-	aRSBezier controlPoints: {
-			point1.
-			(point1 x @ top).
-			(point2 x @ top).
-			point2 }
-]
-
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopAt: aRSShape in: aRSCanvas [
 
 	| lines delta rect |
@@ -274,7 +87,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopAt: aRSShape in: aRSCanvas [
 		  in: aRSCanvas
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromBottomToBottom: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -287,7 +100,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromBottomToBottom: aRSShape in: a
 			point }
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromBottomToLeft: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -300,7 +113,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromBottomToLeft: aRSShape in: aRS
 			point }
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromBottomToRight: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -313,7 +126,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromBottomToRight: aRSShape in: aR
 			point }
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromLeftToLeft: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -326,7 +139,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromLeftToLeft: aRSShape in: aRSCa
 			point }
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromLeftToTop: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -339,7 +152,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromLeftToTop: aRSShape in: aRSCan
 			point }
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromRightToRight: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -352,7 +165,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromRightToRight: aRSShape in: aRS
 			point }
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromRightToTop: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -365,7 +178,7 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromRightToTop: aRSShape in: aRSCa
 			point }
 ]
 
-{ #category : 'private' }
+{ #category : 'edge layouting' }
 MMTDagRoassalBuilder >> attach: aRSBezier loopFromTopToTop: aRSShape in: aRSCanvas [
 
 	| delta point |
@@ -378,60 +191,68 @@ MMTDagRoassalBuilder >> attach: aRSBezier loopFromTopToTop: aRSShape in: aRSCanv
 			point }
 ]
 
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attachPointFromBottomOf: aRSShape to: anotherRSShape [
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> attachPointFromBottomOf: aRectangle to: anotherRectangle [
 
-	| theta rect |
-	theta := ((GLine
-		           through: aRSShape encompassingRectangle center
-		           and: anotherRSShape encompassingRectangle center)
-		          angleWith: (GLine through: 0 @ 0 and: 0 @ 1))
-	         \\ (Float pi * 2).
-	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
-	rect := aRSShape encompassingRectangle.
-	^ rect bottomCenter + (theta / Float pi * rect width / 2.0 @ 0)
+	| theta |
+	theta := (anotherRectangle center - aRectangle center) theta.
+	^ aRectangle bottomCenter + (aRectangle width * 0.3 * theta cos @ 0)
 ]
 
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attachPointFromLeftOf: aRSShape to: anotherRSShape [
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> attachPointFromLeftOf: aRectangle to: anotherRectangle [
 
-	| theta rect |
-	theta := ((GLine
-		           through: aRSShape encompassingRectangle center
-		           and: anotherRSShape encompassingRectangle center)
-		          angleWith: (GLine through: 1 @ 0 and: 0 @ 0))
-	         \\ (Float pi * 2).
-	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
-	rect := aRSShape encompassingRectangle.
-	^ rect leftCenter + (0 @ (theta / Float pi * rect height / 2.0))
+	| theta |
+	theta := (anotherRectangle center - aRectangle center) theta.
+	^ aRectangle leftCenter + (0 @ (aRectangle height * 0.3 * theta sin))
 ]
 
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attachPointFromRightOf: aRSShape to: anotherRSShape [
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> attachPointFromRightOf: aRectangle to: anotherRectangle [
 
-	| theta rect |
-	theta := ((GLine
-		           through: aRSShape encompassingRectangle center
-		           and: anotherRSShape encompassingRectangle center)
-		          angleWith: (GLine through: 1 @ 0 and: 0 @ 0))
-	         \\ (Float pi * 2).
-	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
-	rect := aRSShape encompassingRectangle.
-	^ rect rightCenter + (0 @ (theta / Float pi * rect height / 2.0))
+	| theta |
+	theta := (anotherRectangle center - aRectangle center) theta.
+	^ aRectangle rightCenter + (0 @ (aRectangle height * 0.3 * theta sin))
 ]
 
-{ #category : 'private' }
-MMTDagRoassalBuilder >> attachPointFromTopOf: aRSShape to: anotherRSShape [
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> attachPointFromTopOf: aRectangle to: anotherRectangle [
 
-	| theta rect |
-	theta := ((GLine
-		           through: aRSShape encompassingRectangle center
-		           and: anotherRSShape encompassingRectangle center)
-		          angleWith: (GLine through: 0 @ 0 and: 0 @ 1))
-	         \\ (Float pi * 2).
-	theta > Float pi ifTrue: [ theta := theta - (Float pi * 2.0) ].
-	rect := aRSShape encompassingRectangle.
-	^ rect topCenter + (theta / Float pi * rect width / 2.0 @ 0)
+	| theta |
+	theta := (anotherRectangle center - aRectangle center) theta.
+	^ aRectangle topCenter + (aRectangle width * 0.3 * theta cos @ 0)
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> controlPointsFrom: aRectangle to: anotherRectangle inCanvas: aRSCanvas [
+
+	| geometries leastPenalty bestControlPoints |
+	geometries := self geometriesInCanvas: aRSCanvas.
+	leastPenalty := Float infinity.
+	bestControlPoints := nil.
+	self
+		possibleControlPointsFrom: aRectangle
+		to: anotherRectangle
+		do: [ :cp |
+				| penalty |
+				penalty := self
+					           penaltyAgainstControlPoints: cp
+					           withGeometries: geometries.
+				penalty < leastPenalty ifTrue: [
+						leastPenalty := penalty.
+						bestControlPoints := cp ] ].
+	^ bestControlPoints
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> geometriesInCanvas: aRSCanvas [
+
+	^ aRSCanvas shapes asArray
+		  select: [ :shape | shape isKindOf: RSBoundingShape ]
+		  thenCollect: [ :shape |
+				  | rect |
+				  rect := shape encompassingRectangle.
+				  GRectangle origin: rect origin corner: rect corner ]
 ]
 
 { #category : 'testing' }
@@ -534,6 +355,293 @@ MMTDagRoassalBuilder >> newTreeLayouter [
 MMTDagRoassalBuilder >> newVerticalCPAPController [
 
 	^ MMVerticalCPAPController new
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> penaltyAgainstControlPoints: anArrayOfPoint withGeometries: aCollectionOfGeometry [
+
+	| points lines penalty |
+	points := (RSBezier new controlPoints: anArrayOfPoint) lines.
+	lines := (1 to: points size - 1) collect: [ :i |
+		         GLine through: (points at: i) and: (points at: i + 1) ].
+	penalty := 0.
+	aCollectionOfGeometry do: [ :geometry |
+			(lines anySatisfy: [ :line |
+				 (geometry intersectionsWithLine: line) notEmpty ]) ifTrue: [
+				penalty := penalty + 1 ] ].
+	^ penalty
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFrom: aRectangle to: anotherRectangle do: aBlock [
+
+	self
+		possibleControlPointsFromLeft: aRectangle
+		toRight: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromRight: aRectangle
+		toLeft: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromBottom: aRectangle
+		toTop: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromTop: aRectangle
+		toBottom: anotherRectangle
+		do: aBlock.
+
+	self
+		possibleControlPointsFromLeft: aRectangle
+		toLeft: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromRight: aRectangle
+		toRight: anotherRectangle
+		do: aBlock.
+
+	self
+		possibleControlPointsFromRight: aRectangle
+		toBottom: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromBottom: aRectangle
+		toRight: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromBottom: aRectangle
+		toLeft: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromLeft: aRectangle
+		toBottom: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromBottom: aRectangle
+		toBottom: anotherRectangle
+		do: aBlock.
+
+	self
+		possibleControlPointsFromLeft: aRectangle
+		toTop: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromRight: aRectangle
+		toTop: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromTop: aRectangle
+		toRight: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromTop: aRectangle
+		toLeft: anotherRectangle
+		do: aBlock;
+		possibleControlPointsFromTop: aRectangle
+		toTop: anotherRectangle
+		do: aBlock
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromBottom: aRectangle toBottom: anotherRectangle do: aBlock [
+
+	| bottom p1 p2 |
+	bottom := (aRectangle bottom max: anotherRectangle bottom) + self gap.
+	p1 := self attachPointFromBottomOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromBottomOf: anotherRectangle to: aRectangle.
+	(p1 x between: anotherRectangle left and: anotherRectangle right)
+		ifTrue: [ ^ self ].
+	(p2 x between: aRectangle left and: aRectangle right) ifTrue: [
+		^ self ].
+	aBlock value: {
+			p1.
+			(p1 x @ bottom).
+			(p2 x @ bottom).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromBottom: aRectangle toLeft: anotherRectangle do: aBlock [
+
+	| p1 p2 |
+	aRectangle bottom <= anotherRectangle center y ifFalse: [ ^ self ].
+	aRectangle center x <= anotherRectangle left ifFalse: [ ^ self ].
+	p1 := self attachPointFromBottomOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromLeftOf: anotherRectangle to: aRectangle.
+	aBlock value: {
+			p1.
+			(p1 x @ p2 y).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromBottom: aRectangle toRight: anotherRectangle do: aBlock [
+
+	| p1 p2 |
+	aRectangle bottom <= anotherRectangle center y ifFalse: [ ^ self ].
+	anotherRectangle right <= aRectangle center x ifFalse: [ ^ self ].
+	p1 := self attachPointFromBottomOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromRightOf: anotherRectangle to: aRectangle.
+	aBlock value: {
+			p1.
+			(p1 x @ p2 y).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromBottom: aRectangle toTop: anotherRectangle do: aBlock [
+
+	| p1 p2 middle |
+	aRectangle bottom < anotherRectangle top ifFalse: [ ^ self ].
+	p1 := self attachPointFromBottomOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromTopOf: anotherRectangle to: aRectangle.
+	middle := p1 y + p2 y / 2.0.
+	aBlock value: {
+			p1.
+			(p1 x @ middle).
+			(p2 x @ middle).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromLeft: aRectangle toBottom: anotherRectangle do: aBlock [
+
+	self
+		possibleControlPointsFromBottom: anotherRectangle
+		toLeft: aRectangle
+		do: [ :cp | aBlock value: cp reversed ]
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromLeft: aRectangle toLeft: anotherRectangle do: aBlock [
+
+	| left p1 p2 |
+	left := (aRectangle left min: anotherRectangle left) - self gap.
+	p1 := self attachPointFromLeftOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromLeftOf: anotherRectangle to: aRectangle.
+	(p1 y between: anotherRectangle top and: anotherRectangle bottom)
+		ifTrue: [ ^ self ].
+	(p2 y between: aRectangle top and: aRectangle bottom) ifTrue: [
+		^ self ].
+	aBlock value: {
+			p1.
+			(left @ p1 y).
+			(left @ p2 y).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromLeft: aRectangle toRight: anotherRectangle do: aBlock [
+
+	| p1 p2 middle |
+	anotherRectangle right < aRectangle left ifFalse: [ ^ self ].
+	p1 := self attachPointFromLeftOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromRightOf: anotherRectangle to: aRectangle.
+	middle := p1 x + p2 x / 2.0.
+	aBlock value: {
+			p1.
+			(middle @ p1 y).
+			(middle @ p2 y).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromLeft: aRectangle toTop: anotherRectangle do: aBlock [
+
+	| p1 p2 |
+	anotherRectangle center x <= aRectangle left ifFalse: [ ^ self ].
+	aRectangle center y <= anotherRectangle top ifFalse: [ ^ self ].
+	p1 := self attachPointFromLeftOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromTopOf: anotherRectangle to: aRectangle.
+	aBlock value: {
+			p1.
+			(p2 x @ p1 y).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromRight: aRectangle toBottom: anotherRectangle do: aBlock [
+
+	self
+		possibleControlPointsFromBottom: anotherRectangle
+		toRight: aRectangle
+		do: [ :cp | aBlock value: cp reversed ]
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromRight: aRectangle toLeft: anotherRectangle do: aBlock [
+
+	self
+		possibleControlPointsFromLeft: anotherRectangle
+		toRight: aRectangle
+		do: [ :cp | aBlock value: cp reversed ]
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromRight: aRectangle toRight: anotherRectangle do: aBlock [
+
+	| right p1 p2 |
+	right := (aRectangle right max: anotherRectangle right) + self gap.
+	p1 := self attachPointFromRightOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromRightOf: anotherRectangle to: aRectangle.
+	(p1 y between: anotherRectangle top and: anotherRectangle bottom)
+		ifTrue: [ ^ self ].
+	(p2 y between: aRectangle top and: aRectangle bottom) ifTrue: [
+		^ self ].
+	aBlock value: {
+			p1.
+			(right @ p1 y).
+			(right @ p2 y).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromRight: aRectangle toTop: anotherRectangle do: aBlock [
+
+	| p1 p2 |
+	aRectangle right <= anotherRectangle center x ifFalse: [ ^ self ].
+	aRectangle center y <= anotherRectangle top ifFalse: [ ^ self ].
+	p1 := self attachPointFromRightOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromTopOf: anotherRectangle to: aRectangle.
+	aBlock value: {
+			p1.
+			(p2 x @ p1 y).
+			p2 }
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromTop: aRectangle toBottom: anotherRectangle do: aBlock [
+
+	self
+		possibleControlPointsFromBottom: anotherRectangle
+		toTop: aRectangle
+		do: [ :cp | aBlock value: cp reversed ]
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromTop: aRectangle toLeft: anotherRectangle do: aBlock [
+
+	self
+		possibleControlPointsFromLeft: anotherRectangle
+		toTop: aRectangle
+		do: [ :cp | aBlock value: cp reversed ]
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromTop: aRectangle toRight: anotherRectangle do: aBlock [
+
+	self
+		possibleControlPointsFromRight: anotherRectangle
+		toTop: aRectangle
+		do: [ :cp | aBlock value: cp reversed ]
+]
+
+{ #category : 'edge layouting' }
+MMTDagRoassalBuilder >> possibleControlPointsFromTop: aRectangle toTop: anotherRectangle do: aBlock [
+
+	| top p1 p2 |
+	top := (aRectangle top min: anotherRectangle top) - self gap.
+	p1 := self attachPointFromTopOf: aRectangle to: anotherRectangle.
+	p2 := self attachPointFromTopOf: anotherRectangle to: aRectangle.
+	(p1 x between: anotherRectangle left and: anotherRectangle right)
+		ifTrue: [ ^ self ].
+	(p2 x between: aRectangle left and: aRectangle right) ifTrue: [
+		^ self ].
+	aBlock value: {
+			p1.
+			(p1 x @ top).
+			(p2 x @ top).
+			p2 }
 ]
 
 { #category : 'rendering' }
