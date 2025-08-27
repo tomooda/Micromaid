@@ -71,9 +71,17 @@ MicromaidParser class >> parse: aString [
 			(subclass isAbstract not and: [ subclass accepts: aString ])
 				ifTrue: [
 						| ast |
-						ast := subclass new parse: aString.
+						ast := subclass new parse: (self unHTML: aString).
 						ast isPetit2Success ifTrue: [ ^ ast ] ] ].
 	^ nil
+]
+
+{ #category : 'utilities' }
+MicromaidParser class >> unHTML: aString [
+
+	^ ((aString copyReplaceAll: '&gt;' with: '>')
+		   copyReplaceAll: '&lt;'
+		   with: '<') copyReplaceAll: '&amp;' with: '&'
 ]
 
 { #category : 'accessing' }
