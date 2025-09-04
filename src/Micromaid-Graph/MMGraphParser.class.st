@@ -98,8 +98,8 @@ MMGraphParser >> doubleCircleNode [
 { #category : 'parsing' }
 MMGraphParser >> edgeLabel [
 
-	^ $| asPParser , ($| asPParser not , #any asPParser) star flatten
-	  , $| asPParser ==> #second
+	^ ($| asPParser , ($| asPParser not , #any asPParser) star flatten
+	   , $| asPParser ==> #second) trimBlanks
 ]
 
 { #category : 'parsing' }

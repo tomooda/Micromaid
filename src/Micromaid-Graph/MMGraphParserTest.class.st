@@ -172,6 +172,14 @@ MMGraphParserTest >> testNormalLink [
 				self assert: link linestyle equals: #solid.
 				self assert: link head1 equals: #none.
 				self assert: link head2 equals: #arrowhead.
+				self assert: link length equals: 2 ].
+	self
+		assertPetit2Success: (parser normalLink end parse: '---> |foo|')
+		and: [ :link |
+				self assert: link label equals: 'foo'.
+				self assert: link linestyle equals: #solid.
+				self assert: link head1 equals: #none.
+				self assert: link head2 equals: #arrowhead.
 				self assert: link length equals: 2 ]
 ]
 
