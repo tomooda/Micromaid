@@ -1,6 +1,26 @@
 # Micromaid
 Micromaid is a small subset of [Mermaid](https://mermaid.live/) for Pharo 13 and later.
 
+## Installation
+
+## On Iceberg
+
+Clone github repository with `tomooda` / `Micromaid`.
+
+![Screenshot-Micromaid-Iceberg](https://github.com/user-attachments/assets/6848f0cb-889e-4b81-bdd8-05331790305e)
+
+## On Playground
+
+```pharo
+EpMonitor disableDuring: [
+	Metacello new
+		onConflictUseLoaded;
+		onWarningLog;
+		repository: 'github://tomooda/Micromaid:main/';
+		baseline: 'ViennaTalk';
+		load ] 
+```
+
 ## Viewing mermaid diagrams embedded in markdown documents on Pharo
 
 The following is the REPL flowchart embedded as a mermaid script.
