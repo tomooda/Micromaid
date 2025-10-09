@@ -3,7 +3,7 @@ Micromaid is a small subset of [Mermaid](https://mermaid.live/) for Pharo 13 and
 
 ## Installation
 
-## On Iceberg
+### On Iceberg
 
 Clone github repository with `tomooda` / `Micromaid`.
 
@@ -12,7 +12,7 @@ Clone github repository with `tomooda` / `Micromaid`.
 ![Screenshot-Micromaid-Metacello](https://github.com/user-attachments/assets/866c8b25-e0b0-4d8a-a844-97535a8ebc8b)
 
 
-## On Playground
+### On Playground
 
 ```pharo
 EpMonitor disableDuring: [
