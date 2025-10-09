@@ -9,8 +9,7 @@ Clone github repository with `tomooda` / `Micromaid`.
 
 ![Screenshot-Micromaid-Iceberg](https://github.com/user-attachments/assets/6848f0cb-889e-4b81-bdd8-05331790305e)
 
-![Screenshot-Micromaid-Metacello](https://github.com/user-attachments/assets/866c8b25-e0b0-4d8a-a844-97535a8ebc8b)
-
+![Screenshot-Micromaid-Metacello](https://github.com/user-attachments/assets/dac7865a-36b8-4525-9e51-6df17776daf3)
 
 ### On Playground
 
