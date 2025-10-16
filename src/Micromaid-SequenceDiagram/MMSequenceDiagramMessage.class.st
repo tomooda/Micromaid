@@ -46,6 +46,17 @@ MMSequenceDiagramMessage >> initialize [
 ]
 
 { #category : 'accessing' }
+MMSequenceDiagramMessage >> inversed [
+
+	^ self copy
+		  node1: node2;
+		  node2: node1;
+		  head1: head2;
+		  head2: head1;
+		  yourself
+]
+
+{ #category : 'accessing' }
 MMSequenceDiagramMessage >> linestyle [
 
 	^ linestyle

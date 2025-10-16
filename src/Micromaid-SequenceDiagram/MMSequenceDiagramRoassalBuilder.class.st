@@ -41,6 +41,12 @@ MMSequenceDiagramRoassalBuilder >> addDeactivation: aMMSequenceDiagramActivation
 									 less first <= more first ] ]) add: thread ] ]
 ]
 
+{ #category : 'adding' }
+MMSequenceDiagramRoassalBuilder >> addNote: aMMSequenceDiagramNote [
+
+	self addEdge: aMMSequenceDiagramNote
+]
+
 { #category : 'defaults' }
 MMSequenceDiagramRoassalBuilder >> defaultActivationWidth [
 
@@ -103,6 +109,16 @@ MMSequenceDiagramRoassalBuilder >> newShapeForEdge: aMMSequenceDiagramMessage y:
 ]
 
 { #category : 'instance creation' }
+MMSequenceDiagramRoassalBuilder >> newShapeForLabel: aString [
+
+	^ RSLabel new
+		  metricsProvider: RSPharoMetricsProvider new;
+		  text: aString;
+		  color: Color black;
+		  yourself
+]
+
+{ #category : 'instance creation' }
 MMSequenceDiagramRoassalBuilder >> newShapeForLoopEdge: aMMSequenceDiagramMessage y: aNumber [
 
 	| centerX positions label lineY line1 line2 line3 |
@@ -155,6 +171,96 @@ MMSequenceDiagramRoassalBuilder >> newShapeForNode: aMMNode [
 		  ifFalse: [ self newShapeForRoundedRectNode: aMMNode ]
 ]
 
+{ #category : 'instance creation' }
+MMSequenceDiagramRoassalBuilder >> newShapeForNote: aMMSequenceDiagramNote y: aNumber [
+
+	aMMSequenceDiagramNote position = #left ifTrue: [
+			^ (self
+				   newShapeForNoteLeftOf: aMMSequenceDiagramNote actors first
+				   label: aMMSequenceDiagramNote label
+				   y: aNumber)
+				  model: aMMSequenceDiagramNote;
+				  yourself ].
+	aMMSequenceDiagramNote position = #right ifTrue: [
+			^ (self
+				   newShapeForNoteRightOf: aMMSequenceDiagramNote actors first
+				   label: aMMSequenceDiagramNote label
+				   y: aNumber)
+				  model: aMMSequenceDiagramNote;
+				  yourself ].
+	^ (self
+		   newShapeForNoteOver: aMMSequenceDiagramNote actors
+		   label: aMMSequenceDiagramNote label
+		   y: aNumber)
+		  model: aMMSequenceDiagramNote;
+		  yourself
+]
+
+{ #category : 'instance creation' }
+MMSequenceDiagramRoassalBuilder >> newShapeForNoteLeftOf: nodeString label: labelString y: aNumber [
+
+	| label shape |
+	label := self newShapeForLabel: labelString.
+	shape := {
+		         (RSBox new
+			          fromRectangle: (label encompassingRectangle expandBy: 5);
+			          color: (Color gray: 0.9);
+			          borderWidth: 1;
+			          borderColor: Color darkGray).
+		         label } asShape.
+	shape translateTo:
+		(nodePositions at: nodeString) - (label extent x / 2 + 10)
+		@ (aNumber - (label height / 2) + messageMargin).
+	^ shape
+]
+
+{ #category : 'instance creation' }
+MMSequenceDiagramRoassalBuilder >> newShapeForNoteOver: anArrayOfString label: labelString y: aNumber [
+
+	| xs width centerX label shape |
+	label := self newShapeForLabel: labelString.
+	xs := (Array streamContents: [ :stream |
+			       anArrayOfString do: [ :node |
+				       nodePositions
+					       at: node
+					       ifPresent: [ :x | stream nextPut: x ] ] ]) ifEmpty: [
+		      nodePositions values asArray ].
+	width := xs
+		         ifNotEmpty: [ xs max - xs min + 20 max: label extent x ]
+		         ifEmpty: [ label extent x ].
+	centerX := xs ifNotEmpty: [ xs max + xs min / 2 ] ifEmpty: [ 0 ].
+	shape := {
+		         (RSBox new
+			          fromRectangle: (Rectangle
+					           center: label encompassingRectangle center
+					           extent: width @ label height);
+			          color: (Color gray: 0.9);
+			          borderWidth: 1;
+			          borderColor: Color darkGray).
+		         label } asShape.
+	shape translateTo:
+		centerX @ (aNumber - (shape height / 2) +  messageMargin).
+	^ shape
+]
+
+{ #category : 'instance creation' }
+MMSequenceDiagramRoassalBuilder >> newShapeForNoteRightOf: nodeString label: labelString y: aNumber [
+
+	| label shape |
+	label := self newShapeForLabel: labelString.
+	shape := {
+		         (RSBox new
+			          fromRectangle: (label encompassingRectangle expandBy: 5);
+			          color: (Color gray: 0.9);
+			          borderWidth: 1;
+			          borderColor: Color darkGray).
+		         label } asShape.
+	shape translateTo:
+		(nodePositions at: nodeString) + (label extent x / 2 + 10)
+		@ (aNumber - (label height / 2) + messageMargin).
+	^ shape
+]
+
 { #category : 'accessing' }
 MMSequenceDiagramRoassalBuilder >> nodeLeftAt: aString messageIndex: anInteger [
 
@@ -188,7 +294,9 @@ MMSequenceDiagramRoassalBuilder >> renderLinksIn: aCanvas [
 	y := 40.
 	edges do: [ :message |
 			| shape |
-			shape := self newShapeForEdge: message y: y.
+			shape := message isMMEdge
+				         ifTrue: [ self newShapeForEdge: message y: y ]
+				         ifFalse: [ self newShapeForNote: message y: y ].
 			aCanvas addShape: shape.
 			y := y + shape encompassingRectangle height + messageMargin ].
 	(Array streamContents: [ :stream |
