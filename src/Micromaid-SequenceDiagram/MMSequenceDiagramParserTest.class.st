@@ -141,6 +141,36 @@ MMSequenceDiagramParserTest >> testMessage [
 ]
 
 { #category : 'tests' }
+MMSequenceDiagramParserTest >> testNote [
+
+	| note |
+	note := parser note end parse: 'Note left of Quuux: Foo'.
+	self assert: note first position equals: #left.
+	self assert: note first actors equals: { 'Quuux' }.
+	self assert: note first label equals: 'Foo'.
+	note := parser note end parse:
+		        'Note left of Foo, Bar, Baz, Quuux: Foo'.
+	self assert: note isPetit2Failure.
+	note := parser note end parse: 'Note right of Quuux: Foo'.
+	self assert: note first position equals: #right.
+	self assert: note first actors equals: { 'Quuux' }.
+	self assert: note first label equals: 'Foo'.
+	note := parser note end parse:
+		        'Note right of Foo, Bar, Baz, Quuux: Foo'.
+	self assert: note isPetit2Failure.
+	note := parser note end parse: 'Note over Quuux: Foo'.
+	self assert: note first position equals: #over.
+	self assert: note first actors equals: { 'Quuux' }.
+	self assert: note first label equals: 'Foo'.
+	note := parser note end parse: 'Note over Foo, Bar, Baz, Quuux: Foo'.
+	self assert: note first position equals: #over.
+	self
+		assert: note first actors
+		equals: { 'Foo'. 'Bar'. 'Baz'. 'Quuux' }.
+	self assert: note first label equals: 'Foo'
+]
+
+{ #category : 'tests' }
 MMSequenceDiagramParserTest >> testParticipant [
 
 	| participant |

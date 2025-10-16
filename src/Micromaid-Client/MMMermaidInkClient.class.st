@@ -101,8 +101,8 @@ MMMermaidInkClient >> defaultBaseUrl [
 MMMermaidInkClient >> imageFrom: aString [
 
 	^ ZnEasy getPng:
-		  (self baseUrl / 'img' / (self pakoEncode: aString) withQuery:
-			   'type' -> 'png')
+		  (self baseUrl / 'img' / (self pakoEncode: aString trim)
+			   withQuery: 'type' -> 'png')
 ]
 
 { #category : 'encoding - decoding' }

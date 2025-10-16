@@ -26,6 +26,8 @@ BaselineOfMicromaid >> baseline: spec [
 				with: [ spec requires: #( 'Micromaid-Base' ) ];
 				package: 'Micromaid-Spec'
 				with: [ spec requires: #( 'Micromaid-Base' ) ];
+				package: 'Micromaid-Client'
+				with: [];
 				package: 'Micromaid-Microdown'
 				with: [ spec requires: #( 'Micromaid-Base' ) ].
 			spec
@@ -33,5 +35,5 @@ BaselineOfMicromaid >> baseline: spec [
 				with:
 					#( 'Micromaid-Base' 'Micromaid-Graph' 'Micromaid-StateDiagram'
 					   'Micromaid-SequenceDiagram' 'Micromaid-ClassDiagram'
-					   'Micromaid-Spec' 'Micromaid-Microdown' ) ]
+					   'Micromaid-Spec' 'Micromaid-Client' 'Micromaid-Microdown' ) ]
 ]
