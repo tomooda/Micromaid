@@ -18,6 +18,12 @@ MMClassDiagramInheritance >> head2 [
 	^ #none
 ]
 
+{ #category : 'testing' }
+MMClassDiagramInheritance >> isInheritance [
+
+	^ true
+]
+
 { #category : 'accessing' }
 MMClassDiagramInheritance >> linestyle [
 
