@@ -38,6 +38,12 @@ MMClassDiagramInverseEdge >> head2 [
 	^ baseEdge head1
 ]
 
+{ #category : 'testing' }
+MMClassDiagramInverseEdge >> isInheritance [
+
+	^ baseEdge isInheritance
+]
+
 { #category : 'accessing' }
 MMClassDiagramInverseEdge >> linestyle [
 

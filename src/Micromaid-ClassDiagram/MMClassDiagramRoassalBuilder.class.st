@@ -1,8 +1,6 @@
 Class {
 	#name : 'MMClassDiagramRoassalBuilder',
 	#superclass : 'MMRoassalBuilder',
-	#traits : 'MMTDagRoassalBuilder',
-	#classTraits : 'MMTDagRoassalBuilder classTrait',
 	#instVars : [
 		'defaultClass',
 		'enforcesOperation',
@@ -61,8 +59,24 @@ MMClassDiagramRoassalBuilder class >> exampleCollection [
 	SequenceableCollection <|-- Array
 	SequenceableCollection <|-- OrderedCollection
 	Collection <|-- Set
+	Array <.. Set : hash table
 	Array <.. OrderedCollection : internal containter
-	Array <.. Set : hash table'.
+	'.
+	diagram roassalBuilder build
+		zoomToFit;
+		@ RSCanvasController;
+		openWithTitle: self class name , ' class >>' , thisContext selector
+]
+
+{ #category : 'examples' }
+MMClassDiagramRoassalBuilder class >> exampleCons [
+
+	| diagram |
+	diagram := MMClassDiagramParser new parse: 'classDiagram
+	class Cons {
+		car : Object
+	}
+	Cons *-- Cons : cdr'.
 	diagram roassalBuilder build
 		zoomToFit;
 		@ RSCanvasController;
@@ -186,6 +200,12 @@ MMClassDiagramRoassalBuilder >> ensureClassNamed: aString [
 				  yourself ]
 ]
 
+{ #category : 'accessing' }
+MMClassDiagramRoassalBuilder >> horizontalMargin [
+
+	^ 70
+]
+
 { #category : 'controlling' }
 MMClassDiagramRoassalBuilder >> ifVertical: aBlock ifHorizontal: anotherBlock [
 
@@ -202,11 +222,15 @@ MMClassDiagramRoassalBuilder >> initialize [
 ]
 
 { #category : 'instance creation' }
-MMClassDiagramRoassalBuilder >> newCPAPController [
+MMClassDiagramRoassalBuilder >> newCPController [
 
-	^ self
-		  ifVertical: [ MMVerticalCPAPController new ]
-		  ifHorizontal: [ MMHorizontalCPAPController new ]
+	^ MMClassDiagramCPController new
+]
+
+{ #category : 'instance creation' }
+MMClassDiagramRoassalBuilder >> newCPControllerForInheritance [
+
+	^ MMClassDiagramInheritanceCPController new
 ]
 
 { #category : 'instance creation' }
@@ -219,6 +243,22 @@ MMClassDiagramRoassalBuilder >> newLabelForCardinality: aStringOrNil [
 				  fontSize: RSLabel defaultFontSize - 2;
 				  color: Color darkGray;
 				  yourself ]
+]
+
+{ #category : 'instance creation' }
+MMClassDiagramRoassalBuilder >> newMarkerFor: aSymbol [
+
+	aSymbol = #inheritance ifTrue: [
+			^ (RSPolygon new
+				   points: {
+						   (-12 @ 0).
+						   (0 @ -12).
+						   (12 @ 0) };
+				   color: Color white;
+				   borderColor: Color black;
+				   borderWidth: 1;
+				   asMarker) offset: -6 ].
+	^ super newMarkerFor: aSymbol
 ]
 
 { #category : 'instance creation' }
@@ -367,33 +407,80 @@ MMClassDiagramRoassalBuilder >> newShapeForNode: aMMClassDiagramNode [
 ]
 
 { #category : 'rendering' }
-MMClassDiagramRoassalBuilder >> newTreeLayouter [
+MMClassDiagramRoassalBuilder >> renderClass: aMicroUMLClassNode left: left top: top subclasses: aDictionary in: aRSCanvas [
 
-	direction = #LR ifTrue: [
-			^ RSHorizontalVanDerPloegTreeLayout new
-				  verticalGap: gap;
-				  horizontalGap: gap ].
-	direction = #RL ifTrue: [
-			^ RSHorizontalVanDerPloegTreeLayout new
-				  verticalGap: gap;
-				  horizontalGap: gap;
-				  horizontallyReverse ].
-	direction = #BT ifTrue: [
-			^ RSVanDerPloegTreeLayout new
-				  verticalGap: gap;
-				  horizontalGap: gap;
-				  verticallyReverse ].
-	^ RSVanDerPloegTreeLayout new
-		  verticalGap: gap;
-		  horizontalGap: gap
+	| right bottom shape |
+	right := left.
+	bottom := top.
+	shape := self newShapeForNode: aMicroUMLClassNode.
+	shape translateBy: left @ top - shape encompassingRectangle topLeft
+		+ (self horizontalMargin @ self verticalMargin).
+	right := right max:
+		         shape encompassingRectangle right + self horizontalMargin.
+	bottom := bottom max:
+		          shape encompassingRectangle bottom + self verticalMargin.
+	aRSCanvas
+		add: shape;
+		addNode: shape.
+	aDictionary
+		at: aMicroUMLClassNode name
+		ifPresent: [ :subclassNames |
+				| subclassLeft |
+				subclassLeft := left.
+				subclassNames do: [ :subclassName |
+						nodes at: subclassName ifPresent: [ :subclassNode |
+								subclassLeft := self
+									                renderClass: subclassNode
+									                left: subclassLeft
+									                top: bottom
+									                subclasses: aDictionary
+									                in: aRSCanvas ] ].
+				right := right max: subclassLeft ].
+	shape translateTo:
+		left + right * 0.5 - (shape encompassingRectangle width * 0.5)
+		@ shape encompassingRectangle center y.
+	^ right
+]
+
+{ #category : 'rendering' }
+MMClassDiagramRoassalBuilder >> renderClassesIn: aRSCanvas [
+
+	| nonRoots subclasses left |
+	nonRoots := Set new.
+	subclasses := OrderedDictionary new.
+	edges do: [ :edge |
+			edge isInheritance ifTrue: [
+					| superclassName subclassName |
+					superclassName := edge node1.
+					subclassName := edge node2.
+					(subclasses
+						 at: superclassName
+						 ifAbsentPut: [ OrderedCollection new ]) add: subclassName.
+					nonRoots add: subclassName ] ].
+
+	left := 0.0.
+	nodes keysDo: [ :className |
+			(nonRoots includes: className) ifFalse: [
+					nodes at: className ifPresent: [ :classNode |
+							left := self
+								        renderClass: classNode
+								        left: left
+								        top: 0.0
+								        subclasses: subclasses
+								        in: aRSCanvas ] ] ]
+]
+
+{ #category : 'rendering' }
+MMClassDiagramRoassalBuilder >> renderIn: aRSCanvas [
+
+	self renderClassesIn: aRSCanvas.
+	self renderLinksIn: aRSCanvas
 ]
 
 { #category : 'rendering' }
 MMClassDiagramRoassalBuilder >> renderLinksIn: aRSCanvas [
 
-	| treeEdges |
-	treeEdges := self treeEdges.
-	treeEdges do: [ :edge |
+	edges do: [ :edge |
 			| node1 node2 |
 			node1 := nodes at: edge node1.
 			node2 := nodes at: edge node2.
@@ -406,40 +493,16 @@ MMClassDiagramRoassalBuilder >> renderLinksIn: aRSCanvas [
 							| line |
 							line := self newShapeForEdge: edge.
 							line
-								attachPoint: MMAttachPoint new;
 								from: from;
 								to: to;
-								controlPointsController: (self newCPAPController t: 0.5).
-							aRSCanvas add: line.
-							line pushBack ] ] ].
-	self newTreeLayouter on: aRSCanvas nodes.
-	treeEdges := treeEdges asSet.
-	edges do: [ :edge |
-			(treeEdges includes: edge) ifFalse: [
-					| node1 node2 |
-					node1 := nodes at: edge node1.
-					node2 := nodes at: edge node2.
-					(aRSCanvas nodes
-						 detect: [ :node | node model = node1 ]
-						 ifNone: [ nil ]) ifNotNil: [ :from |
-							(aRSCanvas nodes
-								 detect: [ :node | node model = node2 ]
-								 ifNone: [ nil ]) ifNotNil: [ :to |
-									| line |
-									line := self newShapeForEdge: edge.
-									self
-										attach: line
-										from: from
-										to: to
-										in: aRSCanvas.
-									aRSCanvas add: line ] ] ] ].
+								controlPointsController: (edge isInheritance
+										 ifTrue: [ self newCPControllerForInheritance ]
+										 ifFalse: [ self newCPController ]).
+							aRSCanvas add: line ] ] ].
 	aRSCanvas edges do: [ :bezier |
 			bezier model isMMEdge ifTrue: [
 					(self newLabelForEdge: bezier model) ifNotNil: [ :label |
-							label position: (bezier atT:
-									 (bezier controlPointsController
-										  ifNotNil: #labelT
-										  ifNil: [ 0.5 ])).
+							label position: (bezier atT: 0.5).
 							aRSCanvas addShape: label ].
 					(self newLabelForCardinality: bezier model cardinality1)
 						ifNotNil: [ :label |
@@ -454,24 +517,7 @@ MMClassDiagramRoassalBuilder >> renderLinksIn: aRSCanvas [
 ]
 
 { #category : 'accessing' }
-MMClassDiagramRoassalBuilder >> treeEdges [
+MMClassDiagramRoassalBuilder >> verticalMargin [
 
-	| knownNodes |
-	knownNodes := Set new: nodes size.
-	^ Array streamContents: [ :stream |
-			  ((edges select: [ :edge | edge treeEdgePriority notNil ])
-				   asSortedCollection: #treeEdgePriority ascending) do: [ :edge |
-					  edge isSelfLoop ifFalse: [
-							  (knownNodes includes: edge node2)
-								  ifTrue: [
-										  (knownNodes includes: edge node1) ifFalse: [
-												  knownNodes
-													  add: edge node1;
-													  add: edge node2.
-												  stream nextPut: edge inversed ] ]
-								  ifFalse: [
-										  knownNodes
-											  add: edge node1;
-											  add: edge node2.
-										  stream nextPut: edge ] ] ] ]
+	^ 30
 ]

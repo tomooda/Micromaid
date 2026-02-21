@@ -60,6 +60,12 @@ MMClassDiagramEdge >> inversed [
 	^ MMClassDiagramInverseEdge new baseEdge: self
 ]
 
+{ #category : 'testing' }
+MMClassDiagramEdge >> isInheritance [
+
+	^ false
+]
+
 { #category : 'accessing' }
 MMClassDiagramEdge >> linestyle [
 
