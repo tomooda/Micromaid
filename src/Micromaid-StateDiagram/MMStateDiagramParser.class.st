@@ -32,15 +32,13 @@ MMStateDiagramParser >> diagram [
 { #category : 'parsing' }
 MMStateDiagramParser >> header [
 
-	^ ('stateDiagram' asPParser , '-v2' asPParser optional) flatten
-		  trimBlanks , self newline ==> #first
+	^ ('stateDiagram' asPParser , '-v2' asPParser optional) flatten trimBlanks , newline ==> #first
 ]
 
 { #category : 'parsing' }
 MMStateDiagramParser >> line [
 
-	^ self transition / (self state ==> [ :s | { s } ]) , self newline
-	  ==> #first
+	^ self transition / (self state ==> [ :s | { s } ]) , newline ==> #first
 ]
 
 { #category : 'parsing' }
@@ -68,9 +66,8 @@ MMStateDiagramParser >> state [
 { #category : 'parsing' }
 MMStateDiagramParser >> stateAs [
 
-	^ 'state' asPParser trimBlanks , $" asPParser
-	  , ($" asPParser not , #any asPParser) star flatten , $" asPParser
-	  , 'as' asPParser trimBlanks , self nodeName ==> [ :array |
+	^ 'state' asPParser trimBlanks , $" asPParser , ($" asPParser not , any) star string , $" asPParser , 'as' asPParser trimBlanks
+	  , self nodeName ==> [ :array |
 		  MMStateDiagramState new
 			  label: array third;
 			  name: array sixth;
@@ -80,10 +77,7 @@ MMStateDiagramParser >> stateAs [
 { #category : 'parsing' }
 MMStateDiagramParser >> stateWithLabel [
 
-	^ self nodeName , $: asPParser trimBlanks
-	  ,
-		  ((#newline asPParser / #eoi asPParser) not , #any asPParser) plus
-			  flatten ==> [ :triple |
+	^ self nodeName , $: asPParser trimBlanks , (newline not , any) plus string ==> [ :triple |
 		  MMStateDiagramState new
 			  name: triple first;
 			  label: triple third;
@@ -100,11 +94,8 @@ MMStateDiagramParser >> stopState [
 { #category : 'parsing' }
 MMStateDiagramParser >> transition [
 
-	^ self simpleState / self startState , self arrow
-	  , (self simpleState / self stopState) , ($: asPParser trimBlanks
-	   ,
-		   ((#newline asPParser / #eoi asPParser) not , #any asPParser) star
-			   flatten ==> #second) optional ==> [ :quartet |
+	^ self simpleState / self startState , self arrow , (self simpleState / self stopState)
+	  , ($: asPParser trimBlanks , (newline not , any) star string ==> #second) optional ==> [ :quartet |
 		  {
 			  quartet first.
 			  quartet third.

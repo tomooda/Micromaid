@@ -11,6 +11,10 @@ My subclass also has to implement the `diagram` method to parse the entire scrip
 Class {
 	#name : 'MicromaidParser',
 	#superclass : 'PP2CompositeNode',
+	#instVars : [
+		'any',
+		'newline'
+	],
 	#category : 'Micromaid-Base-AST',
 	#package : 'Micromaid-Base',
 	#tag : 'AST'
@@ -84,17 +88,29 @@ MicromaidParser class >> unHTML: aString [
 		   with: '<') copyReplaceAll: '&amp;' with: '&'
 ]
 
+{ #category : 'parsing' }
+MicromaidParser >> any [
+
+	^ self escape / #any asPParser
+]
+
 { #category : 'accessing' }
 MicromaidParser >> diagram [
 
 	^ self subclassResponsibility
 ]
 
-{ #category : 'instance creation' }
+{ #category : 'parsing' }
+MicromaidParser >> escape [
+
+	^ $# asPParser , #digit asPParser plus , $; asPParser
+	  ==> [ :triple | Character value: (triple second inject: 0 into: [ :code :digit | code * 10 + digit digitValue ]) ]
+]
+
+{ #category : 'parsing' }
 MicromaidParser >> newline [
 
-	^ #newline asPParser trimBlanks star , #eoi asPParser trimBlanks
-	  / #newline asPParser trimBlanks plus ==> [ :array | nil ]
+	^ #newline asPParser trimBlanks star , #eoi asPParser trimBlanks / #newline asPParser trimBlanks plus ==> [ :array | nil ]
 ]
 
 { #category : 'parsing' }

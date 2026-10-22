@@ -23,13 +23,11 @@ MMSequenceDiagramParser >> activation [
 MMSequenceDiagramParser >> actor [
 
 	^ 'actor' asPParser trimBlanks , self nodeName ==> #second
-	  , ('as' asPParser trimBlanks
-		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :pair |
-		  {MMSequenceDiagramActor new
-	name: pair first;
-	label: (pair second ifNil: [ pair first ]);
-	yourself} ]
+	  , ('as' asPParser trimBlanks , (newline not , any) star string ==> #second) optional ==> [ :pair |
+		  { (MMSequenceDiagramActor new
+			   name: pair first;
+			   label: (pair second ifNil: [ pair first ]);
+			   yourself) } ]
 ]
 
 { #category : 'parsing' }
@@ -67,21 +65,19 @@ MMSequenceDiagramParser >> head2 [
 { #category : 'accessing' }
 MMSequenceDiagramParser >> header [
 
-	^ 'sequenceDiagram' asPParser , self newline ==> #first
+	^ 'sequenceDiagram' asPParser , newline ==> #first
 ]
 
 { #category : 'parsing' }
 MMSequenceDiagramParser >> label [
 
-	^ ':' asPParser trimBlanks
-	  , (self newline not , #any asPParser) plus flatten ==> #second
+	^ ':' asPParser trimBlanks , (newline not , any) plus string ==> #second
 ]
 
 { #category : 'accessing' }
 MMSequenceDiagramParser >> line [
 
-	^ self participant / self actor / self note / self activation / self deactivation
-	  / self message , self newline ==> #first
+	^ self participant / self actor / self note / self activation / self deactivation / self message , newline ==> #first
 ]
 
 { #category : 'parsing' }
@@ -138,9 +134,8 @@ MMSequenceDiagramParser >> message [
 { #category : 'parsing' }
 MMSequenceDiagramParser >> nodeName [
 
-	^ ((#newline asPParser / $: asPParser / #blank asPParser
-	    / $, asPParser / self link) not , #any asPParser) plus trimBlanks
-		  flatten ==> [ :str | str trim ]
+	^ ((newline asPParser / $: asPParser / #blank asPParser / $, asPParser / self link) not , any asPParser) plus trimBlanks string
+	  ==> [ :str | str trim ]
 ]
 
 { #category : 'parsing' }
@@ -172,11 +167,9 @@ MMSequenceDiagramParser >> note [
 MMSequenceDiagramParser >> participant [
 
 	^ 'participant' asPParser trimBlanks , self nodeName ==> #second
-	  , ('as' asPParser trimBlanks
-		   , (self newline not , #any asPParser) star flatten ==> #second)
-			  optional ==> [ :pair |
-		  {MMSequenceDiagramParticipant new
-	name: pair first;
-	label: (pair second ifNil: [ pair first ]);
-	yourself} ]
+	  , ('as' asPParser trimBlanks , (newline not , any) star string ==> #second) optional ==> [ :pair |
+		  { (MMSequenceDiagramParticipant new
+			   name: pair first;
+			   label: (pair second ifNil: [ pair first ]);
+			   yourself) } ]
 ]
